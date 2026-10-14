@@ -31,6 +31,41 @@
         rel="stylesheet"
         href="<?= base_url('public/assets/css/ajobmart.css') ?>"
     >
+    <style>
+        .aj-product-image {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+}
+
+.aj-popular-product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 10px;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.aj-product-card:hover .aj-popular-product-img {
+    transform: scale(1.08);
+}
+
+.aj-product-image-placeholder {
+    width: 100%;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    font-size: 45px;
+}
+    </style>
 
 </head>
 
@@ -1961,6 +1996,218 @@ $(document).on(
     }
 );
 
+</script>
+
+<script>
+    const site_url = "<?= rtrim(site_url(), '/') ?>/";
+</script>
+<script>
+
+
+
+    
+let popularProductsLoaded = false;
+let popularProductsRequestRunning = false;
+
+function loadtofetchpopularProducts() {
+
+    // Prevent overlapping AJAX requests
+    if (popularProductsRequestRunning) {
+        return;
+    }
+
+    const container = $('#popularProductsContainer');
+    const refreshStatus = $('#popularRefreshStatus');
+
+    popularProductsRequestRunning = true;
+
+    $.ajax({
+        url: site_url + 'fetchpopularproduct',
+        method: 'GET',
+        dataType: 'json',
+
+        beforeSend: function () {
+
+            // Show loading content only on the first load.
+            if (!popularProductsLoaded) {
+                container.html(`
+                    <div class="text-center w-100 py-4">
+                        <span class="spinner-border spinner-border-sm"></span>
+                        Loading products...
+                    </div>
+                `);
+            } else {
+                // Keep existing products visible during refresh.
+                refreshStatus
+                    .removeClass('d-none')
+                    .addClass('d-flex');
+            }
+        },
+
+        success: function (response) {
+
+            if (!response.status ||
+                !response.products ||
+                response.products.length === 0) {
+
+                if (!popularProductsLoaded) {
+                    container.html(`
+                        <div class="text-center w-100 py-4">
+                            No popular products available.
+                        </div>
+                    `);
+                }
+
+                return;
+            }
+
+            let html = '';
+
+            response.products.forEach(function (product) {
+
+                const name = product.product_name || 'Product';
+                const category = product.category_name || 'General';
+                const price = parseFloat(product.listing_price) || 0;
+                const mrp = parseFloat(product.mrp) || 0;
+                const imagePath = product.image_path || '';
+                // const imageUrl = '';
+
+                const imageUrl = imagePath ? site_url + 'shared-images/' + imagePath.replace(/^\/+/, '') : '';                 
+
+
+                const discount = mrp > price && mrp > 0
+                    ? Math.round(((mrp - price) / mrp) * 100)
+                    : 0;
+
+                const safeName = $('<div>').text(name).html();
+                const safeCategory = $('<div>').text(category).html();
+
+                html += `
+    <div class="aj-product-card">
+        <div class="aj-product-image">
+
+            ${discount > 0 ? `
+                <span class="aj-discount">
+                    -${discount}%
+                </span>
+            ` : ''}
+
+            <button class="aj-wishlist"
+                    type="button"
+                    aria-label="Add to wishlist">
+                <i class="bi bi-heart"></i>
+            </button>
+
+            ${imageUrl !== '' ? `
+                <img
+                    src="${$('<div>').text(imageUrl).html()}"
+                    alt="${safeName}"
+                    class="aj-popular-product-img"
+                    onerror="this.style.display='none';">
+            ` : `
+                <div class="aj-product-image-placeholder">
+                    📦
+                </div>
+            `}
+
+        </div>
+
+        <div class="aj-product-info">
+            <span class="aj-product-category">
+                ${safeCategory}
+            </span>
+
+            <h3>${safeName}</h3>
+
+            <div class="aj-product-price">
+                <strong>
+                    ₹${price.toLocaleString('en-IN', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    })}
+                </strong>
+
+                ${mrp > price ? `
+                    <del>
+                        ₹${mrp.toLocaleString('en-IN', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        })}
+                    </del>
+                ` : ''}
+            </div>
+
+            <button type="button"
+                    class="aj-add-cart"
+                    data-product-id="${Number(product.id) || 0}">
+                <i class="bi bi-cart-plus"></i>
+                Add to Cart
+            </button>
+        </div>
+    </div>
+`;
+            });
+
+            // Replace products only after fresh data arrives.
+            container.html(html);
+            popularProductsLoaded = true;
+        },
+
+        error: function (xhr) {
+            console.error(
+                'Popular products error:',
+                xhr.responseText
+            );
+
+            // Don't remove existing products if a refresh fails.
+            if (!popularProductsLoaded) {
+                container.html(`
+                    <div class="text-center w-100 py-4">
+                        Unable to load products.
+                        <button type="button"
+                                class="btn btn-sm btn-outline-primary ms-2"
+                                onclick="loadtofetchpopularProducts()">
+                            Retry
+                        </button>
+                    </div>
+                `);
+            }
+        },
+
+        complete: function () {
+            popularProductsRequestRunning = false;
+
+            refreshStatus
+                .removeClass('d-flex')
+                .addClass('d-none');
+        }
+    });
+}
+
+$(document).ready(function () {
+
+    console.log('Document ready');
+
+    // Load products initially.
+    loadtofetchpopularProducts();
+
+    // Refresh every 10 seconds.
+    setInterval(function () {
+
+        if (popularProductsLoaded) {
+            $('#popularRefreshStatus')
+                .removeClass('d-none')
+                .addClass('d-flex');
+        }
+
+        loadtofetchpopularProducts();
+
+    }, 10000);
+
+});
+
+
+    
 </script>
 
 </body>

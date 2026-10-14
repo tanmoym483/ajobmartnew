@@ -25,3 +25,7 @@ $routes->post(
 $routes->post('auth/login', 'Auth::login');
 
 $routes->get('auth/customerLogout', 'Auth::customerLogout');
+
+$routes->get('fetchpopularproduct', 'Product::fetchpopularproduct');
+
+$routes->get('shared-images/(:any)', 'SharedImages::show/$1');
