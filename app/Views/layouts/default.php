@@ -2083,69 +2083,69 @@ function loadtofetchpopularProducts() {
                 const safeCategory = $('<div>').text(category).html();
 
                 html += `
-    <div class="aj-product-card">
-        <div class="aj-product-image">
+                    <div class="aj-product-card">
+                        <div class="aj-product-image">
 
-            ${discount > 0 ? `
-                <span class="aj-discount">
-                    -${discount}%
-                </span>
-            ` : ''}
+                            ${discount > 0 ? `
+                                <span class="aj-discount">
+                                    -${discount}%
+                                </span>
+                            ` : ''}
 
-            <button class="aj-wishlist"
-                    type="button"
-                    aria-label="Add to wishlist">
-                <i class="bi bi-heart"></i>
-            </button>
+                            <button class="aj-wishlist"
+                                    type="button"
+                                    aria-label="Add to wishlist">
+                                <i class="bi bi-heart"></i>
+                            </button>
 
-            ${imageUrl !== '' ? `
-                <img
-                    src="${$('<div>').text(imageUrl).html()}"
-                    alt="${safeName}"
-                    class="aj-popular-product-img"
-                    onerror="this.style.display='none';">
-            ` : `
-                <div class="aj-product-image-placeholder">
-                    📦
-                </div>
-            `}
+                            ${imageUrl !== '' ? `
+                                <img
+                                    src="${$('<div>').text(imageUrl).html()}"
+                                    alt="${safeName}"
+                                    class="aj-popular-product-img"
+                                    onerror="this.style.display='none';">
+                            ` : `
+                                <div class="aj-product-image-placeholder">
+                                    📦
+                                </div>
+                            `}
 
-        </div>
+                        </div>
 
-        <div class="aj-product-info">
-            <span class="aj-product-category">
-                ${safeCategory}
-            </span>
+                        <div class="aj-product-info">
+                            <span class="aj-product-category">
+                                ${safeCategory}
+                            </span>
 
-            <h3>${safeName}</h3>
+                            <h3>${safeName}</h3>
 
-            <div class="aj-product-price">
-                <strong>
-                    ₹${price.toLocaleString('en-IN', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    })}
-                </strong>
+                            <div class="aj-product-price">
+                                <strong>
+                                    ₹${price.toLocaleString('en-IN', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2
+                                    })}
+                                </strong>
 
-                ${mrp > price ? `
-                    <del>
-                        ₹${mrp.toLocaleString('en-IN', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
-                        })}
-                    </del>
-                ` : ''}
-            </div>
+                                ${mrp > price ? `
+                                    <del>
+                                        ₹${mrp.toLocaleString('en-IN', {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        })}
+                                    </del>
+                                ` : ''}
+                            </div>
 
-            <button type="button"
-                    class="aj-add-cart"
-                    data-product-id="${Number(product.id) || 0}">
-                <i class="bi bi-cart-plus"></i>
-                Add to Cart
-            </button>
-        </div>
-    </div>
-`;
+                            <button type="button"
+                                    class="aj-add-cart"
+                                    data-product-id="${Number(product.id) || 0}">
+                                <i class="bi bi-cart-plus"></i>
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                `;
             });
 
             // Replace products only after fresh data arrives.
