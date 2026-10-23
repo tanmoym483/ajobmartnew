@@ -1968,45 +1968,69 @@ $(function () {
                 email: email
             }, getCsrfData())
         })
-        .done(function (response) {
-            updateCsrf(response);
+        
+.done(function (response) {
+    updateCsrf(response);
 
-            if (!response.status) {
-                lastRequestedEmail = '';
+    if (
+        response.status !== true &&
+        response.status !== 'success'
+    ) {
+        lastRequestedEmail = '';
 
-                showMessage(
-                    '#otpSendStatus',
-                    response.message || 'Unable to send OTP.',
-                    'text-danger'
-                );
-                return;
-            }
+        showMessage(
+            '#otpSendStatus',
+            response.message || 'Unable to send OTP.',
+            'text-danger'
+        );
+        return;
+    }
 
-            otpSent = true;
-            verifiedEmail = '';
+    otpSent = true;
+    verifiedEmail = '';
+    $('#otpEmailDisplay').text(email);
 
-            $('#otpEmailDisplay').text(email);
+    // Show only the OTP section.
+    $details.hide();
+    $otpSection.prop('hidden', false);
 
-            // Display ONLY the OTP boxes.
-            $details.hide();
-            $otpSection.prop('hidden', false);
+    // Clear old OTP values first.
+    resetOtpBoxes(false);
 
-            resetOtpBoxes(false);
+    // Autofill OTP received from the controller.
+    // This is intended for development/testing only.
+    if (response.debug_otp) {
+        const otp = String(response.debug_otp)
+            .replace(/\D/g, '')
+            .slice(0, 6);
 
-            showMessage(
-                '#otpSendStatus',
-                '',
-                ''
-            );
+        if (/^[0-9]{6}$/.test(otp)) {
+            $otpBoxes.each(function (index) {
+                $(this)
+                    .val(otp[index])
+                    .toggleClass('filled', true);
+            });
 
-            showMessage(
-                '#otpVerifyStatus',
-                response.message || 'OTP sent. Enter the 6-digit code.',
-                'text-muted'
-            );
+            updateCombinedOtp();
+        }
+    }
 
-            setTimeout(focusFirstOtpBox, 100);
-        })
+    showMessage(
+        '#otpVerifyStatus',
+        response.debug_otp
+            ? 'OTP autofilled. Verifying your email...'
+            : response.message || 'OTP sent. Enter the 6-digit code.',
+        'text-muted'
+    );
+
+    // Focus the first box only if it is still empty.
+    setTimeout(function () {
+        if (!$hiddenOtp.val()) {
+            focusFirstOtpBox();
+        }
+    }, 100);
+})
+
         .fail(function (xhr) {
             lastRequestedEmail = '';
             handleAjaxError(xhr, '#otpSendStatus');

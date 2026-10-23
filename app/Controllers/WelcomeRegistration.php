@@ -113,8 +113,10 @@ class WelcomeRegistration extends BaseController
         $this->session->remove('welcome_verified_email');
 
         return $this->response->setJSON([
-            'status'  => true,
-            'message' => 'OTP sent to your email address.',
+            'status'    => 'success',
+            'message'   => 'OTP sent successfully.',
+            'debug_otp' => (string) $otp,
+            'csrfHash'  => csrf_hash(),
         ]);
     }
 
