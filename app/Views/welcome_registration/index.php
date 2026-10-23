@@ -1394,6 +1394,60 @@
 }
 
 
+
+.otp-boxes {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    margin: 20px auto;
+}
+
+.otp-digit {
+    width: 48px;
+    height: 54px;
+    border: 2px solid rgba(255, 255, 255, 0.45);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 800;
+    outline: none;
+    caret-color: #ffdf59;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.otp-digit:focus {
+    border-color: #ffdf59;
+    background: rgba(255, 255, 255, 0.22);
+    box-shadow: 0 0 0 3px rgba(255, 223, 89, 0.15);
+}
+
+.otp-digit.filled {
+    border-color: #ffdf59;
+}
+
+.otp-digit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media (max-width: 400px) {
+    .otp-boxes {
+        gap: 6px;
+    }
+
+    .otp-digit {
+        width: 40px;
+        height: 48px;
+        font-size: 21px;
+        border-radius: 9px;
+    }
+}
+
+
 </style>
 </head>
 <body>
@@ -1506,14 +1560,14 @@
         <span class="reward-star star-six">★</span>
     </div>
 
-    <div class="reward-coins">
+    <!-- <div class="reward-coins">
         <span class="reward-coin coin-one">₹</span>
         <span class="reward-coin coin-two">₹</span>
         <span class="reward-coin coin-three">₹</span>
         <span class="reward-coin coin-four">₹</span>
         <span class="reward-coin coin-five">₹</span>
         <span class="reward-coin coin-six">₹</span>
-    </div>
+    </div> -->
     
 <div class="reward-coins">
     <span class="reward-coin coin-one">₹100</span>
@@ -1542,88 +1596,116 @@
 <div class="welcome-register-body">
 
     
+
 <form id="welcomeRegistrationForm" method="post" novalidate>
     <?= csrf_field() ?>
 
-    <div class="alert alert-success" role="alert">
-        <strong>🎁 ₹100 Welcome Cashback</strong>
-        <div class="small mt-1">
-            Complete registration and verify your email to receive
-                    your welcome cashback in your profile.
+    <!-- Registration details: shown before OTP is sent -->
+    <div id="welcomeDetailsSection">
+        <h5 class="section-heading">1. Your details</h5>
+
+        <div class="mb-3">
+            <label for="name" class="form-label">Full name *</label>
+            <input
+                type="text"
+                id="name"
+                name="name"
+                class="form-control"
+                placeholder="Enter your full name"
+                autocomplete="name"
+                required
+            >
+        </div>
+
+        <div class="mb-3">
+            <label for="mobile" class="form-label">Mobile number *</label>
+            <input
+                type="tel"
+                id="mobile"
+                name="mobile"
+                class="form-control"
+                placeholder="10-digit mobile number"
+                inputmode="numeric"
+                maxlength="10"
+                pattern="[0-9]{10}"
+                autocomplete="tel-national"
+                required
+            >
+        </div>
+
+        <h5 class="section-heading">2. Verify your email</h5>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email address *</label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                class="form-control"
+                placeholder="Enter your email address"
+                autocomplete="email"
+                required
+            >
+
+            <div id="otpSendStatus" class="otp-status mt-2"></div>
+            <small class="text-white-50">
+                An OTP will be sent automatically when you leave this field.
+            </small>
         </div>
     </div>
 
-    <h5 class="section-heading">1. Your details</h5>
+    <!-- Only the OTP section is shown after OTP is sent -->
+    <div id="otpSection" hidden>
+        <div class="text-center mb-3">
+            <i
+                class="bi bi-envelope-check"
+                style="font-size:42px;color:#ffdf59"
+            ></i>
 
-    <div class="mb-3">
-        <label for="name" class="form-label">Full name *</label>
-        <input type="text"
-               id="name"
-               name="name"
-               class="form-control"
-               placeholder="Enter your full name"
-               maxlength="150"
-               autocomplete="name"
-               required>
+            <h5 class="section-heading mt-2">Verify your email</h5>
+
+            <p class="text-white mb-1">
+                Enter the 6-digit OTP sent to your email.
+            </p>
+
+            <p id="otpEmailDisplay" class="small text-white-50"></p>
+        </div>
+
+        <!-- Combined value sent to your existing backend -->
+        <input type="hidden" id="otp" name="otp" value="">
+
+        <div class="otp-boxes" id="otpBoxes">
+            <input type="text" class="otp-digit" maxlength="1"
+                   inputmode="numeric" autocomplete="one-time-code"
+                   aria-label="OTP digit 1" disabled>
+            <input type="text" class="otp-digit" maxlength="1"
+                   inputmode="numeric" aria-label="OTP digit 2" disabled>
+            <input type="text" class="otp-digit" maxlength="1"
+                   inputmode="numeric" aria-label="OTP digit 3" disabled>
+            <input type="text" class="otp-digit" maxlength="1"
+                   inputmode="numeric" aria-label="OTP digit 4" disabled>
+            <input type="text" class="otp-digit" maxlength="1"
+                   inputmode="numeric" aria-label="OTP digit 5" disabled>
+            <input type="text" class="otp-digit" maxlength="1"
+                   inputmode="numeric" aria-label="OTP digit 6" disabled>
+        </div>
+
+        <div id="otpVerifyStatus"
+             class="otp-status text-center mt-3"
+             role="status"
+             aria-live="polite"></div>
+
+        <div class="text-center mt-3">
+            <button type="button" id="changeEmailBtn"
+                    class="btn btn-outline-light btn-sm">
+                Change email
+            </button>
+        </div>
     </div>
 
-    <div class="mb-3">
-        <label for="mobile" class="form-label">Mobile number *</label>
-        <input type="tel"
-               id="mobile"
-               name="mobile"
-               class="form-control"
-               placeholder="10-digit mobile number"
-               inputmode="numeric"
-               pattern="[0-9]{10}"
-               maxlength="10"
-               autocomplete="tel"
-               required>
-    </div>
-
-    <h5 class="section-heading">2. Verify your email</h5>
-
-    
-<div class="mb-3">
-    <label for="email" class="form-label">Email address *</label>
-
-    <input type="email"
-           id="email"
-           name="email"
-           class="form-control"
-           placeholder="Enter your email address"
-           maxlength="190"
-           autocomplete="email"
-           required>
-
-    <div id="otpSendStatus" class="otp-status" aria-live="polite"></div>
-</div>
-
-<div class="mb-3" id="otpSection" hidden>
-    <label for="otp" class="form-label">Email verification code *</label>
-
-    <input type="text"
-           id="otp"
-           name="otp"
-           class="form-control"
-           placeholder="Enter 6-digit OTP"
-           inputmode="numeric"
-           autocomplete="one-time-code"
-           pattern="[0-9]{6}"
-           maxlength="6"
-           required>
-
-    <div id="otpVerifyStatus" class="otp-status" aria-live="polite"></div>
-</div>
-
-
-    <div class="alert alert-light border small mb-0">
-        <i class="bi bi-shield-lock text-success"></i>
-        Your account will be created automatically after successful
-        OTP verification. A random password will be generated securely
-        by our system.
-    </div>
+    <!-- Keep your existing cashback information here if needed. -->
 </form>
+
 
 </div>
 </div>
@@ -1742,96 +1824,137 @@ $(function () {
 
 
 
+
+
 $(function () {
+    const $form = $('#welcomeRegistrationForm');
+    const $details = $('#welcomeDetailsSection');
+    const $otpSection = $('#otpSection');
+    const $email = $('#email');
+    const $hiddenOtp = $('#otp');
+    const $otpBoxes = $('.otp-digit');
+
     const sendOtpUrl = <?= json_encode(site_url('welcome-registration/send-otp')) ?>;
     const verifyOtpUrl = <?= json_encode(site_url('welcome-registration/verify-otp')) ?>;
     const registerUrl = <?= json_encode(site_url('welcome-registration/register')) ?>;
     const homeUrl = <?= json_encode(site_url('/')) ?>;
 
-    let emailTimer = null;
-    let lastOtpEmail = '';
-    let otpRequestInProgress = false;
-    let otpVerificationInProgress = false;
+    let sendingOtp = false;
+    let verifyingOtp = false;
     let registrationInProgress = false;
+    let otpSent = false;
     let verifiedEmail = '';
+    let lastRequestedEmail = '';
 
-    const $email = $('#email');
-    const $otp = $('#otp');
-    const $otpSection = $('#otpSection');
+    // Keep this synchronized with your existing CSRF configuration.
+    const csrfName = <?= json_encode(csrf_token()) ?>;
 
-    function showMessage(selector, message, type = 'text-muted') {
-        $(selector)
-            .removeClass('text-success text-danger text-muted')
-            .addClass(type)
-            .text(message);
-    }
+    function getCsrfData() {
+        const data = {};
+        const $csrf = $form.find('input[name="' + csrfName + '"]');
 
-    function csrfData() {
-        const token = $('input[name="<?= csrf_token() ?>"]').val();
+        if ($csrf.length) {
+            data[csrfName] = $csrf.val();
+        }
 
-        return token
-            ? { ['<?= csrf_token() ?>']: token }
-            : {};
+        return data;
     }
 
     function updateCsrf(response) {
-        if (response && response.csrfHash) {
-            $('input[name="<?= csrf_token() ?>"]')
-                .val(response.csrfHash);
+        if (!response || !response.csrfHash) {
+            return;
         }
+
+        $form.find('input[name="' + csrfName + '"]')
+            .val(response.csrfHash);
     }
 
-    function ajaxError(xhr, selector) {
+    function showMessage(selector, message, className) {
+        $(selector)
+            .removeClass('text-danger text-success text-muted text-warning')
+            .addClass(className || 'text-muted')
+            .text(message || '');
+    }
+
+    function handleAjaxError(xhr, selector) {
         const response = xhr.responseJSON || {};
 
         updateCsrf(response);
 
         showMessage(
             selector,
-            response.message || 'Something went wrong. Please try again.',
+            response.message ||
+                'Something went wrong. Please try again.',
             'text-danger'
         );
     }
 
-    function resetVerification() {
-        verifiedEmail = '';
-        lastOtpEmail = '';
+    function resetOtpBoxes(disabled = false) {
+        $otpBoxes.each(function () {
+            $(this)
+                .val('')
+                .removeClass('filled')
+                .prop('disabled', disabled);
+        });
 
-        $otp.val('');
-        $otpSection.prop('hidden', true);
-
-        showMessage('#otpVerifyStatus', '');
+        $hiddenOtp.val('');
     }
 
-    // Send OTP automatically when the email is valid.
-    function scheduleOtpSend() {
-        clearTimeout(emailTimer);
+    function focusFirstOtpBox() {
+        if (!registrationInProgress && !verifyingOtp) {
+            $otpBoxes.first().trigger('focus');
+        }
+    }
 
+    // Send OTP automatically when the email field loses focus.
+    function sendOtpAutomatically() {
+        if (sendingOtp || otpSent || registrationInProgress) {
+            return;
+        }
+
+        const name = $.trim($('#name').val());
+        const mobile = $.trim($('#mobile').val());
         const email = $.trim($email.val()).toLowerCase();
 
-        if (!$email[0].checkValidity() || !email) {
+        if (!name) {
+            showMessage(
+                '#otpSendStatus',
+                'Please enter your full name first.',
+                'text-danger'
+            );
+            $('#name').trigger('focus');
             return;
         }
 
-        if (email === lastOtpEmail || otpRequestInProgress) {
+        if (!/^[0-9]{10}$/.test(mobile)) {
+            showMessage(
+                '#otpSendStatus',
+                'Please enter a valid 10-digit mobile number.',
+                'text-danger'
+            );
+            $('#mobile').trigger('focus');
             return;
         }
 
-        emailTimer = setTimeout(function () {
-            sendOtp(email);
-        }, 800);
-    }
-
-    function sendOtp(email) {
-        if (otpRequestInProgress || registrationInProgress) {
+        if (!email || !$email[0].checkValidity()) {
+            showMessage(
+                '#otpSendStatus',
+                'Please enter a valid email address.',
+                'text-danger'
+            );
             return;
         }
 
-        otpRequestInProgress = true;
+        if (email === lastRequestedEmail && !otpSent) {
+            return;
+        }
+
+        sendingOtp = true;
+        lastRequestedEmail = email;
 
         showMessage(
             '#otpSendStatus',
-            'Sending verification code...',
+            'Sending OTP to your email...',
             'text-muted'
         );
 
@@ -1839,12 +1962,18 @@ $(function () {
             url: sendOtpUrl,
             type: 'POST',
             dataType: 'json',
-            data: Object.assign({ email: email }, csrfData())
+            data: Object.assign({
+                name: name,
+                mobile: mobile,
+                email: email
+            }, getCsrfData())
         })
         .done(function (response) {
             updateCsrf(response);
 
             if (!response.status) {
+                lastRequestedEmail = '';
+
                 showMessage(
                     '#otpSendStatus',
                     response.message || 'Unable to send OTP.',
@@ -1853,84 +1982,219 @@ $(function () {
                 return;
             }
 
-            lastOtpEmail = email;
+            otpSent = true;
+            verifiedEmail = '';
+
+            $('#otpEmailDisplay').text(email);
+
+            // Display ONLY the OTP boxes.
+            $details.hide();
             $otpSection.prop('hidden', false);
+
+            resetOtpBoxes(false);
 
             showMessage(
                 '#otpSendStatus',
-                response.message || 'OTP sent. Check your email.',
-                'text-success'
+                '',
+                ''
             );
 
-            $otp.trigger('focus');
+            showMessage(
+                '#otpVerifyStatus',
+                response.message || 'OTP sent. Enter the 6-digit code.',
+                'text-muted'
+            );
+
+            setTimeout(focusFirstOtpBox, 100);
         })
         .fail(function (xhr) {
-            ajaxError(xhr, '#otpSendStatus');
+            lastRequestedEmail = '';
+            handleAjaxError(xhr, '#otpSendStatus');
         })
         .always(function () {
-            otpRequestInProgress = false;
+            sendingOtp = false;
         });
     }
 
+    // Email blur and Enter trigger automatic OTP sending.
+    $email.on('blur', function () {
+        sendOtpAutomatically();
+    });
+
+    $email.on('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            sendOtpAutomatically();
+        }
+    });
+
+    // If the email changes, the user must request a new OTP.
     $email.on('input', function () {
-        const email = $.trim(this.value).toLowerCase();
+        const currentEmail = $.trim($(this).val()).toLowerCase();
 
-        if (email !== verifiedEmail) {
-            resetVerification();
-        }
+        if (otpSent && currentEmail !== lastRequestedEmail) {
+            otpSent = false;
+            verifiedEmail = '';
+            lastRequestedEmail = '';
 
-        if (email !== lastOtpEmail) {
-            showMessage('#otpSendStatus', '');
-        }
-
-        scheduleOtpSend();
-    });
-
-    // Only numeric OTP characters are accepted.
-    $otp.on('input', function () {
-        this.value = this.value.replace(/\D/g, '').slice(0, 6);
-
-        if (this.value.length === 6) {
-            verifyAndRegister();
+            resetOtpBoxes(true);
+            $otpSection.prop('hidden', true);
+            $details.show();
         }
     });
 
-    function verifyAndRegister() {
-        if (otpVerificationInProgress || registrationInProgress) {
+    // Six-box input: typing, backspace, arrows and paste.
+    $otpBoxes.each(function (index) {
+        const $box = $(this);
+
+        
+$box.on('input', function () {
+    if (verifyingOtp || registrationInProgress) {
+        return;
+    }
+
+    const raw = String($(this).val()).replace(/\D/g, '');
+
+    // Browser autofill or insertion of the entire OTP.
+    if (raw.length > 1) {
+        const startIndex = index;
+        const digits = raw.slice(0, 6 - startIndex);
+
+        digits.split('').forEach(function (digit, offset) {
+            const target = $otpBoxes.eq(startIndex + offset);
+
+            target.val(digit).addClass('filled');
+        });
+
+        const nextIndex = Math.min(
+            startIndex + digits.length,
+            $otpBoxes.length - 1
+        );
+
+        $otpBoxes.eq(nextIndex).trigger('focus');
+        updateCombinedOtp();
+        return;
+    }
+
+    // Normal one-digit input.
+    $(this).val(raw.slice(0, 1));
+    $(this).toggleClass('filled', !!$(this).val());
+
+    if ($(this).val() && index < $otpBoxes.length - 1) {
+        $otpBoxes.eq(index + 1).trigger('focus');
+    }
+
+    updateCombinedOtp();
+});
+
+
+        $box.on('keydown', function (event) {
+            if (
+                event.key === 'Backspace' &&
+                !$(this).val() &&
+                index > 0
+            ) {
+                $otpBoxes.eq(index - 1).trigger('focus');
+            }
+
+            if (event.key === 'ArrowLeft' && index > 0) {
+                event.preventDefault();
+                $otpBoxes.eq(index - 1).trigger('focus');
+            }
+
+            if (
+                event.key === 'ArrowRight' &&
+                index < $otpBoxes.length - 1
+            ) {
+                event.preventDefault();
+                $otpBoxes.eq(index + 1).trigger('focus');
+            }
+
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                updateCombinedOtp();
+            }
+        });
+
+        $box.on('paste', function (event) {
+            event.preventDefault();
+
+            if (verifyingOtp || registrationInProgress) {
+                return;
+            }
+
+            const clipboard = event.originalEvent.clipboardData;
+            const pasted = clipboard
+                ? clipboard.getData('text')
+                : '';
+
+            const digits = pasted.replace(/\D/g, '').slice(0, 6);
+
+            $otpBoxes.val('').removeClass('filled');
+
+            digits.split('').forEach(function (digit, i) {
+                $otpBoxes.eq(i)
+                    .val(digit)
+                    .toggleClass('filled', !!digit);
+            });
+
+            if (digits.length < 6) {
+                $otpBoxes.eq(digits.length).trigger('focus');
+            } else {
+                $otpBoxes.last().trigger('focus');
+            }
+
+            updateCombinedOtp();
+        });
+    });
+
+    function updateCombinedOtp() {
+        const otp = $otpBoxes.map(function () {
+            return $(this).val();
+        }).get().join('');
+
+        $hiddenOtp.val(otp);
+
+        if (otp.length === 6 && /^[0-9]{6}$/.test(otp)) {
+            verifyOtpAndRegister(otp);
+        }
+    }
+
+    // Verify OTP, then automatically register the customer.
+    function verifyOtpAndRegister(otp) {
+        if (
+            verifyingOtp ||
+            registrationInProgress ||
+            !otpSent ||
+            !/^[0-9]{6}$/.test(otp)
+        ) {
             return;
         }
 
-        const form = document.getElementById('welcomeRegistrationForm');
-
+        const email = $.trim($email.val()).toLowerCase();
         const name = $.trim($('#name').val());
         const mobile = $.trim($('#mobile').val());
-        const email = $.trim($email.val()).toLowerCase();
-        const otp = $.trim($otp.val());
 
-        if (!form.checkValidity()) {
-            form.reportValidity();
-            return;
-        }
-
-        if (!/^[0-9]{10}$/.test(mobile)) {
+        if (
+            !name ||
+            !/^[0-9]{10}$/.test(mobile) ||
+            !email ||
+            email !== lastRequestedEmail
+        ) {
             showMessage(
                 '#otpVerifyStatus',
-                'Enter a valid 10-digit mobile number.',
+                'Please check your registration details.',
                 'text-danger'
             );
-            $('#mobile').trigger('focus');
             return;
         }
 
-        if (otp.length !== 6 || email !== lastOtpEmail) {
-            return;
-        }
-
-        otpVerificationInProgress = true;
+        verifyingOtp = true;
+        $otpBoxes.prop('disabled', true);
 
         showMessage(
             '#otpVerifyStatus',
-            'Verifying your OTP...',
+            'Verifying OTP...',
             'text-muted'
         );
 
@@ -1941,7 +2205,7 @@ $(function () {
             data: Object.assign({
                 email: email,
                 otp: otp
-            }, csrfData())
+            }, getCsrfData())
         })
         .done(function (response) {
             updateCsrf(response);
@@ -1953,122 +2217,136 @@ $(function () {
                     'text-danger'
                 );
 
-                $otp.val('');
-                $otp.trigger('focus');
+                resetOtpBoxes(false);
+                focusFirstOtpBox();
                 return;
             }
 
             verifiedEmail = email;
-            registrationInProgress = true;
 
             showMessage(
                 '#otpVerifyStatus',
-                'OTP verified. Creating your account...',
+                'Email verified! Creating your account...',
                 'text-success'
             );
 
-            createAccount(name, mobile, email, otp);
+            registrationInProgress = true;
+
+            $.ajax({
+                url: registerUrl,
+                type: 'POST',
+                dataType: 'json',
+                data: Object.assign({
+                    name: name,
+                    mobile: mobile,
+                    email: email,
+                    otp: otp
+                }, getCsrfData())
+            })
+            .done(function (result) {
+                updateCsrf(result);
+
+                if (!result.status) {
+                    registrationInProgress = false;
+
+                    showMessage(
+                        '#otpVerifyStatus',
+                        result.message || 'Registration failed.',
+                        'text-danger'
+                    );
+
+                    resetOtpBoxes(false);
+                    focusFirstOtpBox();
+                    return;
+                }
+
+                // Run your existing WIN BLAST success function.
+                if (typeof window.showSuccessCelebration === 'function') {
+                    window.showSuccessCelebration();
+                } else {
+                    window.location.replace(result.redirect || homeUrl);
+                }
+            })
+            .fail(function (xhr) {
+                registrationInProgress = false;
+                handleAjaxError(xhr, '#otpVerifyStatus');
+                resetOtpBoxes(false);
+                focusFirstOtpBox();
+            });
         })
         .fail(function (xhr) {
-            ajaxError(xhr, '#otpVerifyStatus');
+            handleAjaxError(xhr, '#otpVerifyStatus');
+            resetOtpBoxes(false);
+            focusFirstOtpBox();
         })
         .always(function () {
-            otpVerificationInProgress = false;
+            verifyingOtp = false;
         });
     }
 
-    function createAccount(name, mobile, email, otp) {
-        $.ajax({
-            url: registerUrl,
-            type: 'POST',
-            dataType: 'json',
-            data: Object.assign({
-                name: name,
-                mobile: mobile,
-                email: email,
-                otp: otp
-            }, csrfData())
-        })
-        .done(function (response) {
-            updateCsrf(response);
+    // Allow the existing change-email button to restart the flow.
+    $('#changeEmailBtn').on('click', function () {
+        if (sendingOtp || verifyingOtp || registrationInProgress) {
+            return;
+        }
 
-            if (!response.status) {
-                registrationInProgress = false;
+        otpSent = false;
+        verifiedEmail = '';
+        lastRequestedEmail = '';
 
-                showMessage(
-                    '#otpVerifyStatus',
-                    response.message || 'Registration failed.',
-                    'text-danger'
-                );
-                return;
-            }
+        resetOtpBoxes(true);
+        $otpSection.prop('hidden', true);
+        $details.show();
 
-            // Show the reward only after confirmed registration.
-            showSuccessCelebration();
-        })
-        .fail(function (xhr) {
-            registrationInProgress = false;
-            ajaxError(xhr, '#otpVerifyStatus');
-        });
-    }
+        showMessage('#otpSendStatus', '', '');
+        showMessage('#otpVerifyStatus', '', '');
 
-    
-function showSuccessCelebration() {
-    const splash = document.getElementById('cashbackSuccessSplash');
+        $email.prop('readonly', false).trigger('focus');
+    });
 
-    if (!splash) {
-        window.location.replace(homeUrl);
+    // Prevent accidental full-page form submission.
+    $form.on('submit', function (event) {
+        event.preventDefault();
+    });
+
+    // Start with the OTP section hidden.
+    $otpSection.prop('hidden', true);
+});
+
+
+window.showSuccessCelebration = function () {
+    const $splash = $('#cashbackSuccessSplash');
+
+    if (!$splash.length) {
+        window.location.replace(<?= json_encode(site_url('/')) ?>);
         return;
     }
 
-    splash.classList.remove('splash-hide');
-    splash.classList.add('win-popup-active');
+    $splash.removeClass('splash-hide').addClass('win-popup-active');
+    $('body').css('overflow', 'hidden');
 
-    document.body.style.overflow = 'hidden';
+    const $confetti = $('#successConfetti');
+    $confetti.empty();
 
-    const confetti = document.getElementById('successConfetti');
+    for (let i = 0; i < 70; i++) {
+        const $piece = $('<span class="win-confetti"></span>');
 
-    if (confetti && !window.matchMedia(
-        '(prefers-reduced-motion: reduce)'
-    ).matches) {
-        const colors = [
-            '#ffdf59', '#ff42d0', '#55e8ff',
-            '#ffffff', '#7dff9b'
-        ];
+        $piece.css({
+            left: Math.random() * 100 + '%',
+            animationDelay: Math.random() * 1.5 + 's',
+            animationDuration: (2 + Math.random() * 2) + 's',
+            transform: 'rotate(' + Math.random() * 360 + 'deg)'
+        });
 
-        for (let i = 0; i < 55; i++) {
-            const piece = document.createElement('span');
-
-            piece.className = 'confetti-piece';
-            piece.style.left = Math.random() * 100 + '%';
-            piece.style.backgroundColor =
-                colors[Math.floor(Math.random() * colors.length)];
-
-            piece.style.animationDuration =
-                (1.5 + Math.random() * 1.5) + 's';
-
-            piece.style.animationDelay =
-                (Math.random() * .5) + 's';
-
-            piece.style.setProperty(
-                '--drift',
-                (Math.random() * 160 - 80) + 'px'
-            );
-
-            confetti.appendChild(piece);
-        }
+        $confetti.append($piece);
     }
 
     setTimeout(function () {
-        window.location.replace(homeUrl);
-    }, 1000);
-}
+        window.location.replace(<?= json_encode(site_url('/')) ?>);
+    }, 3000);
+};
 
 
-    $('#welcomeRegistrationForm').on('submit', function (event) {
-        event.preventDefault();
-    });
-});
 
 
 </script>
