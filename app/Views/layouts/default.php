@@ -1,3 +1,23 @@
+<?php
+$isCustomerLoggedIn = session()->get('ajobmart_customer_logged_in');
+$customerName = session()->get('ajobmart_customer_name') ?? 'Customer';
+
+// Use a default image when the customer has no uploaded profile image.
+$customerImage = session()->get('ajobmart_customer_image')
+    ?: base_url('assets/images/default-user.png');
+?>
+
+<?php
+// Coupon / cashback balance
+$couponAmount = 0;
+
+if ($isCustomerLoggedIn) {
+    // Replace this with the actual database balance when available.
+    $couponAmount = (float) (session()->get('ajobmart_customer_coupon_amount') ?? 0);
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -13,6 +33,9 @@
     <title>
         <?= esc($title ?? 'Ajobmart') ?>
     </title>
+
+    <link rel="icon" type="image/png"
+      href="<?= base_url('public/assets/favicon/android-chrome-512x512.png') . '?v=2'; ?>">
 
     <!-- Bootstrap 5 -->
     <link
@@ -31,57 +54,116 @@
         rel="stylesheet"
         href="<?= base_url('public/assets/css/ajobmart.css') ?>"
     >
+
     <style>
-        .aj-product-image {
-    position: relative;
-    width: 100%;
-    height: 220px;
-    overflow: hidden;
+
+        #ajobmart-splash {
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    background: #ffffff;
     display: flex;
-    align-items: center;
     justify-content: center;
-    background: #fff;
+    align-items: center;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
 }
 
-.aj-popular-product-img {
-    width: 100%;
-    height: 100%;
+#ajobmart-splash.hide {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.splash-content {
+    text-align: center;
+    animation: splashAppear 0.7s ease;
+}
+
+.splash-logo {
+    width: 110px;
+    height: 110px;
     object-fit: contain;
-    padding: 10px;
-    display: block;
-    transition: transform 0.3s ease;
+    border-radius: 20px;
 }
 
-.aj-product-card:hover .aj-popular-product-img {
-    transform: scale(1.08);
+.splash-content h1 {
+    margin: 15px 0 5px;
+    font-size: 32px;
+    font-weight: 800;
+    color: #ed6b23;
 }
 
-.aj-product-image-placeholder {
-    width: 100%;
-    height: 220px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f8f9fa;
-    font-size: 45px;
+.splash-content p {
+    color: #666;
+    font-size: 14px;
+}
+
+.splash-loader {
+    width: 35px;
+    height: 35px;
+    margin: 22px auto 0;
+    border: 4px solid #f3d9ca;
+    border-top-color: #ed6b23;
+    border-radius: 50%;
+    animation: splashSpin 0.8s linear infinite;
+}
+
+@keyframes splashSpin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes splashAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.92);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
     </style>
-
 </head>
 
 <body>
 
 
-<?= view('layouts/header') ?>
+<?= view('layouts/header', [
+    'isCustomerLoggedIn' => $isCustomerLoggedIn,
+    'customerName'       => $customerName,
+    'customerImage'      => $customerImage,
+    'couponAmount'       => $couponAmount,
+]) ?>
+
+<?= view('layouts/searchheader') ?>
 
 <div>
 <?= $content ?>
 </div>
 
 <?= view('layouts/footer') ?>
-<?= view('layouts/mobile_bottom_nav') ?>
+<?= view('layouts/mobile_bottom_nav', [
+    'isCustomerLoggedIn' => $isCustomerLoggedIn,
+    'customerName'       => $customerName,
+    'customerImage'      => $customerImage,
+    'couponAmount'       => $couponAmount,
+]) ?>
 
 
+
+<div id="ajobmart-splash">
+    <div class="splash-content">
+        <img
+            src="<?= base_url('public/assets/favicon/android-chrome-512x512.png') ?>"
+            alt="Ajobmart Logo"
+            class="splash-logo"
+        >
+        <h1>Ajobmart</h1>
+        <p>Your shopping destination</p>
+
+        <div class="splash-loader"></div>
+    </div>
+</div>
 
 <div
     class="modal fade aj-profile-modal"
@@ -310,34 +392,15 @@
 
                 <!-- Empty Cart -->
 
-                <div
-                    class="aj-cart-empty"
-                    id="ajCartEmpty"
-                >
-
+                <div class="aj-cart-empty" id="ajCartEmpty">
                     <div class="aj-cart-empty-icon">
-
                         <i class="bi bi-cart-x"></i>
-
                     </div>
-
-                    <h4>
-                        Your cart is empty
-                    </h4>
-
-                    <p>
-                        Looks like you haven't added anything
-                        to your cart yet.
-                    </p>
-
-                    <a
-                        href="#"
-                        class="aj-cart-shop-btn"
-                        data-bs-dismiss="modal"
-                    >
+                    <h4>Your cart is empty</h4>
+                    <p>Looks like you haven't added anything to your cart yet.</p>
+                    <a href="#" class="aj-cart-shop-btn" data-bs-dismiss="modal">
                         Start Shopping
                     </a>
-
                 </div>
 
 
@@ -350,130 +413,7 @@
 
                     <!-- Product example -->
 
-                    <div class="aj-cart-product">
-
-                        <div class="aj-cart-product-image">
-
-                            <img
-                                src="https://via.placeholder.com/100"
-                                alt="Product"
-                            >
-
-                        </div>
-
-
-                        <div class="aj-cart-product-details">
-
-                            <h6>
-                                Samsung Smartphone
-                            </h6>
-
-                            <span class="aj-cart-product-price">
-                                ₹15,999
-                            </span>
-
-
-                            <div class="aj-cart-product-bottom">
-
-                                <div class="aj-cart-quantity">
-
-                                    <button
-                                        type="button"
-                                        class="aj-cart-qty-btn"
-                                    >
-                                        −
-                                    </button>
-
-                                    <span>
-                                        1
-                                    </span>
-
-                                    <button
-                                        type="button"
-                                        class="aj-cart-qty-btn"
-                                    >
-                                        +
-                                    </button>
-
-                                </div>
-
-
-                                <button
-                                    type="button"
-                                    class="aj-cart-remove"
-                                >
-                                    <i class="bi bi-trash"></i>
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- Another Product -->
-
-                    <div class="aj-cart-product">
-
-                        <div class="aj-cart-product-image">
-
-                            <img
-                                src="https://via.placeholder.com/100"
-                                alt="Product"
-                            >
-
-                        </div>
-
-
-                        <div class="aj-cart-product-details">
-
-                            <h6>
-                                Wireless Headphones
-                            </h6>
-
-                            <span class="aj-cart-product-price">
-                                ₹1,499
-                            </span>
-
-
-                            <div class="aj-cart-product-bottom">
-
-                                <div class="aj-cart-quantity">
-
-                                    <button
-                                        type="button"
-                                        class="aj-cart-qty-btn"
-                                    >
-                                        −
-                                    </button>
-
-                                    <span>
-                                        1
-                                    </span>
-
-                                    <button
-                                        type="button"
-                                        class="aj-cart-qty-btn"
-                                    >
-                                        +
-                                    </button>
-
-                                </div>
-
-
-                                <button
-                                    type="button"
-                                    class="aj-cart-remove"
-                                >
-                                    <i class="bi bi-trash"></i>
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                    </div>
+                    
 
                 </div>
 
@@ -487,52 +427,25 @@
             <div class="aj-cart-modal-footer">
 
                 <div class="aj-cart-summary">
-
                     <div>
-                        <span>
-                            Subtotal
-                        </span>
-
-                        <strong>
-                            ₹17,498
-                        </strong>
+                        <span>Subtotal</span>
+                        <strong id="ajCartSubtotal">₹0.00</strong>
                     </div>
 
-
                     <div>
-                        <span>
-                            Delivery
-                        </span>
-
-                        <strong>
-                            FREE
-                        </strong>
+                        <span>Delivery</span>
+                        <strong id="ajCartDelivery">FREE</strong>
                     </div>
-
 
                     <div class="aj-cart-total">
-
-                        <span>
-                            Total
-                        </span>
-
-                        <strong>
-                            ₹17,498
-                        </strong>
-
+                        <span>Total</span>
+                        <strong id="ajCartTotal">₹0.00</strong>
                     </div>
-
                 </div>
 
-
-                <button
-                    type="button"
-                    class="aj-cart-checkout-btn"
-                >
+                <button type="button" class="aj-cart-checkout-btn" id="ajCartCheckout">
                     Proceed to Checkout
-
                     <i class="bi bi-arrow-right"></i>
-
                 </button>
 
             </div>
@@ -770,11 +683,30 @@
     </div>
 
 </div>
+
+<script>
+    const site_url = "<?= rtrim(site_url(), '/') ?>/";
+</script>
+<script>
+window.AJ_CART_CONFIG = {
+    loggedIn: <?= session()->get('ajobmart_customer_logged_in') ? 'true' : 'false' ?>,
+    fetchUrl: <?= json_encode(site_url('cart/fetch')) ?>,
+    addUrl: <?= json_encode(site_url('cart/add')) ?>,
+    updateUrl: <?= json_encode(site_url('cart/update')) ?>,
+    removeUrl: <?= json_encode(site_url('cart/remove')) ?>,
+    checkoutUrl: <?= json_encode(site_url('checkout')) ?>,
+    csrfName: <?= json_encode(csrf_token()) ?>,
+    csrfHash: <?= json_encode(csrf_hash()) ?>
+};
+</script>
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="<?= base_url('public/assets/js/ajobmart-cart.js') ?>"></script>
+
 
 <script src="<?= base_url('public/assets/js/ajobmart.js') ?>"></script>
 
@@ -1998,217 +1930,8 @@ $(document).on(
 
 </script>
 
-<script>
-    const site_url = "<?= rtrim(site_url(), '/') ?>/";
-</script>
-<script>
 
 
-
-    
-let popularProductsLoaded = false;
-let popularProductsRequestRunning = false;
-
-function loadtofetchpopularProducts() {
-
-    // Prevent overlapping AJAX requests
-    if (popularProductsRequestRunning) {
-        return;
-    }
-
-    const container = $('#popularProductsContainer');
-    const refreshStatus = $('#popularRefreshStatus');
-
-    popularProductsRequestRunning = true;
-
-    $.ajax({
-        url: site_url + 'fetchpopularproduct',
-        method: 'GET',
-        dataType: 'json',
-
-        beforeSend: function () {
-
-            // Show loading content only on the first load.
-            if (!popularProductsLoaded) {
-                container.html(`
-                    <div class="text-center w-100 py-4">
-                        <span class="spinner-border spinner-border-sm"></span>
-                        Loading products...
-                    </div>
-                `);
-            } else {
-                // Keep existing products visible during refresh.
-                refreshStatus
-                    .removeClass('d-none')
-                    .addClass('d-flex');
-            }
-        },
-
-        success: function (response) {
-
-            if (!response.status ||
-                !response.products ||
-                response.products.length === 0) {
-
-                if (!popularProductsLoaded) {
-                    container.html(`
-                        <div class="text-center w-100 py-4">
-                            No popular products available.
-                        </div>
-                    `);
-                }
-
-                return;
-            }
-
-            let html = '';
-
-            response.products.forEach(function (product) {
-
-                const name = product.product_name || 'Product';
-                const category = product.category_name || 'General';
-                const price = parseFloat(product.listing_price) || 0;
-                const mrp = parseFloat(product.mrp) || 0;
-                const imagePath = product.image_path || '';
-                // const imageUrl = '';
-
-                const imageUrl = imagePath ? site_url + 'shared-images/' + imagePath.replace(/^\/+/, '') : '';                 
-
-
-                const discount = mrp > price && mrp > 0
-                    ? Math.round(((mrp - price) / mrp) * 100)
-                    : 0;
-
-                const safeName = $('<div>').text(name).html();
-                const safeCategory = $('<div>').text(category).html();
-
-                html += `
-                    <div class="aj-product-card">
-                        <div class="aj-product-image">
-
-                            ${discount > 0 ? `
-                                <span class="aj-discount">
-                                    -${discount}%
-                                </span>
-                            ` : ''}
-
-                            <button class="aj-wishlist"
-                                    type="button"
-                                    aria-label="Add to wishlist">
-                                <i class="bi bi-heart"></i>
-                            </button>
-
-                            ${imageUrl !== '' ? `
-                                <img
-                                    src="${$('<div>').text(imageUrl).html()}"
-                                    alt="${safeName}"
-                                    class="aj-popular-product-img"
-                                    onerror="this.style.display='none';">
-                            ` : `
-                                <div class="aj-product-image-placeholder">
-                                    📦
-                                </div>
-                            `}
-
-                        </div>
-
-                        <div class="aj-product-info">
-                            <span class="aj-product-category">
-                                ${safeCategory}
-                            </span>
-
-                            <h3>${safeName}</h3>
-
-                            <div class="aj-product-price">
-                                <strong>
-                                    ₹${price.toLocaleString('en-IN', {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2
-                                    })}
-                                </strong>
-
-                                ${mrp > price ? `
-                                    <del>
-                                        ₹${mrp.toLocaleString('en-IN', {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2
-                                        })}
-                                    </del>
-                                ` : ''}
-                            </div>
-
-                            <button type="button"
-                                    class="aj-add-cart"
-                                    data-product-id="${Number(product.id) || 0}">
-                                <i class="bi bi-cart-plus"></i>
-                                Add to Cart
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
-
-            // Replace products only after fresh data arrives.
-            container.html(html);
-            popularProductsLoaded = true;
-        },
-
-        error: function (xhr) {
-            console.error(
-                'Popular products error:',
-                xhr.responseText
-            );
-
-            // Don't remove existing products if a refresh fails.
-            if (!popularProductsLoaded) {
-                container.html(`
-                    <div class="text-center w-100 py-4">
-                        Unable to load products.
-                        <button type="button"
-                                class="btn btn-sm btn-outline-primary ms-2"
-                                onclick="loadtofetchpopularProducts()">
-                            Retry
-                        </button>
-                    </div>
-                `);
-            }
-        },
-
-        complete: function () {
-            popularProductsRequestRunning = false;
-
-            refreshStatus
-                .removeClass('d-flex')
-                .addClass('d-none');
-        }
-    });
-}
-
-$(document).ready(function () {
-
-    console.log('Document ready');
-
-    // Load products initially.
-    loadtofetchpopularProducts();
-
-    // Refresh every 10 seconds.
-    setInterval(function () {
-
-        if (popularProductsLoaded) {
-            $('#popularRefreshStatus')
-                .removeClass('d-none')
-                .addClass('d-flex');
-        }
-
-        loadtofetchpopularProducts();
-
-    }, 10000);
-
-});
-
-
-    
-</script>
 
 </body>
 

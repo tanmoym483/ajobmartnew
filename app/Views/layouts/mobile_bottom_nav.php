@@ -1,13 +1,3 @@
-
-<?php
-$isCustomerLoggedIn = session()->get('ajobmart_customer_logged_in');
-$customerName = session()->get('ajobmart_customer_name') ?? 'Customer';
-
-// Use a default image when the customer has no uploaded profile image.
-$customerImage = session()->get('ajobmart_customer_image')
-    ?: base_url('assets/images/default-user.png');
-?>
-
 <!-- =========================================
      MOBILE BOTTOM NAVIGATION
 ========================================= -->

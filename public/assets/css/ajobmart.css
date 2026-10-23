@@ -140,7 +140,7 @@ input {
 
     border-radius: 12px;
 
-    background: var(--aj-primary);
+    background: #fff;
 
     color: #fff;
 
@@ -4766,4 +4766,135 @@ input {
 .aj-user-icon:hover .aj-customer-avatar {
     border-color: #0d6efd;
     transition: border-color 0.2s ease;
+}
+
+/* Coupon balance in navbar */
+.aj-coupon-balance {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 13px;
+    border: 1px solid #f1d8a8;
+    border-radius: 12px;
+    background: #fffaf0;
+    color: #754c00;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.aj-coupon-balance:hover {
+    background: #fff0cf;
+    color: #5c3b00;
+    transform: translateY(-1px);
+}
+
+.aj-coupon-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #ffe5a3;
+    font-size: 19px;
+}
+
+.aj-coupon-details {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+}
+
+.aj-coupon-details small {
+    font-size: 11px;
+    color: #80652f;
+}
+
+.aj-coupon-details strong {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+/* Mobile adjustments */
+@media (max-width: 767px) {
+    .aj-coupon-balance {
+        gap: 5px;
+        padding: 5px 8px;
+    }
+
+    .aj-coupon-icon {
+        width: 30px;
+        height: 30px;
+        font-size: 16px;
+    }
+
+    .aj-coupon-details small {
+        font-size: 10px;
+    }
+
+    .aj-coupon-details strong {
+        font-size: 13px;
+    }
+}
+
+.aj-product-image {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+}
+
+.aj-popular-product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 10px;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.aj-product-card:hover .aj-popular-product-img {
+    transform: scale(1.08);
+}
+
+.aj-product-image-placeholder {
+    width: 100%;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    font-size: 45px;
+}
+
+.ajobmartlogo{
+        height: 30px;
+        width: 30px;
+    }
+
+
+    .aj-product-details-link {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.aj-product-title-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.aj-product-title-link:hover {
+    color: #0d6efd;
+}
+
+.aj-popular-product-img {
+    cursor: pointer;
 }

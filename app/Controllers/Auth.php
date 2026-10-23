@@ -373,6 +373,7 @@ public function login()
         'ajobmart_customer_name'      => $user['name'],
         'ajobmart_customer_email'     => $user['email'],
         'ajobmart_customer_mobile'    => $user['mobile'],
+        'ajobmart_customer_coupon_amount' => $user['total_coupon_amount'],
     ]);
 
     return $this->response->setJSON([
@@ -391,6 +392,7 @@ public function login()
             'ajobmart_customer_name',
             'ajobmart_customer_email',
             'ajobmart_customer_mobile',
+            'ajobmart_customer_coupon_amount',
         ]);
 
         return redirect()->to(site_url('/'));

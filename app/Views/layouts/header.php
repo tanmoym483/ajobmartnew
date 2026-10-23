@@ -1,14 +1,3 @@
-
-
-<?php
-$isCustomerLoggedIn = session()->get('ajobmart_customer_logged_in');
-$customerName = session()->get('ajobmart_customer_name') ?? 'Customer';
-
-// Use a default image when the customer has no uploaded profile image.
-$customerImage = session()->get('ajobmart_customer_image')
-    ?: base_url('assets/images/default-user.png');
-?>
-
 <!-- ==============================
      MAIN NAVBAR
 ================================ -->
@@ -26,7 +15,7 @@ $customerImage = session()->get('ajobmart_customer_image')
 
             <span class="aj-logo-icon">
 
-                <i class="bi bi-bag-heart-fill"></i>
+                <img class="ajobmartlogo" src="<?= base_url('public/assets/favicon/android-chrome-512x512.png') ?>">
 
             </span>
 
@@ -62,8 +51,32 @@ $customerImage = session()->get('ajobmart_customer_image')
         </div> -->
 
         <!-- RIGHT SIDE -->
+         <?php
+            if ($isCustomerLoggedIn) {
+        ?>
+            <a
+                href="javascript:void(0);"
+                class="aj-coupon-balance"
+                aria-label="Available coupon balance"
+                data-bs-toggle="modal"
+                data-bs-target="#couponModal"
+            >
+                <span class="aj-coupon-icon">
+                    <i class="bi bi-ticket-perforated-fill"></i>
+                </span>
 
+                <span class="aj-coupon-details">
+                    <small>My Cashback</small>
+                    <strong>₹<?= number_format($couponAmount, 0) ?></strong>
+                </span>
+            </a>
+        <?php
+            }
+        ?>
         <div class="aj-navbar-actions desktop-only">
+
+            <!-- COUPON / CASHBACK BALANCE -->
+            
 
             <!-- CART -->
             <a
@@ -114,54 +127,53 @@ $customerImage = session()->get('ajobmart_customer_image')
 </header>
 
 
-<!-- ==============================
-     SEARCH
-================================ -->
 
-<div
-    class="aj-search-wrapper"
-    id="ajSearchWrapper"
->
 
-    <div class="aj-search-container">
 
-        <form
-            action="#"
-            method="get"
-            id="ajSearchForm"
-            class="aj-search-box"
-        >
+<div class="modal fade" id="couponModal" tabindex="-1"
+     aria-labelledby="couponModalLabel" aria-hidden="true">
 
-            <i class="bi bi-search aj-search-icon"></i>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
 
-            <input
-                type="text"
-                name="search"
-                id="ajSearchInput"
-                placeholder="Search products, brands and categories..."
-                autocomplete="off"
-            >
+            <div class="modal-header">
+                <h5 class="modal-title" id="couponModalLabel">
+                    <i class="bi bi-ticket-perforated-fill text-warning"></i>
+                    My Coupons & Cashback
+                </h5>
 
-            <button
-                type="submit"
-                class="aj-search-button"
-            >
-                Search
-            </button>
+                <button type="button" class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
 
-        </form>
+            <div class="modal-body text-center py-4">
 
+                <p class="text-muted mb-2">Your available balance</p>
+
+                <h2 class="fw-bold text-success">
+                    ₹<?= number_format($couponAmount, 2) ?>
+                </h2>
+
+                <p class="text-muted small mb-0">
+                    Use your eligible coupons and cashback
+                    during checkout.
+                </p>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary"
+                        data-bs-dismiss="modal">
+                    Close
+                </button>
+
+                <a href="<?= base_url('coupons') ?>"
+                   class="btn btn-primary">
+                    View Coupons
+                </a>
+            </div>
+
+        </div>
     </div>
-
 </div>
-
-
-<!--
-    Placeholder is activated by JavaScript
-    when mobile search becomes fixed.
--->
-
-<div
-    id="ajSearchPlaceholder"
-    class="aj-search-placeholder"
-></div>

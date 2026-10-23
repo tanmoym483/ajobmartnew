@@ -17,7 +17,9 @@
             >
 
                 <span class="aj-logo-icon">
-                    <i class="bi bi-bag-heart-fill"></i>
+
+                    <img class="ajobmartlogo" src="<?= base_url('public/assets/favicon/android-chrome-512x512.png') ?>">
+
                 </span>
 
                 <span>

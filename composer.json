@@ -13,6 +13,8 @@
         "php": "^8.2",
         "ext-intl": "*",
         "ext-mbstring": "*",
+        "dompdf/dompdf": "^3.1",
+        "endroid/qr-code": "6.0.9",
         "laminas/laminas-escaper": "^2.18",
         "psr/log": "^3.0"
     },

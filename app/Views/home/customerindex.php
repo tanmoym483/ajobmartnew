@@ -72,6 +72,14 @@
     id="categories"
 >
 
+
+<a href="<?= site_url('qr-code/download-pdf') ?>"
+   class="btn btn-success"
+   target="_blank">
+    <i class="fas fa-qrcode"></i>
+    Download Welcome QR Code PDF
+</a>
+
     <div class="aj-section-heading">
 
         <div>
