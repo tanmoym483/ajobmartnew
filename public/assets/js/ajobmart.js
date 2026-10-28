@@ -439,7 +439,7 @@ function loadtofetchpopularProducts() {
             response.products.forEach(function (product) {
 
                 const name = product.product_name || 'Product';
-                const category = product.category_name || 'General';
+                const category = product.category || 'General';
                 const price = parseFloat(product.listing_price) || 0;
                 const mrp = parseFloat(product.mrp) || 0;
                 const imagePath = product.image_path || '';
@@ -468,7 +468,7 @@ function loadtofetchpopularProducts() {
                         <div class="aj-product-image">
 
                             ${discount > 0 ? `
-                                <span class="aj-discount">-${discount}%</span>
+                                <span class="aj-discount">${discount}%</span>
                             ` : ''}
 
                             <button class="aj-wishlist"
