@@ -337,6 +337,133 @@ if ($isCustomerLoggedIn) {
 
 
 
+<div class="modal fade" id="ajShippingModal" tabindex="-1"
+     aria-labelledby="ajShippingModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title" id="ajShippingModalTitle">
+                        Check delivery availability
+                    </h5>
+                    <small class="text-muted">
+                        Enter your PIN code to estimate shipping.
+                    </small>
+                </div>
+                <button type="button" class="btn-close"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div id="ajShippingMessage"
+                     class="alert alert-info d-none" role="alert"></div>
+
+                <form id="ajShippingForm">
+                    <div class="mb-3">
+                        <label for="ajShippingPin" class="form-label">
+                            PIN code
+                        </label>
+                        <input type="text" id="ajShippingPin"
+                               name="pincode" class="form-control"
+                               inputmode="numeric" maxlength="6"
+                               pattern="[0-9]{6}" required
+                               placeholder="Enter 6-digit PIN code">
+                    </div>
+
+                    <div id="ajShippingAddressFields" class="d-none">
+                        <hr>
+                        <p class="fw-semibold mb-3">Delivery address</p>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="ajShippingName">
+                                Recipient name
+                            </label>
+                            <input class="form-control" id="ajShippingName"
+                                   name="recipient_name" autocomplete="name">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="ajShippingMobile">
+                                Mobile number
+                            </label>
+                            <input class="form-control" id="ajShippingMobile"
+                                   name="mobile" inputmode="numeric"
+                                   maxlength="10" autocomplete="tel">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="ajShippingAddress1">
+                                Address line 1
+                            </label>
+                            <input class="form-control" id="ajShippingAddress1"
+                                   name="address_line1"
+                                   autocomplete="address-line1">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="ajShippingAddress2">
+                                Address line 2 (optional)
+                            </label>
+                            <input class="form-control" id="ajShippingAddress2"
+                                   name="address_line2"
+                                   autocomplete="address-line2">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="ajShippingLandmark">
+                                Landmark (optional)
+                            </label>
+                            <input class="form-control" id="ajShippingLandmark"
+                                   name="landmark">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label" for="ajShippingCity">
+                                    City
+                                </label>
+                                <input class="form-control" id="ajShippingCity"
+                                       name="city" autocomplete="address-level2">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label" for="ajShippingState">
+                                    State
+                                </label>
+                                <input class="form-control" id="ajShippingState"
+                                       name="state" autocomplete="address-level1">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="ajShippingAddressType">
+                                Address type
+                            </label>
+                            <select class="form-select" id="ajShippingAddressType"
+                                    name="address_type">
+                                <option value="home">Home</option>
+                                <option value="work">Work</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="ajShippingSubmit"
+                            class="btn btn-primary w-100">
+                        Check shipping
+                    </button>
+                </form>
+
+                <p class="small text-muted mt-3 mb-0">
+                    Guests can estimate shipping with a PIN code. You can
+                    provide the full delivery address during checkout.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 <!-- =========================================
      CART MODAL
 ========================================= -->
@@ -358,29 +485,51 @@ if ($isCustomerLoggedIn) {
                  CART HEADER
             ================================= -->
 
-            <div class="aj-cart-modal-header">
+            
+        <div class="aj-cart-modal-header">
+            <div class="flex-grow-1">
+                <h5 id="cartModalLabel">My Cart</h5>
 
-                <div>
+                <span class="aj-cart-modal-items">0 Items</span>
 
-                    <h5 id="cartModalLabel">
-                        My Cart
-                    </h5>
+                
+                <div class="aj-cart-delivery-selector" id="ajCartDeliverySelector">
+                    <div class="aj-cart-delivery-icon">
+                        <i class="bi bi-geo-alt"></i>
+                    </div>
 
-                    <span class="aj-cart-modal-items">
-                        0 Items
-                    </span>
+                    <div class="aj-cart-delivery-info">
+                        <div class="aj-cart-delivery-label">
+                            Deliver to
+                        </div>
 
+                        <div id="ajCartDeliveryAddress">
+                            <div class="small text-muted">
+                                Delivery address not selected
+                            </div>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="aj-cart-address-toggle"
+                        id="ajCartAddressToggle"
+                        aria-label="Change delivery address"
+                        title="Change delivery address">
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
                 </div>
 
-
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                ></button>
-
             </div>
+
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close">
+            </button>
+        </div>
+
 
 
             <!-- ================================
@@ -455,6 +604,48 @@ if ($isCustomerLoggedIn) {
     </div>
 
 </div>
+
+
+
+<div class="modal fade" id="ajAddressSelectModal" tabindex="-1"
+     aria-labelledby="ajAddressSelectTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title" id="ajAddressSelectTitle">
+                        Choose delivery address
+                    </h5>
+                    <small class="text-muted">
+                        Select where you want your order delivered.
+                    </small>
+                </div>
+
+                <button type="button" class="btn-close"
+                        data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div id="ajSavedAddressList">
+                    <div class="text-muted small">
+                        Loading saved addresses...
+                    </div>
+                </div>
+
+                <button type="button"
+                        class="btn btn-outline-primary w-100 mt-3"
+                        id="ajAddNewAddress">
+                    <i class="bi bi-plus-circle me-1"></i>
+                    Add a new address
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 
 
 
@@ -685,32 +876,63 @@ if ($isCustomerLoggedIn) {
 </div>
 
 <script>
-    const site_url = "<?= rtrim(site_url(), '/') ?>/";
-</script>
-<script>
+const site_url = <?= json_encode(rtrim(site_url(), '/') . '/') ?>;
+
 window.AJ_CART_CONFIG = {
     loggedIn: <?= session()->get('ajobmart_customer_logged_in') ? 'true' : 'false' ?>,
+
     fetchUrl: <?= json_encode(site_url('cart/fetch')) ?>,
     addUrl: <?= json_encode(site_url('cart/add')) ?>,
     updateUrl: <?= json_encode(site_url('cart/update')) ?>,
     removeUrl: <?= json_encode(site_url('cart/remove')) ?>,
     checkoutUrl: <?= json_encode(site_url('checkout')) ?>,
+
+    shippingCustomerAddressUrl:
+        <?= json_encode(site_url('shipping/customer-address')) ?>,
+
+    shippingCustomerAddressesUrl:
+    <?= json_encode(site_url('shipping/customer-addresses')) ?>,
+
+    shippingEstimateUrl:
+        <?= json_encode(site_url('shipping/estimate')) ?>,
+
+    shippingSaveAddressUrl:
+        <?= json_encode(site_url('shipping/save-address')) ?>,
+
     csrfName: <?= json_encode(csrf_token()) ?>,
-    csrfHash: <?= json_encode(csrf_hash()) ?>
+    csrfHash: <?= json_encode(csrf_hash()) ?>,
+    csrfHeader: 'X-CSRF-TOKEN'
 };
 </script>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script src="<?= base_url('public/assets/js/ajobmart-cart.js') ?>"></script>
-
-
 <script src="<?= base_url('public/assets/js/ajobmart.js') ?>"></script>
+<script src="<?= base_url('public/assets/js/aj-shipping.js') ?>"></script>
 
+<script>
+// $(document).on('click', '#ajMobileCartButton, #ajCartButton', function (e) {
+//     e.preventDefault();
 
+//     console.log('Mobile cart clicked');
+
+//     const shippingModal = document.getElementById('ajShippingModal');
+//     const cartModal = document.getElementById('cartModal');
+
+//     if (shippingModal && window.bootstrap) {
+//         bootstrap.Modal.getOrCreateInstance(shippingModal).show();
+//         console.log('Shipping modal opened');
+//     } else if (cartModal && window.bootstrap) {
+//         bootstrap.Modal.getOrCreateInstance(cartModal).show();
+//         console.error('Shipping modal missing; opened cart as fallback');
+//     } else {
+//         console.error('Neither modal nor Bootstrap was found');
+//     }
+// });
+</script>
 <script>
 
 $(document).on('click', '#ajLoginRegisterBtn', function (e) {
@@ -1930,7 +2152,7 @@ $(document).on(
 
 </script>
 
-
+ 
 
 
 </body>

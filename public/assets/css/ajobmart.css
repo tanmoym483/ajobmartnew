@@ -872,7 +872,7 @@ input {
 
 
 .aj-product-image {
-    height: 225px;
+    height: 100px;
 
     position: relative;
 
@@ -905,11 +905,13 @@ input {
 
     background: #fee2e2;
 
-    color: #dc2626;
+    color: #0c6d03;
 
     font-size: 10px;
 
     font-weight: 800;
+    z-index: 10;
+
 }
 
 
@@ -1589,7 +1591,7 @@ input {
 
 
     .aj-product-image {
-        height: 150px;
+        height: 100px;
     }
 
 
@@ -4840,7 +4842,7 @@ input {
 .aj-product-image {
     position: relative;
     width: 100%;
-    height: 220px;
+    height: 160px;
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -4897,4 +4899,284 @@ input {
 
 .aj-popular-product-img {
     cursor: pointer;
+}
+
+.aj-product-image {
+    position: relative;
+    width: 100%;
+    height: 160px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+}
+
+/* Product image link stays underneath the wishlist */
+.aj-product-details-link {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Wishlist stays clickable above the image link */
+.aj-wishlist {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: #fff;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.aj-wishlist:hover {
+    color: #ef4444;
+}
+
+/* .aj-discount {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+} */
+
+/* Mobile: show 3 product cards inline */
+@media (max-width: 767px) {
+    #popularProducts {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 8px;
+        width: 100%;
+    }
+
+    #popularProducts .aj-product-card {
+        width: 100% !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+    }
+
+    #popularProducts .aj-product-image {
+        width: 100%;
+        height: 100px;
+    }
+
+    #popularProducts .aj-popular-product-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+}
+
+
+/* Mobile: display 3 product cards in one row */
+@media (max-width: 767.98px) {
+    #popularProductsContainer.aj-product-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+        width: 100%;
+    }
+
+    #popularProductsContainer .aj-product-card {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        box-sizing: border-box;
+    }
+
+    #popularProductsContainer .aj-product-image {
+        width: 100%;
+        height: 100px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    #popularProductsContainer .aj-product-details-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        min-width: 0;
+    }
+
+    #popularProductsContainer .aj-popular-product-img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 4px;
+        box-sizing: border-box;
+    }
+
+    #popularProductsContainer .aj-product-info {
+        padding: 6px;
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    #popularProductsContainer .aj-product-info h3 {
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    #popularProductsContainer .aj-product-category {
+        font-size: 10px;
+    }
+
+    #popularProductsContainer .aj-product-price {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 3px;
+        font-size: 11px;
+    }
+
+    #popularProductsContainer .aj-add-cart {
+        width: 100%;
+        padding: 6px 2px;
+        font-size: 10px;
+    }
+
+    #popularProductsContainer .aj-wishlist {
+        z-index: 10;
+        width: 26px;
+        height: 26px;
+        top: 4px;
+        right: 4px;
+    }
+}
+
+
+
+.aj-cart-delivery-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 11px 12px;
+    background: #f7f9fc;
+    border: 1px solid #e4e9f0;
+    border-radius: 10px;
+    cursor: pointer;
+    min-width: 0;
+}
+
+.aj-cart-delivery-icon {
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: 1px solid #e4e9f0;
+    border-radius: 50%;
+    color: #ff6a00;
+    font-size: 17px;
+}
+
+.aj-cart-delivery-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.aj-cart-delivery-label {
+    font-size: 11px;
+    color: #737d89;
+    margin-bottom: 3px;
+}
+
+#ajCartDeliveryAddress {
+    font-size: 12px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+#ajCartDeliveryAddress .aj-delivery-recipient {
+    color: #202a35;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+#ajCartDeliveryAddress .aj-delivery-address-text {
+    color: #66717e;
+}
+
+.aj-cart-address-toggle {
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    border-radius: 50%;
+    background: #fff;
+    color: #424d5a;
+    cursor: pointer;
+}
+
+.aj-cart-address-toggle:hover {
+    background: #fff0e6;
+    color: #ff6a00;
+}
+
+.aj-cart-address-toggle i {
+    transition: transform .2s ease;
+}
+
+.aj-cart-delivery-selector.is-open
+.aj-cart-address-toggle i {
+    transform: rotate(180deg);
+}
+
+
+
+/* Saved delivery address cards */
+#ajSavedAddressList .aj-saved-address {
+    background-color: #ffffff;
+    color: #212529;
+    border: 1px solid #dee2e6;
+    transition: background-color 0.2s ease,
+                border-color 0.2s ease;
+}
+
+/* Currently selected address */
+#ajSavedAddressList .aj-saved-address.aj-address-selected {
+    background-color: #d1e7dd !important;
+    color: #0f5132 !important;
+    border: 2px solid #198754 !important;
+    box-shadow: 0 0 0 2px rgba(25, 135, 84, 0.10);
+}
+
+/* Selected address text */
+#ajSavedAddressList .aj-address-selected .small {
+    color: #146c43 !important;
+}
+
+#ajSavedAddressList .aj-address-selected .badge {
+    background-color: #198754 !important;
+    color: #ffffff !important;
+}
+
+#ajSavedAddressList .aj-saved-address:hover {
+    border-color: #198754;
+}
+
+#ajSavedAddressList .aj-saved-address:focus-visible {
+    outline: 2px solid #198754;
+    outline-offset: 2px;
 }

@@ -67,20 +67,31 @@
     }
 
     function normalizeGuestItem(item) {
-        return {
-            product_id: Number(item.product_id),
-            quantity: Number(item.quantity) || 1,
-            product_name: item.product_name || 'Product',
-            listing_price: Number(item.listing_price) || 0,
-            mrp: Number(item.mrp) || 0,
-            image_path: item.image_path || '',
-            image_url: item.image_url || '',
-            min_order_quantity: Math.max(
-                1, Number(item.min_order_quantity) || 1
-            ),
-            stock_quantity: Number(item.stock_quantity) || 0
-        };
-    }
+    return {
+        product_id: Number(item.product_id ?? item.productId ?? item.id),
+        quantity: Number(item.quantity ?? item.qty) || 1,
+        product_name: item.product_name || 'Product',
+
+        listing_price: Number(item.listing_price) || 0,
+
+        // Support both database/API naming conventions.
+        shipping_allowance: Number(
+            item.shipping_allowance ??
+            item.product_shipping_allowance ??
+            item.shippingAllowance
+        ) || 0,
+
+        selling_price: Number(item.selling_price) || 0,
+        mrp: Number(item.mrp) || 0,
+        image_path: item.image_path || '',
+        image_url: item.image_url || '',
+        min_order_quantity: Math.max(
+            1,
+            Number(item.min_order_quantity) || 1
+        ),
+        stock_quantity: Number(item.stock_quantity) || 0
+    };
+}
 
     function syncCardControls() {
         $('.aj-product-cart-action').each(function () {
@@ -127,100 +138,145 @@
         });
     }
 
-    function renderCart() {
-        const container = $('#ajCartProducts');
-        const empty = $('#ajCartEmpty');
+    
+function renderCart() {
+    const container = $('#ajCartProducts');
+    const empty = $('#ajCartEmpty');
 
-        updateBadge();
-        syncCardControls();
+    updateBadge();
+    syncCardControls();
 
-        if (!cartItems.length) {
-            container.empty();
-            empty.show();
+    const subtotalElement = document.getElementById('ajCartSubtotal');
+    const deliveryElement = document.getElementById('ajCartDelivery');
+    const totalElement = document.getElementById('ajCartTotal');
 
-            $('#ajCartSubtotal, #ajCartTotal').text(money(0));
-            $('#ajCartDelivery').text('FREE');
-            return;
+    if (!cartItems.length) {
+        container.empty();
+        empty.show();
+
+        $('#ajCartSubtotal').text(money(0));
+        $('#ajCartDelivery').text('FREE');
+        $('#ajCartTotal').text(money(0));
+
+        if (subtotalElement) {
+            delete subtotalElement.dataset.baseSubtotal;
         }
 
-        empty.hide();
+        if (totalElement) {
+            delete totalElement.dataset.shippingAmount;
+            delete totalElement.dataset.shippingPincode;
+        }
 
-        let subtotal = 0;
-        let html = '';
+        window.AJ_SHIPPING_CHARGE = 0;
+        return;
+    }
 
-        cartItems.forEach(function (item) {
-            const id = Number(item.product_id);
-            const quantity = Number(item.quantity) || 1;
-            const price = Number(item.listing_price) || 0;
-            const lineTotal = price * quantity;
+    empty.hide();
 
-            subtotal += lineTotal;
+    let subtotal = 0;
+    let html = '';
 
-            const image = item.image_url ||
-                (item.image_path
-                    ? config.sharedImageBaseUrl
-                        ? config.sharedImageBaseUrl + String(item.image_path).replace(/^[\\/]+/, '')
-                        : ''
-                    : '');
+    cartItems.forEach(function (item) {
+        const id = Number(item.product_id);
+        const quantity = Number(item.quantity) || 1;
+        const price = Number(item.listing_price) || 0;
+        const lineTotal = price * quantity;
+        subtotal += lineTotal;
 
-            html += `
-                <div class="aj-cart-product"
-                     data-product-id="${id}">
+        const image = item.image_url ||
+            (item.image_path
+                ? config.sharedImageBaseUrl
+                    ? config.sharedImageBaseUrl +
+                      String(item.image_path).replace(/^[\\/]+/, '')
+                    : ''
+                : '');
 
-                    <div class="aj-cart-product-image">
-                        ${image
-                            ? `<img src="${escapeHtml(image)}"
-                                    alt="${escapeHtml(item.product_name)}"
-                                    onerror="this.style.display='none'">`
-                            : `<div class="aj-product-image-placeholder">📦</div>`
-                        }
-                    </div>
+        html += `
+            <div class="aj-cart-product" data-product-id="${id}">
+                <div class="aj-cart-product-image">
+                    ${image
+                        ? `<img src="${escapeHtml(image)}"
+                                alt="${escapeHtml(item.product_name)}"
+                                onerror="this.style.display='none'">`
+                        : `<div class="aj-product-image-placeholder">📦</div>`
+                    }
+                </div>
 
-                    <div class="aj-cart-product-details">
-                        <h6>${escapeHtml(item.product_name || 'Product')}</h6>
+                <div class="aj-cart-product-details">
+                    <h6>${escapeHtml(item.product_name || 'Product')}</h6>
 
-                        <span class="aj-cart-product-price">
-                            ${money(price)}
-                        </span>
+                    <span class="aj-cart-product-price">
+                        ${money(price)}
+                    </span>
 
-                        <div class="aj-cart-product-bottom">
-                            <div class="aj-cart-quantity">
-                                <button type="button"
-                                        class="aj-cart-qty-btn"
-                                        data-action="decrement"
-                                        data-product-id="${id}">−</button>
+                    <div class="aj-cart-product-bottom">
+                        <div class="aj-cart-quantity">
+                            <button type="button"
+                                    class="aj-cart-qty-btn"
+                                    data-action="decrement"
+                                    data-product-id="${id}">−</button>
 
-                                <span>${quantity}</span>
-
-                                <button type="button"
-                                        class="aj-cart-qty-btn"
-                                        data-action="increment"
-                                        data-product-id="${id}">+</button>
-                            </div>
+                            <span>${quantity}</span>
 
                             <button type="button"
-                                    class="aj-cart-remove"
-                                    data-product-id="${id}"
-                                    aria-label="Remove product">
-                                <i class="bi bi-trash"></i>
-                            </button>
+                                    class="aj-cart-qty-btn"
+                                    data-action="increment"
+                                    data-product-id="${id}">+</button>
                         </div>
 
-                        <strong class="aj-cart-line-total">
-                            ${money(lineTotal)}
-                        </strong>
+                        <button type="button"
+                                class="aj-cart-remove"
+                                data-product-id="${id}"
+                                aria-label="Remove product">
+                            <i class="bi bi-trash"></i>
+                        </button>
                     </div>
+
+                    <strong class="aj-cart-line-total">
+                        ${money(lineTotal)}
+                    </strong>
                 </div>
-            `;
-        });
+            </div>
+        `;
+    });
 
-        container.html(html);
-        $('#ajCartSubtotal').text(money(subtotal));
+    container.html(html);
+    $('#ajCartSubtotal').text(money(subtotal));
 
-        // Replace with your real delivery calculation when available.
-        $('#ajCartDelivery').text('FREE');
-        $('#ajCartTotal').text(money(subtotal));
+    // Preserve the latest product subtotal.
+    if (subtotalElement) {
+        subtotalElement.dataset.baseSubtotal = String(subtotal);
     }
+
+    // Preserve shipping only when the estimate is still for the
+    // current cart and its PIN has not been invalidated.
+    // Preserve the extra shipping fee calculated for the selected PIN.
+const shippingPin = totalElement?.dataset.shippingPincode || '';
+const savedShipping = totalElement?.dataset.shippingAmount;
+
+const hasSavedShipping =
+    shippingPin !== '' &&
+    savedShipping !== undefined &&
+    Number.isFinite(Number(savedShipping)) &&
+    shippingPin === (
+        document.getElementById('ajShippingPin')?.value || ''
+    ).trim();
+
+const shipping = hasSavedShipping
+    ? Math.max(0, Number(savedShipping))
+    : 0;
+
+window.AJ_SHIPPING_CHARGE = shipping;
+
+$('#ajCartDelivery').text(
+    hasSavedShipping
+        ? (shipping > 0 ? money(shipping) : 'FREE')
+        : 'Not calculated'
+);
+
+$('#ajCartTotal').text(money(subtotal + shipping));
+}
+
 
     function applyServerCart(response) {
         if (!response || !response.status) {
@@ -455,6 +511,11 @@
                 product_id: id,
                 product_name: product.product_name || 'Product',
                 listing_price: Number(product.listing_price) || 0,
+                shipping_allowance: Number(
+                    product.shipping_allowance ??
+                    product.product_shipping_allowance ??
+                    product.shippingAllowance
+                ) || 0,
                 mrp: Number(product.mrp) || 0,
                 stock_quantity: Number(product.stock_quantity) || 0,
                 min_order_quantity: Math.max(
@@ -504,8 +565,81 @@
         renderCart();
     }
 
+    
     window.ajCartRefresh = function () {
-        syncCardControls();
+        if (config.loggedIn) {
+            return $.getJSON(config.fetchUrl).then(function (response) {
+                applyServerCart(response);
+                return cartItems;
+            });
+        }
+
+        cartItems = readGuestCart().map(normalizeGuestItem);
+        renderCart();
+
+        return Promise.resolve(cartItems);
     };
+
+
+    window.ajGetShippingCartItems = function () {
+    
+    return (cartItems || []).map(function (item) {
+        return {
+            product_id: Number(
+                item.product_id ?? item.productId ?? item.id
+            ),
+            quantity: Number(
+                item.quantity ?? item.qty ?? item.cart_quantity ?? 1
+            ),
+            listing_price: Number(item.listing_price) || 0,
+            shipping_allowance: Number(item.shipping_allowance) || 0
+        };
+    }).filter(function (item) {
+        return item.product_id > 0 && item.quantity > 0;
+    });
+};
+
+
+
+// $(async function () {
+//     if (
+//         sessionStorage.getItem('ajReopenCartAfterLogin') !== '1'
+//     ) {
+//         return;
+//     }
+
+//     // Remove the flag so the modal opens only once.
+//     sessionStorage.removeItem('ajReopenCartAfterLogin');
+
+//     try {
+//         // The page must now have the authenticated session.
+//         if (!window.AJ_CART_CONFIG?.loggedIn) {
+//             console.error(
+//                 'Login session is not active. Cannot restore cart.'
+//             );
+//             return;
+//         }
+
+//         // Refresh cart from the server.
+//         await window.ajCartRefresh();
+
+//         const modalElement = document.getElementById('cartModal');
+
+//         if (!modalElement) {
+//             console.error('Cart modal #cartModal was not found.');
+//             return;
+//         }
+
+//         bootstrap.Modal
+//             .getOrCreateInstance(modalElement)
+//             .show();
+
+//         console.log('Cart reopened successfully after login.');
+//     } catch (error) {
+//         console.error('Unable to restore cart after login:', error);
+//     }
+// });
+
+
 
 })(jQuery);

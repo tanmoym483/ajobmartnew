@@ -66,3 +66,19 @@ $routes->get(
     'product-details/(:num)',
     'ProductDetails::index/$1'
 );
+
+
+$routes->get(
+    'shipping/customer-addresses',
+    'Shipping::customerAddresses'
+);
+
+$routes->get('shipping/customer-address', 'Shipping::customerAddress');
+$routes->post('shipping/estimate', 'Shipping::estimate');
+$routes->post('shipping/save-address', 'Shipping::saveAddress');
+
+
+$routes->get('checkout', 'Checkout::index');
+$routes->post('checkout/place-order', 'Checkout::placeOrder');
+$routes->post('checkout/payment/verify', 'Checkout::verifyPayment');
+

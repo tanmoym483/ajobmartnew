@@ -59,22 +59,14 @@
     </a>
 
 
-    <a
-        href="javascript:void(0);"
-        class="aj-mobile-nav-item aj-mobile-cart"
-        data-bs-toggle="modal"
-        data-bs-target="#cartModal"
-    >
-        <i class="bi bi-cart3"></i>
-
-        <span class="aj-mobile-cart-count">
-            0
-        </span>
-
-        <span>
-            Cart
-        </span>
-    </a>
+    <a href="javascript:void(0);"
+   class="aj-mobile-nav-item aj-mobile-cart"
+   id="ajMobileCartButton"
+   data-aj-shipping-cart-trigger>
+    <i class="bi bi-cart3"></i>
+    <span class="aj-mobile-cart-count">0</span>
+    <span>Cart</span>
+</a>
 
 
     <!-- <a

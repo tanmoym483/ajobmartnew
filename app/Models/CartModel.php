@@ -35,6 +35,7 @@ class CartModel extends Model
                 'p.listing_price',
                 'p.mrp',
                 'p.stock_quantity',
+                'p.shipping_allowance',
                 'p.min_order_quantity',
                 'p.status',
                 'p.approval_status',
