@@ -82,3 +82,7 @@ $routes->get('checkout', 'Checkout::index');
 $routes->post('checkout/place-order', 'Checkout::placeOrder');
 $routes->post('checkout/payment/verify', 'Checkout::verifyPayment');
 
+$routes->get(
+    'shipping/testShadowfax',
+    'Shipping::testShadowfax'
+);

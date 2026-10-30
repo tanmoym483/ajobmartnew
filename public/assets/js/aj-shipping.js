@@ -495,11 +495,33 @@ function renderSavedAddressList() {
             throw new Error('The shipping service did not return a valid shipping amount.');
         }
         console.log('========== SHIPPING CALCULATION ==========');
-console.log('Destination PIN:', pin);
-console.log('Selected address:', selectedAddress);
-console.log('Shipping API response:', result);
-console.log('Actual destination shipping charge:', result.shipping_amount);
-console.log('===========================================');
+        console.log('Destination PIN:', pin);
+        console.log('Selected address:', selectedAddress);
+        console.log('Shipping API response:', result);
+        console.log(
+            'Actual destination shipping charge:',
+            result.total_shipping
+        );
+
+
+        (result.seller_shipments || []).forEach((seller, index) => {
+
+            console.log(`Seller ${index + 1}:`, seller.seller_id);
+
+            console.table(
+                (seller.available_couriers || []).map(courier => ({
+                    Courier: courier.courier_name,
+                    'Actual Shipping': courier.shipping,
+                    'Customer Payable': courier.customer_cost,
+                    Selected: courier.is_selected ? 'YES' : 'NO'
+                }))
+            );
+
+            console.log('Automatically Selected:', seller.courier_name);
+        });
+
+
+        console.log('===========================================');
 
         updateCartTotals(result.total_shipping);
         return result;

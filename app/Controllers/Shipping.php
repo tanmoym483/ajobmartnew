@@ -4,6 +4,10 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\ShippingModel;
+use App\Libraries\Couriers\CourierManager;
+use App\Libraries\Couriers\IndiaPostCourier;
+use App\Libraries\Couriers\ShadowfaxCourier;
+
 
 class Shipping extends BaseController
 {
@@ -108,7 +112,44 @@ class Shipping extends BaseController
      */
     public function estimate()
     {
-        $payload = $this->getPayload();
+        // Initialize courier manager.
+    $courierManager = new CourierManager();
+
+    // Fetch active courier providers.
+    $providers = $this->db
+        ->table('ajobmart_courier_providers')
+        ->where('is_enabled', 1)
+        ->where('is_quote_enabled', 1)
+        ->get()
+        ->getResultArray();
+
+    // Register only enabled courier providers.
+    foreach ($providers as $provider) {
+
+        switch ($provider['courier_code']) {
+
+            case 'india_post':
+
+                $courierManager->register(
+                    'india_post',
+                    new IndiaPostCourier()
+                );
+
+                break;
+
+            case 'shadowfax':
+
+                $courierManager->register(
+                    'shadowfax',
+                    new ShadowfaxCourier()
+                );
+
+                break;
+        }
+    }
+
+    // Continue with your existing estimate() code.
+    $payload = $this->getPayload();
 
         $destinationPin = trim((string) ($payload['pincode'] ?? ''));
         $items = $payload['items'] ?? [];
@@ -156,7 +197,7 @@ class Shipping extends BaseController
             $product = $this->db->table('ajobmart_products')
                 ->select(
                     'id, seller_id, product_name, shipping_weight, ' .
-                    'status, approval_status'
+                    'shipping_allowance, status, approval_status'
                 )
                 ->where('id', $productId)
                 // ->where('status', 'active')
@@ -197,11 +238,21 @@ class Shipping extends BaseController
                     'seller_id' => $sellerId,
                     'weight_grams' => 0,
                     'items' => 0,
+                    'shipping_allowance' => 0,
                 ];
             }
 
+            $unitAllowance = (float) (
+                $product['shipping_allowance'] ?? 0
+            );
+
             $sellerShipments[$sellerId]['weight_grams'] += $lineWeightGrams;
+
             $sellerShipments[$sellerId]['items'] += $quantity;
+
+            // Allowance is per product unit.
+            $sellerShipments[$sellerId]['shipping_allowance'] +=
+                $unitAllowance * $quantity;
         }
 
         $sellerResults = [];
@@ -224,41 +275,130 @@ class Shipping extends BaseController
                 ], 422);
             }
 
+            
             $weightGrams = (int) $shipment['weight_grams'];
 
-            $zone = $this->shippingModel->resolveZone(
-                (string) $sellerAddress['pincode'],
-                $destinationPin
+            $shippingAllowance = (float) (
+                $shipment['shipping_allowance'] ?? 0
             );
 
-            if (!$zone) {
+            // Build common shipment data for all courier providers.
+            $courierShipment = [
+                'seller_id' => (int) $sellerId,
+                'origin_pincode' => (string) $sellerAddress['pincode'],
+                'destination_pincode' => $destinationPin,
+                'weight_grams' => $weightGrams,
+                'shipping_allowance' => $shippingAllowance,
+            ];
+
+            // Ask all registered couriers for quotes.
+            $quotes = $courierManager->getQuotes($courierShipment);
+
+            log_message(
+                'debug',
+                'AJOBMART COURIER QUOTES - SELLER ' . $sellerId . ': ' .
+                json_encode($quotes, JSON_PRETTY_PRINT)
+            );
+
+            log_message(
+                'debug',
+                'AJOBMART SHIPMENT DATA: ' .
+                json_encode($courierShipment)
+            );
+
+            // Automatically select the lowest customer-payable quote.
+            
+            // Automatically select the lowest customer-payable quote.
+            $selectedQuote = $courierManager->selectAutomatic($quotes);
+
+            if (!$selectedQuote) {
                 return $this->jsonResponse([
                     'success' => false,
-                    'message' => 'Shipping zone could not be determined for seller ID '
-                        . $sellerId . '. Please contact support.',
+                    'message' => 'No courier service is available for seller ID '
+                        . $sellerId . ' for this destination and shipment weight.',
+                    'available_couriers' => [],
                 ], 422);
             }
 
-            $rate = $this->shippingModel->calculateRate($zone, $weightGrams);
+            // Selected courier information.
+            $shipping = (float) $selectedQuote['shipping'];
+            $customerShipping = (float) $selectedQuote['customer_cost'];
 
-            if (!$rate) {
-                return $this->jsonResponse([
-                    'success' => false,
-                    'message' => 'No shipping rate is configured for seller ID '
-                        . $sellerId . ', zone ' . $zone . ', weight '
-                        . $weightGrams . 'g.',
-                ], 422);
+            $grandShipping += $shipping;
+
+            // Prepare every available courier quotation for frontend.
+            $availableCouriers = [];
+
+            foreach ($quotes as $quote) {
+
+                $courierCode = $quote['courier'] ?? '';
+
+                $availableCouriers[] = [
+                    'courier_code' => $courierCode,
+
+                    'courier_name' => $quote['courier_name']
+                        ?? ucwords(str_replace('_', ' ', $courierCode)),
+
+                    // Actual courier charge.
+                    'shipping' => round(
+                        (float) $quote['shipping'],
+                        2
+                    ),
+
+                    // Amount customer has to pay after allowance.
+                    'customer_cost' => round(
+                        (float) $quote['customer_cost'],
+                        2
+                    ),
+
+                    'shipping_allowance' => round(
+                        (float) $shippingAllowance,
+                        2
+                    ),
+
+                    'zone_code' => $quote['zone_code'] ?? null,
+
+                    'is_selected' => (
+                        $courierCode === ($selectedQuote['courier'] ?? '')
+                    ),
+                ];
             }
 
-            $grandShipping += $rate['shipping'];
-
+            // Add seller quotation result.
             $sellerResults[] = [
                 'seller_id' => (int) $sellerId,
-                'zone_code' => $zone,
+
+                'zone_code' => $selectedQuote['zone_code'] ?? null,
+
                 'weight_grams' => $weightGrams,
-                'courier_name' => $rate['courier_name'],
-                'shipping' => $rate['shipping'],
+
+                // Automatically selected courier.
+                'courier_name' => $selectedQuote['courier_name']
+                    ?? ucwords(str_replace(
+                        '_',
+                        ' ',
+                        $selectedQuote['courier']
+                    )),
+
+                'courier_code' => $selectedQuote['courier'],
+
+                'shipping' => round($shipping, 2),
+
+                'shipping_allowance' => round(
+                    $shippingAllowance,
+                    2
+                ),
+
+                'customer_shipping' => round(
+                    max(0, $shipping - $shippingAllowance),
+                    2
+                ),
+
+                // All available courier quotations.
+                'available_couriers' => $availableCouriers,
             ];
+
+
         }
 
         return $this->jsonResponse([
@@ -366,4 +506,16 @@ class Shipping extends BaseController
             'message' => 'Address saved successfully.',
         ]);
     }
+
+    public function testShadowfax()
+{
+    $courier = new ShadowfaxCourier();
+
+    $result = $courier->checkServiceability([
+        'origin_pincode'      => '743165',
+        'destination_pincode' => '700001',
+    ]);
+
+    return $this->response->setJSON($result);
+}
 }
