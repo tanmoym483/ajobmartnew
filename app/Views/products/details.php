@@ -649,6 +649,125 @@
         animation-iteration-count: 1 !important;
     }
 }
+
+
+/* Ajobmart product details accordion */
+.aj-details-accordion {
+    margin-top: 22px;
+    border: 1px solid var(--aj-market-border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.aj-details-accordion-item {
+    border-bottom: 1px solid var(--aj-market-border);
+}
+
+.aj-details-accordion-item:last-child {
+    border-bottom: 0;
+}
+
+.aj-details-accordion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    width: 100%;
+    min-height: 62px;
+    padding: 17px 20px;
+    border: 0;
+    background: #fff;
+    color: var(--aj-market-ink);
+    text-align: left;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s ease;
+}
+
+.aj-details-accordion-header:hover {
+    background: #fffaf6;
+}
+
+.aj-details-accordion-header:focus-visible {
+    outline: 3px solid rgba(255, 106, 0, .3);
+    outline-offset: -3px;
+}
+
+.aj-details-accordion-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.aj-details-accordion-title > i {
+    flex: 0 0 auto;
+    color: var(--aj-market-orange-dark);
+    font-size: 19px;
+}
+
+.aj-details-accordion-arrow {
+    flex: 0 0 auto;
+    color: #68737e;
+    font-size: 15px;
+    transition: transform .25s ease;
+}
+
+.aj-details-accordion-header[aria-expanded="true"]
+.aj-details-accordion-arrow {
+    transform: rotate(180deg);
+}
+
+.aj-details-accordion-panel {
+    padding: 0 20px 22px;
+}
+
+.aj-details-accordion-panel[hidden] {
+    display: none !important;
+}
+
+/* Remove old section spacing when sections are inside accordion */
+.aj-details-accordion .aj-details-section {
+    margin: 0;
+    padding: 8px 0 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.aj-details-accordion .aj-details-section h2 {
+    display: none;
+}
+
+@media (max-width: 767.98px) {
+    .aj-details-accordion {
+        margin-top: 18px;
+        border-radius: 10px;
+    }
+
+    .aj-details-accordion-header {
+        min-height: 56px;
+        padding: 15px 13px;
+        font-size: 14px;
+    }
+
+    .aj-details-accordion-title {
+        gap: 9px;
+    }
+
+    .aj-details-accordion-panel {
+        padding: 0 13px 18px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .aj-details-accordion-arrow {
+        transition: none;
+    }
+}
+
 </style>
 <?php
 $productId = (int) ($product['id'] ?? 0);
@@ -836,9 +955,9 @@ $moq = max(1, (int) ($product['min_order_quantity'] ?? 1));
                 <h1><?= esc($productName) ?></h1>
 
                 <div class="aj-details-meta">
-                    <?php if (!empty($product['sku'])): ?>
+                    <!-- <?php if (!empty($product['sku'])): ?>
                         <span>SKU: <?= esc($product['sku']) ?></span>
-                    <?php endif; ?>
+                    <?php endif; ?> -->
 
                     <?php if (!empty($product['product_condition'])): ?>
                         <span>
@@ -913,6 +1032,33 @@ $moq = max(1, (int) ($product['min_order_quantity'] ?? 1));
 
             </div>
 
+            
+<!-- Product details accordion -->
+<div class="aj-details-accordion" id="ajProductDetailsAccordion">
+
+    <!-- 1. Delivery Information -->
+    <div class="aj-details-accordion-item">
+        <button
+            type="button"
+            class="aj-details-accordion-header"
+            id="ajDeliveryToggle"
+            aria-expanded="true"
+            aria-controls="ajDeliveryPanel">
+
+            <span class="aj-details-accordion-title">
+                <i class="bi bi-truck"></i>
+                Delivery Information
+            </span>
+
+            <i class="bi bi-chevron-down aj-details-accordion-arrow"></i>
+        </button>
+
+        <div
+            class="aj-details-accordion-panel"
+            id="ajDeliveryPanel"
+            role="region"
+            aria-labelledby="ajDeliveryToggle">
+
             <div class="aj-details-shipping">
                 <h5>
                     <i class="bi bi-truck"></i>
@@ -942,161 +1088,240 @@ $moq = max(1, (int) ($product['min_order_quantity'] ?? 1));
                     </strong>
                 </div>
             </div>
-
         </div>
     </div>
 
-    <!-- Product description -->
-    <section class="aj-details-section mt-5">
-        <h2>Product Description</h2>
+    <!-- 2. Product Description -->
+    <div class="aj-details-accordion-item">
+        <button
+            type="button"
+            class="aj-details-accordion-header"
+            id="ajDescriptionToggle"
+            aria-expanded="false"
+            aria-controls="ajDescriptionPanel">
 
-        <?php if (!empty($product['description'])): ?>
-            <div class="aj-details-description">
-                <?= nl2br(esc($product['description'])) ?>
+            <span class="aj-details-accordion-title">
+                <i class="bi bi-card-text"></i>
+                Product Description
+            </span>
+
+            <i class="bi bi-chevron-down aj-details-accordion-arrow"></i>
+        </button>
+
+        <div
+            class="aj-details-accordion-panel"
+            id="ajDescriptionPanel"
+            role="region"
+            aria-labelledby="ajDescriptionToggle"
+            hidden>
+
+            <div class="aj-details-section">
+                <?php if (!empty($product['description'])): ?>
+                    <div class="aj-details-description">
+                        <?= nl2br(esc($product['description'])) ?>
+                    </div>
+                <?php else: ?>
+                    <p class="text-muted mb-0">
+                        No description available.
+                    </p>
+                <?php endif; ?>
             </div>
-        <?php else: ?>
-            <p class="text-muted">No description available.</p>
-        <?php endif; ?>
-    </section>
 
-    <!-- Key features -->
-    <?php if (!empty($features)): ?>
-        <section class="aj-details-section">
-            <h2>Key Features</h2>
+            <?php if (!empty($features)): ?>
+                <div class="aj-details-section">
+                    <h2>Key Features</h2>
 
-            <ul class="aj-details-features">
-                <?php foreach ($features as $feature): ?>
-                    <?php
-                    if (is_array($feature)) {
-                        $feature = $feature['value']
-                            ?? $feature['label']
-                            ?? implode(': ', array_map('strval', $feature));
-                    }
+                    <ul class="aj-details-features">
+                        <?php foreach ($features as $feature): ?>
+                            <?php
+                            if (is_array($feature)) {
+                                $feature = $feature['value']
+                                    ?? $feature['label']
+                                    ?? implode(': ', array_map('strval', $feature));
+                            }
 
-                    if (trim((string) $feature) === '') {
-                        continue;
-                    }
-                    ?>
+                            if (trim((string) $feature) === '') {
+                                continue;
+                            }
+                            ?>
 
-                    <li>
-                        <i class="bi bi-check2-circle"></i>
-                        <?= esc((string) $feature) ?>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        </section>
-    <?php endif; ?>
-
-    <!-- Technical / product specifications -->
-    <section class="aj-details-section">
-        <h2>Product Specifications</h2>
-
-        <div class="table-responsive">
-            <table class="table aj-details-spec-table">
-                <tbody>
-                    <tr>
-                        <th>Category</th>
-                        <td><?= esc($product['category'] ?: 'Not specified') ?></td>
-                    </tr>
-                    <tr>
-                        <th>Brand</th>
-                        <td><?= esc($product['brand'] ?: 'Not specified') ?></td>
-                    </tr>
-                    <tr>
-                        <th>Sub-brand</th>
-                        <td><?= esc($product['sub_brand'] ?: 'Not specified') ?></td>
-                    </tr>
-                    <tr>
-                        <th>SKU</th>
-                        <td><?= esc($product['sku'] ?: 'Not specified') ?></td>
-                    </tr>
-                    <tr>
-                        <th>Condition</th>
-                        <td><?= esc($product['product_condition'] ?: 'Not specified') ?></td>
-                    </tr>
-                    <tr>
-                        <th>Pack of</th>
-                        <td><?= esc($product['pack_of'] ?: 'Not specified') ?></td>
-                    </tr>
-                    <tr>
-                        <th>Minimum order quantity</th>
-                        <td><?= $moq ?></td>
-                    </tr>
-                    <tr>
-                        <th>Manufacturer</th>
-                        <td><?= esc($product['manufacturer_name'] ?: 'Not specified') ?></td>
-                    </tr>
-                    <tr>
-                        <th>Packer</th>
-                        <td><?= esc($product['packer_name'] ?: 'Not specified') ?></td>
-                    </tr>
-                    <tr>
-                        <th>Country of origin</th>
-                        <td><?= esc($product['country_of_origin'] ?: 'Not specified') ?></td>
-                    </tr>
-                    <tr>
-                        <th>HSN code</th>
-                        <td><?= esc($product['hsn_code'] ?: 'Not specified') ?></td>
-                    </tr>
-                    <tr>
-                        <th>Model number</th>
-                        <td><?= esc($product['model_number_general'] ?: 'Not specified') ?></td>
-                    </tr>
-                    <tr>
-                        <th>Package length</th>
-                        <td><?= $formatDimension($product['package_length'] ?? null) ?></td>
-                    </tr>
-                    <tr>
-                        <th>Package width</th>
-                        <td><?= $formatDimension($product['package_width'] ?? null) ?></td>
-                    </tr>
-                    <tr>
-                        <th>Package height</th>
-                        <td><?= $formatDimension($product['package_height'] ?? null) ?></td>
-                    </tr>
-                    <tr>
-                        <th>Shipping weight</th>
-                        <td>
-                            <?= $formatDimension($product['shipping_weight'] ?? null) ?>
-                            <?php if (($product['shipping_weight'] ?? '') !== ''): ?>
-                                kg
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Stock</th>
-                        <td><?= $stock > 0 ? $stock . ' available' : 'Out of stock' ?></td>
-                    </tr>
-                </tbody>
-            </table>
+                            <li>
+                                <i class="bi bi-check2-circle"></i>
+                                <?= esc((string) $feature) ?>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
         </div>
-    </section>
+    </div>
 
-    <!-- Dynamic category attributes -->
-    <?php if (!empty($attributes)): ?>
-        <section class="aj-details-section">
-            <h2>Additional Information</h2>
+    <!-- 3. Product Specifications -->
+    <div class="aj-details-accordion-item">
+        <button
+            type="button"
+            class="aj-details-accordion-header"
+            id="ajSpecificationsToggle"
+            aria-expanded="false"
+            aria-controls="ajSpecificationsPanel">
+
+            <span class="aj-details-accordion-title">
+                <i class="bi bi-list-check"></i>
+                Product Specifications
+            </span>
+
+            <i class="bi bi-chevron-down aj-details-accordion-arrow"></i>
+        </button>
+
+        <div
+            class="aj-details-accordion-panel"
+            id="ajSpecificationsPanel"
+            role="region"
+            aria-labelledby="ajSpecificationsToggle"
+            hidden>
 
             <div class="table-responsive">
                 <table class="table aj-details-spec-table">
                     <tbody>
-                        <?php foreach ($attributes as $attribute): ?>
-                            <tr>
-                                <th>
-                                    <?= esc(
-                                        $attribute['label']
-                                        ?? $attribute['attribute_name']
-                                        ?? ('Attribute ' . $attribute['attribute_id'])
-                                    ) ?>
-                                </th>
-                                <td><?= esc($attribute['attribute_value'] ?? '') ?></td>
-                            </tr>
-                        <?php endforeach; ?>
+                        <tr>
+                            <th>Category</th>
+                            <td><?= esc($product['category'] ?: 'Not specified') ?></td>
+                        </tr>
+                        <tr>
+                            <th>Brand</th>
+                            <td><?= esc($product['brand'] ?: 'Not specified') ?></td>
+                        </tr>
+                        <tr>
+                            <th>Sub-brand</th>
+                            <td><?= esc($product['sub_brand'] ?: 'Not specified') ?></td>
+                        </tr>
+                        <tr>
+                            <th>SKU</th>
+                            <td><?= esc($product['sku'] ?: 'Not specified') ?></td>
+                        </tr>
+                        <tr>
+                            <th>Condition</th>
+                            <td><?= esc($product['product_condition'] ?: 'Not specified') ?></td>
+                        </tr>
+                        <tr>
+                            <th>Pack of</th>
+                            <td><?= esc($product['pack_of'] ?: 'Not specified') ?></td>
+                        </tr>
+                        <tr>
+                            <th>Minimum order quantity</th>
+                            <td><?= $moq ?></td>
+                        </tr>
+                        <tr>
+                            <th>Manufacturer</th>
+                            <td><?= esc($product['manufacturer_name'] ?: 'Not specified') ?></td>
+                        </tr>
+                        <tr>
+                            <th>Packer</th>
+                            <td><?= esc($product['packer_name'] ?: 'Not specified') ?></td>
+                        </tr>
+                        <tr>
+                            <th>Country of origin</th>
+                            <td><?= esc($product['country_of_origin'] ?: 'Not specified') ?></td>
+                        </tr>
+                        <tr>
+                            <th>HSN code</th>
+                            <td><?= esc($product['hsn_code'] ?: 'Not specified') ?></td>
+                        </tr>
+                        <tr>
+                            <th>Model number</th>
+                            <td><?= esc($product['model_number_general'] ?: 'Not specified') ?></td>
+                        </tr>
+                        <tr>
+                            <th>Package length</th>
+                            <td><?= $formatDimension($product['package_length'] ?? null) ?></td>
+                        </tr>
+                        <tr>
+                            <th>Package width</th>
+                            <td><?= $formatDimension($product['package_width'] ?? null) ?></td>
+                        </tr>
+                        <tr>
+                            <th>Package height</th>
+                            <td><?= $formatDimension($product['package_height'] ?? null) ?></td>
+                        </tr>
+                        <tr>
+                            <th>Shipping weight</th>
+                            <td>
+                                <?= $formatDimension($product['shipping_weight'] ?? null) ?>
+                                <?php if (($product['shipping_weight'] ?? '') !== ''): ?>
+                                    kg
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Stock</th>
+                            <td>
+                                <?= $stock > 0
+                                    ? $stock . ' available'
+                                    : 'Out of stock' ?>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
-        </section>
+        </div>
+    </div>
+
+    <!-- 4. Additional Information -->
+    <?php if (!empty($attributes)): ?>
+        <div class="aj-details-accordion-item">
+            <button
+                type="button"
+                class="aj-details-accordion-header"
+                id="ajAdditionalToggle"
+                aria-expanded="false"
+                aria-controls="ajAdditionalPanel">
+
+                <span class="aj-details-accordion-title">
+                    <i class="bi bi-info-circle"></i>
+                    Additional Information
+                </span>
+
+                <i class="bi bi-chevron-down aj-details-accordion-arrow"></i>
+            </button>
+
+            <div
+                class="aj-details-accordion-panel"
+                id="ajAdditionalPanel"
+                role="region"
+                aria-labelledby="ajAdditionalToggle"
+                hidden>
+
+                <div class="table-responsive">
+                    <table class="table aj-details-spec-table">
+                        <tbody>
+                            <?php foreach ($attributes as $attribute): ?>
+                                <tr>
+                                    <th>
+                                        <?= esc(
+                                            $attribute['label']
+                                            ?? $attribute['attribute_name']
+                                            ?? ('Attribute ' . ($attribute['attribute_id'] ?? ''))
+                                        ) ?>
+                                    </th>
+                                    <td>
+                                        <?= esc($attribute['attribute_value'] ?? '') ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     <?php endif; ?>
+
+</div>
+
+
+        </div>
+    </div>
+
+    
 
     <div class="mt-4">
         <a href="<?= site_url('/') ?>"
@@ -1269,4 +1494,55 @@ $moq = max(1, (int) ($product['min_order_quantity'] ?? 1));
         if (event.key === 'Escape') closeZoom();
     });
 })();
+
+
+
+(function () {
+    'use strict';
+
+    const accordion = document.getElementById('ajProductDetailsAccordion');
+
+    if (!accordion || accordion.dataset.initialized === 'true') {
+        return;
+    }
+
+    accordion.dataset.initialized = 'true';
+
+    accordion.addEventListener('click', function (event) {
+        const button = event.target.closest('.aj-details-accordion-header');
+
+        if (!button || !accordion.contains(button)) {
+            return;
+        }
+
+        const panelId = button.getAttribute('aria-controls');
+        const panel = document.getElementById(panelId);
+
+        if (!panel) {
+            return;
+        }
+
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+
+        // Single-open accordion: close all other panels.
+        accordion.querySelectorAll('.aj-details-accordion-header').forEach(function (item) {
+            item.setAttribute('aria-expanded', 'false');
+
+            const controlledPanel = document.getElementById(
+                item.getAttribute('aria-controls')
+            );
+
+            if (controlledPanel) {
+                controlledPanel.hidden = true;
+            }
+        });
+
+        // Toggle the selected panel.
+        if (!isExpanded) {
+            button.setAttribute('aria-expanded', 'true');
+            panel.hidden = false;
+        }
+    });
+})();
+
 </script>
