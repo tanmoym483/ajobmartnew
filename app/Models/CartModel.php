@@ -84,4 +84,13 @@ class CartModel extends Model
 
         return (int) ($row['total_quantity'] ?? 0);
     }
+
+    public function clearCustomerCart(int $customerId): bool
+    {
+         if ($customerId <= 0) {
+                return false;
+            }
+
+            return $this->where('customer_id', $customerId)->delete();
+    }
 }

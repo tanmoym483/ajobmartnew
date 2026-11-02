@@ -79,10 +79,21 @@ $routes->post('shipping/save-address', 'Shipping::saveAddress');
 
 
 $routes->get('checkout', 'Checkout::index');
+// $routes->post('checkout/payment/verify', 'Checkout::verifyPayment');
+
+
 $routes->post('checkout/place-order', 'Checkout::placeOrder');
-$routes->post('checkout/payment/verify', 'Checkout::verifyPayment');
+$routes->post('checkout/razorpay/verify', 'Checkout::verifyRazorpayPayment');
+$routes->get('checkout/payment-success', 'Checkout::paymentSuccess');
+$routes->get('checkout/payment-failed', 'Checkout::paymentFailed');
+
 
 $routes->get(
     'shipping/testShadowfax',
     'Shipping::testShadowfax'
 );
+
+
+
+$routes->get('my-orders', 'Orders::index');
+

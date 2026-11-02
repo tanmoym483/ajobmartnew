@@ -5180,3 +5180,100 @@ input {
     outline: 2px solid #198754;
     outline-offset: 2px;
 }
+
+/* Delivery & Charges - Horizontal scrolling */
+.aj-cart-charge-details {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 12px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    padding: 12px 2px;
+    margin-top: 8px;
+
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+
+    scrollbar-width: thin;
+    scrollbar-color: #ff6a00 #f1f3f5;
+}
+
+/* Individual charge cards */
+.aj-cart-charge-details .aj-cart-charge-row {
+    flex: 0 0 140px;
+    min-width: 140px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 14px;
+    background: #f7f9fc;
+    border: 1px solid #e4e9f0;
+    border-radius: 12px;
+
+    scroll-snap-align: start;
+}
+
+/* Charge labels */
+.aj-cart-charge-details .aj-cart-charge-row span {
+    font-size: 12px;
+    color: #737d89;
+}
+
+/* Charge values */
+.aj-cart-charge-details .aj-cart-charge-row strong {
+    font-size: 15px;
+    font-weight: 700;
+    color: #202a35;
+}
+
+/* Coupon discount */
+.aj-cart-charge-details .aj-charge-discount {
+    color: #198754 !important;
+}
+
+/* Hide note from horizontal cards */
+.aj-cart-charge-details .aj-cart-charge-note {
+    flex: 0 0 200px;
+    min-width: 200px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    font-size: 11px;
+    color: #737d89;
+    background: #fff7f0;
+    padding: 12px;
+    border-radius: 10px;
+
+    scroll-snap-align: start;
+}
+
+/* Horizontal scrollbar */
+.aj-cart-charge-details::-webkit-scrollbar {
+    height: 4px;
+}
+
+.aj-cart-charge-details::-webkit-scrollbar-thumb {
+    background: #ff6a00;
+    border-radius: 10px;
+}
+
+.aj-cart-charge-details::-webkit-scrollbar-track {
+    background: #f1f3f5;
+    border-radius: 10px;
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+    .aj-cart-charge-details .aj-cart-charge-row {
+        flex-basis: 125px;
+        min-width: 125px;
+    }
+}

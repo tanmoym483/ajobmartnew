@@ -122,6 +122,133 @@ if ($isCustomerLoggedIn) {
         transform: scale(1);
     }
 }
+
+
+/* ======================================
+   CART CHARGE BREAKDOWN
+====================================== */
+
+.aj-cart-charge-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    background: transparent;
+    border: 0;
+    border-top: 1px solid #edf0f4;
+    border-bottom: 1px solid #edf0f4;
+    color: #344054;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+}
+
+.aj-cart-charge-toggle-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.aj-cart-charge-toggle-right strong {
+    color: #344054;
+    font-size: 13px;
+}
+
+.aj-cart-charge-toggle-right i {
+    color: #8a94a6;
+    font-size: 12px;
+    transition: transform .25s ease;
+}
+
+.aj-cart-charge-toggle[aria-expanded="true"]
+.aj-cart-charge-toggle-right i {
+    transform: rotate(180deg);
+}
+
+/* Breakdown container */
+
+.aj-cart-charge-details {
+    padding: 12px 12px 10px;
+    background: #f8faff;
+    border-radius: 10px;
+    margin: 8px 0;
+}
+
+.aj-cart-charge-details[hidden] {
+    display: none !important;
+}
+
+.aj-cart-charge-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: 12px;
+}
+
+.aj-cart-charge-row span {
+    color: #697586;
+}
+
+.aj-cart-charge-row strong {
+    color: #344054;
+    font-weight: 600;
+}
+
+.aj-cart-charge-row .aj-charge-discount {
+    color: #15945b;
+}
+
+.aj-cart-charge-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin-top: 8px;
+    padding-top: 9px;
+    border-top: 1px dashed #dce3ee;
+    color: #8994a6;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+/* Final total */
+
+.aj-cart-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 14px;
+    margin-top: 5px;
+    border-top: 1px solid #e8edf4;
+}
+
+.aj-cart-total > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.aj-cart-total span {
+    font-size: 15px;
+    font-weight: 700;
+    color: #172033;
+}
+
+.aj-cart-total small {
+    font-size: 10px;
+    color: #929bad;
+}
+
+.aj-cart-total strong {
+    font-size: 21px;
+    font-weight: 800;
+    color: #1769e0;
+}
+
     </style>
 </head>
 
@@ -240,7 +367,7 @@ if ($isCustomerLoggedIn) {
 
 
 
-                <a href="#" class="aj-profile-option">
+                <a href="<?= site_url('my-orders')?>" class="aj-profile-option">
 
                     <div class="aj-profile-option-icon">
                         <i class="bi bi-box-seam"></i>
@@ -573,31 +700,92 @@ if ($isCustomerLoggedIn) {
                  CART FOOTER
             ================================= -->
 
+            
             <div class="aj-cart-modal-footer">
 
                 <div class="aj-cart-summary">
-                    <div>
+
+                    <!-- Product subtotal -->
+                    <div class="aj-cart-summary-row">
                         <span>Subtotal</span>
                         <strong id="ajCartSubtotal">₹0.00</strong>
                     </div>
 
-                    <div>
-                        <span>Delivery</span>
-                        <strong id="ajCartDelivery">FREE</strong>
+                    <!-- Charges toggler -->
+                    <button
+                        type="button"
+                        class="aj-cart-charge-toggle"
+                        id="ajCartChargeToggle"
+                        aria-expanded="false"
+                        aria-controls="ajCartChargeDetails">
+
+                        <span>
+                            <i class="bi bi-receipt me-2"></i>
+                            Delivery & Charges
+                        </span>
+
+                        <span class="aj-cart-charge-toggle-right">
+                            <!-- <strong id="ajCartDelivery">FREE</strong> -->
+                            <i class="bi bi-chevron-down" id="ajCartChargeArrow"></i>
+                        </span>
+
+                    </button>
+
+                    <!-- Expandable breakdown -->
+                    <div
+                        class="aj-cart-charge-details"
+                        id="ajCartChargeDetails"
+                        hidden>
+
+                        <div class="aj-cart-charge-row">
+                            <span>Coupon Discount</span>
+                            <strong class="aj-charge-discount" id="ajCartCouponDiscount">
+                                −₹0.00
+                            </strong>
+                        </div>
+
+                        <div class="aj-cart-charge-row">
+                            <span>Platform Fee</span>
+                            <strong id="ajCartPlatformFee">₹0.00</strong>
+                        </div>
+
+                        <div class="aj-cart-charge-row">
+                            <span>Delivery Fee</span>
+                            <strong id="ajCartDeliveryFee">FREE</strong>
+                        </div>
+
+                        <div class="aj-cart-charge-note">
+                            <i class="bi bi-info-circle"></i>
+                            Delivery charges are calculated based on your delivery
+                            location and applicable shipping allowance.
+                        </div>
+
                     </div>
 
+                    <!-- Final total -->
                     <div class="aj-cart-total">
-                        <span>Total</span>
+                        <div>
+                            <span>Total Payable</span>
+                            <small>Inclusive of displayed charges</small>
+                        </div>
+
                         <strong id="ajCartTotal">₹0.00</strong>
                     </div>
+
                 </div>
 
-                <button type="button" class="aj-cart-checkout-btn" id="ajCartCheckout">
+                <button
+                    type="button"
+                    class="aj-cart-checkout-btn"
+                    id="ajCartCheckout">
+
                     Proceed to Checkout
                     <i class="bi bi-arrow-right"></i>
+
                 </button>
 
             </div>
+
 
         </div>
 
@@ -2149,6 +2337,7 @@ $(document).on(
 
     }
 );
+
 
 </script>
 

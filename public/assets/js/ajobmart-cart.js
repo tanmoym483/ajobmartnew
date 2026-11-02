@@ -251,30 +251,49 @@ function renderCart() {
     // Preserve shipping only when the estimate is still for the
     // current cart and its PIN has not been invalidated.
     // Preserve the extra shipping fee calculated for the selected PIN.
-const shippingPin = totalElement?.dataset.shippingPincode || '';
-const savedShipping = totalElement?.dataset.shippingAmount;
 
-const hasSavedShipping =
-    shippingPin !== '' &&
-    savedShipping !== undefined &&
-    Number.isFinite(Number(savedShipping)) &&
-    shippingPin === (
-        document.getElementById('ajShippingPin')?.value || ''
-    ).trim();
+    // Preserve shipping estimate and calculate final payable amount.
+    const shippingPin =
+        totalElement?.dataset.shippingPincode || '';
 
-const shipping = hasSavedShipping
-    ? Math.max(0, Number(savedShipping))
-    : 0;
+    const savedShipping =
+        totalElement?.dataset.shippingAmount;
 
-window.AJ_SHIPPING_CHARGE = shipping;
+    const actualShipping =
+        Number(totalElement?.dataset.actualShipping);
 
-$('#ajCartDelivery').text(
-    hasSavedShipping
-        ? (shipping > 0 ? money(shipping) : 'FREE')
-        : 'Not calculated'
-);
+    const hasSavedShipping =
+        shippingPin !== '' &&
+        savedShipping !== undefined &&
+        Number.isFinite(actualShipping) &&
+        shippingPin === (
+            document.getElementById('ajShippingPin')?.value || ''
+        ).trim();
 
-$('#ajCartTotal').text(money(subtotal + shipping));
+    if (hasSavedShipping) {
+
+        // Recalculate subtotal, allowance, delivery,
+        // coupon discount, platform fee and final total.
+        if (typeof window.ajUpdateCartTotals === 'function') {
+            window.ajUpdateCartTotals(actualShipping);
+        }
+
+    } else {
+
+        // No shipping estimate available yet.
+        $('#ajCartDelivery').text('Not calculated');
+
+        $('#ajCartDeliveryFee').text('Not calculated');
+
+        $('#ajCartCouponDiscount').text('−' + money(0));
+
+        $('#ajCartPlatformFee').text(money(5));
+
+        $('#ajCartTotal').text(money(subtotal + 5));
+
+        window.AJ_SHIPPING_CHARGE = 0;
+    }
+
 }
 
 

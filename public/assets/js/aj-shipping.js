@@ -118,31 +118,37 @@
     }
 
     function normalizeItems(items) {
-        if (!Array.isArray(items)) {
-            return [];
-        }
-
-        return items.map(function (item) {
-            return {
-                product_id: Number(
-                    item.product_id ?? item.productId ?? item.id
-                ),
-                quantity: Number(
-                    item.quantity ?? item.qty ?? item.cart_quantity ?? 1
-                ),
-                shipping_allowance: Number(
-                    item.shipping_allowance ??
-                    item.product_shipping_allowance ??
-                    item.shippingAllowance
-                ) || 0
-            };
-        }).filter(function (item) {
-            return Number.isInteger(item.product_id) &&
-                item.product_id > 0 &&
-                Number.isInteger(item.quantity) &&
-                item.quantity > 0;
-        });
+    if (!Array.isArray(items)) {
+        return [];
     }
+
+    return items.map(function (item) {
+        return {
+            product_id: Number(
+                item.product_id ?? item.productId ?? item.id
+            ),
+            quantity: Number(
+                item.quantity ?? item.qty ?? item.cart_quantity ?? 1
+            ),
+            listing_price: Number(
+                item.listing_price ??
+                item.product_listing_price ??
+                item.price ??
+                0
+            ),
+            shipping_allowance: Number(
+                item.shipping_allowance ??
+                item.product_shipping_allowance ??
+                item.shippingAllowance
+            ) || 0
+        };
+    }).filter(function (item) {
+        return Number.isInteger(item.product_id) &&
+            item.product_id > 0 &&
+            Number.isInteger(item.quantity) &&
+            item.quantity > 0;
+    });
+}
 
     function money(value) {
         return new Intl.NumberFormat('en-IN', {
@@ -166,54 +172,167 @@
      * Preserve the existing shipping allowance calculation:
      * extra delivery = max(actual destination shipping - included allowance, 0)
      */
-    function updateCartTotals(actualShippingAmount) {
-        const subtotalElement = document.getElementById('ajCartSubtotal');
-        const deliveryElement = document.getElementById('ajCartDelivery');
-        const totalElement = document.getElementById('ajCartTotal');
+    
 
-        if (!subtotalElement || !deliveryElement || !totalElement) {
-            console.error('Cart total elements were not found.');
-            return;
-        }
+function updateCartTotals(actualShippingAmount) {
 
-        const items = getCartItems();
+    const subtotalElement = document.getElementById('ajCartSubtotal');
+    // const deliveryElement = document.getElementById('ajCartDelivery');
+    const deliveryFeeElement = document.getElementById('ajCartDeliveryFee');
+    const couponElement = document.getElementById('ajCartCouponDiscount');
+    const platformElement = document.getElementById('ajCartPlatformFee');
+    const totalElement = document.getElementById('ajCartTotal');
 
-        const includedAllowance = items.reduce(function (sum, item) {
-            return sum +
-                (Number(item.shipping_allowance) || 0) *
-                (Number(item.quantity) || 0);
-        }, 0);
-
-        const actualShipping = Math.max(
-            0,
-            Number(actualShippingAmount) || 0
-        );
-
-        const extraDeliveryFees = Math.max(
-            0,
-            actualShipping - includedAllowance
-        );
-
-        let subtotal = Number(subtotalElement.dataset.baseSubtotal);
-
-        if (!Number.isFinite(subtotal)) {
-            subtotal = readAmount(subtotalElement);
-            subtotalElement.dataset.baseSubtotal = String(subtotal);
-        }
-
-        deliveryElement.textContent = extraDeliveryFees > 0
-            ? money(extraDeliveryFees)
-            : 'FREE';
-
-        totalElement.textContent = money(subtotal + extraDeliveryFees);
-
-        totalElement.dataset.shippingAmount = String(extraDeliveryFees);
-        totalElement.dataset.actualShipping = String(actualShipping);
-        totalElement.dataset.includedAllowance = String(includedAllowance);
-        totalElement.dataset.shippingPincode = pinInput.value.trim();
-
-        window.AJ_SHIPPING_CHARGE = extraDeliveryFees;
+    if (
+        !subtotalElement ||
+        !deliveryFeeElement ||
+        !couponElement ||
+        !platformElement ||
+        !totalElement
+    ) {
+        console.error('Cart charge breakdown elements were not found.');
+        return;
     }
+
+    const items = getCartItems();
+
+    if (!items.length) {
+        console.error('No cart items available for total calculation.');
+        return;
+    }
+
+    // 1. PRODUCT SUBTOTAL
+    // listing_price is the final product listing price.
+
+    const subtotal = items.reduce(function (sum, item) {
+
+        return sum +
+            (Number(item.listing_price) || 0) *
+            (Number(item.quantity) || 0);
+
+    }, 0);
+
+
+    // 2. INCLUDED SHIPPING ALLOWANCE
+
+    const includedAllowance = items.reduce(function (sum, item) {
+
+        return sum +
+            (Number(item.shipping_allowance) || 0) *
+            (Number(item.quantity) || 0);
+
+    }, 0);
+
+
+    // 3. ACTUAL COURIER SHIPPING
+
+    const actualShipping = Math.max(
+        0,
+        Number(actualShippingAmount) || 0
+    );
+
+
+    // 4. CUSTOMER ADDITIONAL DELIVERY CHARGE
+
+    const deliveryFee = Math.max(
+        0,
+        actualShipping - includedAllowance
+    );
+
+
+    // 5. COUPON DISCOUNT
+
+    const breakdown = window.AJ_CART_BREAKDOWN || {};
+
+    const couponDiscount = Math.min(
+        subtotal,
+        Math.max(
+            0,
+            Number(breakdown.couponDiscount) || 0
+        )
+    );
+
+
+    // 6. PLATFORM FEE
+
+    const configuredPlatformFee = Number(
+        breakdown.platformFee
+    );
+
+    const platformFee = Math.max(
+        0,
+        Number.isFinite(configuredPlatformFee)
+            ? configuredPlatformFee
+            : 5
+    );
+
+
+    // 7. FINAL TOTAL
+
+    const finalTotal = Math.max(
+        0,
+        subtotal +
+        deliveryFee +
+        platformFee -
+        couponDiscount
+    );
+
+
+    // 8. UPDATE CART DISPLAY
+
+    subtotalElement.textContent = money(subtotal);
+
+    // deliveryElement.textContent = deliveryFee > 0
+    //     ? money(deliveryFee)
+    //     : 'FREE';
+
+    deliveryFeeElement.textContent = deliveryFee > 0
+        ? money(deliveryFee)
+        : 0.00;
+
+    couponElement.textContent = '−' + money(couponDiscount);
+
+    platformElement.textContent = money(platformFee);
+
+    totalElement.textContent = money(finalTotal);
+
+
+    // 9. STORE CALCULATED VALUES
+
+    subtotalElement.dataset.baseSubtotal = String(subtotal);
+
+    totalElement.dataset.subtotal = String(subtotal);
+    totalElement.dataset.shippingAmount = String(deliveryFee);
+    totalElement.dataset.actualShipping = String(actualShipping);
+    totalElement.dataset.includedAllowance = String(includedAllowance);
+    totalElement.dataset.couponDiscount = String(couponDiscount);
+    totalElement.dataset.platformFee = String(platformFee);
+    totalElement.dataset.finalTotal = String(finalTotal);
+    totalElement.dataset.shippingPincode = pinInput.value.trim();
+
+
+    // 10. GLOBAL SHIPPING CHARGE
+
+    window.AJ_SHIPPING_CHARGE = deliveryFee;
+
+    // 11. DEBUGGING
+
+    console.table({
+        productSubtotal: subtotal,
+        actualCourierShipping: actualShipping,
+        includedShippingAllowance: includedAllowance,
+        customerDeliveryFee: deliveryFee,
+        couponDiscount: couponDiscount,
+        platformFee: platformFee,
+        finalPayable: finalTotal
+    });
+
+    return finalTotal;
+}
+
+
+// Make the total calculation accessible to cart JS.
+window.ajUpdateCartTotals = updateCartTotals;
 
     function resetShippingOnCartChange() {
         const totalElement = document.getElementById('ajCartTotal');
@@ -987,6 +1106,31 @@ $(document).on('click', '#ajCartCheckout', function (e) {
 });
 
 
+
+/* ======================================
+   CART CHARGES DROPDOWN TOGGLER
+====================================== */
+
+const chargeToggle = document.getElementById('ajCartChargeToggle');
+const chargeDetails = document.getElementById('ajCartChargeDetails');
+
+if (chargeToggle && chargeDetails) {
+
+    chargeToggle.addEventListener('click', function () {
+
+        const isExpanded =
+            chargeToggle.getAttribute('aria-expanded') === 'true';
+
+        chargeToggle.setAttribute(
+            'aria-expanded',
+            String(!isExpanded)
+        );
+
+        chargeDetails.hidden = isExpanded;
+
+    });
+
+}
 
 
 })();

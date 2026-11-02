@@ -16,7 +16,8 @@
         "dompdf/dompdf": "^3.1",
         "endroid/qr-code": "6.0.9",
         "laminas/laminas-escaper": "^2.18",
-        "psr/log": "^3.0"
+        "psr/log": "^3.0",
+        "razorpay/razorpay": "2.*"
     },
     "require-dev": {
         "codeigniter/coding-standard": "^1.7",

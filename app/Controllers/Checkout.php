@@ -4,18 +4,37 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 
+use Razorpay\Api\Api;
+use Razorpay\Api\Errors\SignatureVerificationError;
+use App\Libraries\ShippingQuoteService;
+
+
+use App\Models\OrderModel;
+
 use App\Models\CartModel;
 
 class Checkout extends BaseController
 {
     protected $cartModel;
+    protected $orderModel;
     protected $layout = 'layouts/default_checkout';
 
 
     public function __construct()
     {
         $this->cartModel = new CartModel();
+        $this->orderModel = new OrderModel();
     }
+
+    
+    private function razorpayApi(): Api
+    {
+        return new Api(
+            env('RAZORPAY_KEY_ID'),
+            env('RAZORPAY_KEY_SECRET')
+        );
+    }
+
 
     public function index()
     {
@@ -93,31 +112,458 @@ class Checkout extends BaseController
     }
 
 
-    public function placeOrder()
-    {
-        // 1. Keep your existing customer login check here.
+    
 
-        // 2. Validate payment method and gateway.
-        $paymentMethod = $this->request->getPost('payment_method');
-        $paymentGateway = $this->request->getPost('payment_gateway');
+public function placeOrder()
+{
+    $customerId = (int) session('ajobmart_customer_db_id');
 
-        if ($paymentMethod === 'online') {
-            $allowedGateways = ['razorpay', 'cashfree', 'payu'];
+    if (
+        $customerId <= 0 ||
+        !session('ajobmart_customer_logged_in')
+    ) {
+        return redirect()->to(site_url('login'))
+            ->with('error', 'Please log in before placing your order.');
+    }
 
-            if (!in_array($paymentGateway, $allowedGateways, true)) {
-                return redirect()->back()
-                    ->withInput()
-                    ->with('error', 'Please select an online payment gateway.');
-            }
-        } elseif ($paymentMethod !== 'cod') {
+    $paymentMethod = (string) $this->request->getPost('payment_method');
+    $paymentGateway = $this->request->getPost('payment_gateway');
+
+    // Only Razorpay is implemented for online payments at this stage.
+    if ($paymentMethod === 'online') {
+        if ($paymentGateway !== 'razorpay') {
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Please select a valid payment method.');
+                ->with('error', 'Currently, Razorpay is the supported online payment gateway.');
+        }
+    } elseif ($paymentMethod === 'cod') {
+        $paymentGateway = null;
+    } else {
+        return redirect()->back()
+            ->withInput()
+            ->with('error', 'Invalid payment method.');
+    }
+
+    $addressId = (int) $this->request->getPost('address_id');
+
+    if ($addressId <= 0) {
+        return redirect()->back()
+            ->with('error', 'Please select a delivery address.');
+    }
+
+    // Load the customer's real cart.
+    $cartItems = $this->cartModel->getCustomerCart($customerId);
+
+    if (empty($cartItems)) {
+        return redirect()->to(site_url('checkout'))
+            ->with('error', 'Your cart is empty.');
+    }
+
+    // Validate cart quantities and calculate product totals from listing_price.
+    $subtotal = 0.0;
+    $includedShipping = 0.0;
+
+    foreach ($cartItems as $item) {
+        $quantity = (int) ($item['quantity'] ?? 0);
+        $price = (float) ($item['listing_price'] ?? 0);
+        $allowance = (float) ($item['shipping_allowance'] ?? 0);
+        $stock = (int) ($item['stock_quantity'] ?? 0);
+        $minimum = max(1, (int) ($item['min_order_quantity'] ?? 1));
+
+        if (
+            $quantity < $minimum ||
+            $price < 0 ||
+            $allowance < 0 ||
+            $stock < $quantity
+        ) {
+            return redirect()->back()
+                ->with('error', 'A product in your cart has an invalid quantity or insufficient stock.');
         }
 
-        // 3. Continue your existing checkout logic here:
-        // Validate address, cart, stock, and prices.
-        // Calculate shipping and total.
-        // Create the order and order items.
+        // if (
+        //     isset($item['status']) &&
+        //     strtolower((string) $item['status']) !== 'active'
+        // ) {
+        //     return redirect()->back()
+        //         ->with('error', 'A product in your cart is no longer available.');
+        // }
+
+        // if (
+        //     isset($item['approval_status']) &&
+        //     strtolower((string) $item['approval_status']) !== 'approved'
+        // ) {
+        //     return redirect()->back()
+        //         ->with('error', 'A product in your cart is not approved for purchase.');
+        // }
+
+        $subtotal += $price * $quantity;
+        $includedShipping += $allowance * $quantity;
     }
+
+    $subtotal = round($subtotal, 2);
+    $includedShipping = round($includedShipping, 2);
+
+    if ($subtotal <= 0) {
+        return redirect()->back()
+            ->with('error', 'Invalid order subtotal.');
+    }
+
+    // Verify the address belongs to this customer.
+    $address = $this->db
+        ->table('ajobmart_customer_addresses')
+        ->where('id', $addressId)
+        ->where('customer_id', $customerId)
+        ->get()
+        ->getRowArray();
+
+    if (!$address) {
+        return redirect()->back()
+            ->with('error', 'Invalid delivery address.');
+    }
+
+    // Recalculate shipping on the server using the saved address PIN.
+    $shippingService = new ShippingQuoteService();
+
+    $shippingResult = $shippingService->calculate(
+        $cartItems,
+        (string) $address['pincode']
+    );
+
+
+    if (empty($shippingResult['success'])) {
+        return redirect()->back()
+            ->with(
+                'error',
+                $shippingResult['message'] ?? 'Unable to calculate shipping.'
+            );
+    }
+
+    $shippingCharge = round(
+        (float) $shippingResult['total_customer_shipping'],
+        2
+    );
+
+    $actualShipping = round(
+        (float) $shippingResult['total_actual_shipping'],
+        2
+    );
+
+    $totalAmount = round($subtotal + $shippingCharge, 2);
+
+    if ($totalAmount <= 0) {
+        return redirect()->back()
+            ->with('error', 'Invalid order amount.');
+    }
+
+    $orderNumber = 'AJM-' . date('Ymd') . '-'
+        . strtoupper(bin2hex(random_bytes(4)));
+
+    $orderData = [
+        'order_number' => $orderNumber,
+        'user_id' => $customerId,
+        'address_id' => $addressId,
+        'subtotal' => $subtotal,
+        'shipping_charge' => $shippingCharge,
+        'actual_shipping' => $actualShipping,
+        'included_shipping' => $includedShipping,
+        'total_amount' => $totalAmount,
+        'payment_method' => $paymentMethod,
+        'payment_gateway' => $paymentGateway,
+        'payment_status' => 'pending',
+        'order_status' => $paymentMethod === 'cod'
+            ? 'confirmed'
+            : 'pending_payment',
+    ];
+
+    // echo '<pre>'; print_r($shippingResult['seller_shipments']); die;
+
+
+    $orderId = $this->orderModel->createOrderWithItems(
+        $orderData,
+        $cartItems,
+        $shippingResult['seller_shipments']
+    );
+
+
+
+    if (!$orderId) {
+        return redirect()->back()
+            ->with('error', 'Unable to create your order. Please try again.');
+    }
+
+    // COD: confirm the order and clear the cart.
+    if ($paymentMethod === 'cod') {
+        $this->db->transBegin();
+
+        try {
+            $updated = $this->orderModel->updateOrder($orderId, [
+                'payment_status' => 'pending',
+                'order_status' => 'confirmed',
+            ]);
+
+            if (!$updated || !$this->cartModel->clearCustomerCart($customerId)) {
+                throw new \RuntimeException('Unable to confirm COD order.');
+            }
+
+            if ($this->db->transStatus() === false) {
+                throw new \RuntimeException('COD order transaction failed.');
+            }
+
+            $this->db->transCommit();
+
+            return redirect()->to(site_url('my-orders'))
+                ->with('success', 'Your order has been placed successfully.');
+        } catch (\Throwable $e) {
+            $this->db->transRollback();
+
+            log_message('error', 'COD order confirmation failed: ' . $e->getMessage());
+
+            return redirect()->to(site_url('checkout'))
+                ->with('error', 'Unable to confirm your COD order.');
+        }
+    }
+
+    // Razorpay: create the gateway order.
+    try {
+        $keyId = trim((string) env('RAZORPAY_KEY_ID'));
+        $keySecret = trim((string) env('RAZORPAY_KEY_SECRET'));
+
+        if ($keyId === '' || $keySecret === '') {
+            throw new \RuntimeException('Razorpay credentials are missing.');
+        }
+
+        $amountInPaise = (int) round($totalAmount * 100);
+
+        $razorpayOrder = $this->razorpayApi()->order->create([
+            'receipt' => $orderNumber,
+            'amount' => $amountInPaise,
+            'currency' => 'INR',
+            'notes' => [
+                'internal_order_id' => (string) $orderId,
+                'order_number' => $orderNumber,
+            ],
+        ]);
+
+        $razorpayOrderId = (string) $razorpayOrder['id'];
+
+        if ($razorpayOrderId === '') {
+            throw new \RuntimeException('Razorpay did not return an order ID.');
+        }
+
+        $this->db->transBegin();
+
+        $updated = $this->orderModel->updateOrder($orderId, [
+            'razorpay_order_id' => $razorpayOrderId,
+        ]);
+
+        $paymentAttemptId = $this->orderModel->addPaymentAttempt([
+            'order_id' => $orderId,
+            'payment_gateway' => 'razorpay',
+            'gateway_order_id' => $razorpayOrderId,
+            'amount' => $totalAmount,
+            'currency' => 'INR',
+            'payment_status' => 'pending',
+        ]);
+
+        if (
+            !$updated ||
+            !$paymentAttemptId ||
+            $this->db->transStatus() === false
+        ) {
+            throw new \RuntimeException('Unable to save Razorpay payment details.');
+        }
+
+        $this->db->transCommit();
+
+        return view('checkout/razorpay', [
+            'keyId' => $keyId,
+            'razorpayOrderId' => $razorpayOrderId,
+            'internalOrderId' => $orderId,
+            'paymentAttemptId' => $paymentAttemptId,
+            'amount' => $amountInPaise,
+            'customerName' => session('ajobmart_customer_name'),
+            'customerEmail' => session('ajobmart_customer_email'),
+            'customerMobile' => session('ajobmart_customer_mobile'),
+        ]);
+    } catch (\Throwable $e) {
+        if ($this->db->transStatus() !== false) {
+            $this->db->transRollback();
+        }
+
+        log_message('error', 'Razorpay initiation failed: ' . $e->getMessage());
+
+        return redirect()->to(site_url('checkout'))
+            ->with('error', 'Unable to initiate Razorpay payment. Please try again.');
+    }
+}
+
+
+public function verifyRazorpayPayment()
+{
+    $customerId = (int) session('ajobmart_customer_db_id');
+
+    if (
+        $customerId <= 0 ||
+        !session('ajobmart_customer_logged_in')
+    ) {
+        return redirect()->to(site_url('login'))
+            ->with('error', 'Please log in to verify your payment.');
+    }
+
+    $paymentId = trim((string) $this->request->getPost('razorpay_payment_id'));
+    $razorpayOrderId = trim((string) $this->request->getPost('razorpay_order_id'));
+    $signature = trim((string) $this->request->getPost('razorpay_signature'));
+    $internalOrderId = (int) $this->request->getPost('internal_order_id');
+
+    if (
+        $paymentId === '' ||
+        $razorpayOrderId === '' ||
+        $signature === '' ||
+        $internalOrderId <= 0
+    ) {
+        return redirect()->to(site_url('checkout/payment-failed'))
+            ->with('error', 'Invalid payment response.');
+    }
+
+    $order = $this->orderModel->getCustomerOrder(
+        $internalOrderId,
+        $customerId
+    );
+
+    if (!$order) {
+        return redirect()->to(site_url('checkout/payment-failed'))
+            ->with('error', 'Order not found.');
+    }
+
+    // Do not accept a gateway order ID supplied only by the browser.
+    if (
+        empty($order['razorpay_order_id']) ||
+        !hash_equals(
+            (string) $order['razorpay_order_id'],
+            $razorpayOrderId
+        )
+    ) {
+        return redirect()->to(site_url('checkout/payment-failed'))
+            ->with('error', 'Payment order mismatch.');
+    }
+
+    // Find the matching payment attempt saved on the server.
+    $paymentAttempt = $this->db
+        ->table('ajobmart_order_payments')
+        ->where('order_id', $internalOrderId)
+        ->where('payment_gateway', 'razorpay')
+        ->where('gateway_order_id', $razorpayOrderId)
+        ->orderBy('id', 'DESC')
+        ->get()
+        ->getRowArray();
+
+    if (!$paymentAttempt) {
+        return redirect()->to(site_url('checkout/payment-failed'))
+            ->with('error', 'Payment attempt not found.');
+    }
+
+    // Idempotency: don't process a previously paid order again.
+    if (
+        ($order['payment_status'] ?? '') === 'paid' &&
+        !empty($order['razorpay_payment_id']) &&
+        hash_equals((string) $order['razorpay_payment_id'], $paymentId)
+    ) {
+        return redirect()->to(site_url('checkout/payment-success'));
+    }
+
+    try {
+        $api = $this->razorpayApi();
+
+        $api->utility->verifyPaymentSignature([
+            'razorpay_order_id' => $razorpayOrderId,
+            'razorpay_payment_id' => $paymentId,
+            'razorpay_signature' => $signature,
+        ]);
+
+        // Fetch the payment from Razorpay, not from browser-submitted values.
+        $payment = $api->payment->fetch($paymentId);
+
+        $gatewayPaymentOrderId = (string) ($payment['order_id'] ?? '');
+        $gatewayAmount = (int) ($payment['amount'] ?? 0);
+        $gatewayCurrency = strtoupper((string) ($payment['currency'] ?? ''));
+        $gatewayStatus = strtolower((string) ($payment['status'] ?? ''));
+
+        $expectedAmount = (int) round(
+            ((float) $order['total_amount']) * 100
+        );
+
+        if (!hash_equals($razorpayOrderId, $gatewayPaymentOrderId)) {
+            throw new \RuntimeException('Payment belongs to another Razorpay order.');
+        }
+
+        if ($gatewayAmount !== $expectedAmount) {
+            throw new \RuntimeException('Payment amount mismatch.');
+        }
+
+        if ($gatewayCurrency !== 'INR') {
+            throw new \RuntimeException('Payment currency mismatch.');
+        }
+
+        if ($gatewayStatus !== 'captured') {
+            throw new \RuntimeException('Payment has not been captured.');
+        }
+
+        // Update order, payment attempt and cart in one database transaction.
+        $this->db->transBegin();
+
+        $orderUpdated = $this->orderModel->updateOrder($internalOrderId, [
+            'payment_status' => 'paid',
+            'order_status' => 'confirmed',
+            'razorpay_payment_id' => $paymentId,
+        ]);
+
+        $attemptUpdated = $this->orderModel->updatePaymentAttempt(
+            (int) $paymentAttempt['id'],
+            [
+                'gateway_payment_id' => $paymentId,
+                'payment_status' => 'paid',
+                'failure_reason' => null,
+            ]
+        );
+
+        $cartCleared = $this->cartModel->clearCustomerCart($customerId);
+
+        if (
+            !$orderUpdated ||
+            !$attemptUpdated ||
+            !$cartCleared ||
+            $this->db->transStatus() === false
+        ) {
+            throw new \RuntimeException('Unable to finalize paid order.');
+        }
+
+        $this->db->transCommit();
+
+        return redirect()->to(site_url('checkout/payment-success'));
+    } catch (\Throwable $e) {
+        $this->db->transRollback();
+
+        log_message(
+            'error',
+            'Razorpay verification failed for order '
+            . $internalOrderId . ': ' . $e->getMessage()
+        );
+
+        return redirect()->to(site_url('checkout/payment-failed'))
+            ->with('error', 'Payment verification failed. If money was deducted, please contact support.');
+    }
+}
+
+
+public function paymentSuccess()
+{
+    return view('checkout/payment_success');
+}
+
+public function paymentFailed()
+{
+    return view('checkout/payment_failed');
+}
+
+
 }
