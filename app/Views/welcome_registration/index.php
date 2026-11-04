@@ -2040,9 +2040,44 @@ $(function () {
         });
     }
 
-    // Email blur and Enter trigger automatic OTP sending.
-    $email.on('blur', function () {
-        sendOtpAutomatically();
+    let emailOtpTimer = null;
+
+    // Automatically send OTP after email input stops changing.
+    $email.on('input', function () {
+        const currentEmail = $.trim($(this).val()).toLowerCase();
+
+        clearTimeout(emailOtpTimer);
+
+        // Reset OTP if email changes.
+        if (otpSent && currentEmail !== lastRequestedEmail) {
+            otpSent = false;
+            verifiedEmail = '';
+
+            resetOtpBoxes(true);
+            $otpSection.prop('hidden', true);
+            $details.show();
+
+            showMessage('#otpVerifyStatus', '', '');
+            showMessage('#otpSendStatus', '', '');
+        }
+
+        // Wait until user finishes typing.
+        emailOtpTimer = setTimeout(function () {
+
+            if (
+                !currentEmail ||
+                !$email[0].checkValidity() ||
+                sendingOtp ||
+                otpSent ||
+                registrationInProgress ||
+                currentEmail === lastRequestedEmail
+            ) {
+                return;
+            }
+
+            sendOtpAutomatically();
+
+        }, 800);
     });
 
     $email.on('keydown', function (event) {
