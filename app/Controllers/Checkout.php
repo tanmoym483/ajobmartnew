@@ -612,38 +612,12 @@ public function verifyRazorpayPayment()
 
         if ($cashbackDeduct > 0) {
 
-            // Atomic deduction: prevents balance from becoming negative
-            // if the customer has insufficient cashback balance.
-            $this->db->query(
-                "UPDATE ajobmart_users
-                SET total_coupon_amount = total_coupon_amount - ?
-                WHERE id = ?
-                AND total_coupon_amount >= ?",
-                [
-                    $cashbackDeduct,
-                    $customerId,
-                    $cashbackDeduct
-                ]
-            );
-
-            if ($this->db->affectedRows() !== 1) {
-                throw new \RuntimeException(
-                    'Cashback deduction failed or insufficient cashback balance.'
-                );
-            }
-
-            $updatedUser = $this->db->table('ajobmart_users')
-                ->select('total_coupon_amount')
-                ->where('id', $customerId)
-                ->get()
-                ->getRowArray();
-
-            session()->set(
-                'ajobmart_customer_coupon_amount',
-                (float) ($updatedUser['total_coupon_amount'] ?? 0)
+            $cashbackBalanceAfter = $this->deductOrderCashback(
+                $order,
+                $customerId,
+                $paymentId
             );
         }
-
 
 
         // 3. UPDATE ORDER STATUS
@@ -684,6 +658,12 @@ public function verifyRazorpayPayment()
 
         $this->db->transCommit();
 
+        // Update session cashback balance only after successful commit.
+        session()->set(
+            'ajobmart_customer_coupon_amount',
+            $cashbackBalanceAfter
+        );
+
         return redirect()->to(site_url('checkout/payment-success'));
             } catch (\Throwable $e) {
 
@@ -705,6 +685,107 @@ public function verifyRazorpayPayment()
     }
 }
 
+
+/**
+ * Deduct cashback and save its transaction history.
+ *
+ * IMPORTANT:
+ * Call this method only inside an active database transaction.
+ *
+ * @return float Updated cashback balance.
+ */
+private function deductOrderCashback(
+    array $order,
+    int $customerId,
+    ?string $paymentId = null
+): float {
+    $orderId = (int) ($order['id'] ?? 0);
+
+    $amount = round(
+        max(0, (float) ($order['cashback_deduct'] ?? 0)),
+        2
+    );
+
+    if ($orderId <= 0 || $customerId <= 0) {
+        throw new \RuntimeException('Invalid cashback transaction reference.');
+    }
+
+    // No cashback deduction required.
+    if ($amount <= 0) {
+        return 0.00;
+    }
+
+    // Prevent duplicate cashback deductions for this order.
+    $existingTransaction = $this->db
+        ->table('ajobmart_cashback_transactions')
+        ->where('order_id', $orderId)
+        ->where('transaction_type', 'debit')
+        ->get()
+        ->getRowArray();
+
+    if ($existingTransaction) {
+        return (float) $existingTransaction['balance_after'];
+    }
+
+    // Lock the customer's cashback balance.
+    $user = $this->db->query(
+        "SELECT total_coupon_amount
+         FROM ajobmart_users
+         WHERE id = ?
+         FOR UPDATE",
+        [$customerId]
+    )->getRowArray();
+
+    if (!$user) {
+        throw new \RuntimeException('Customer cashback account not found.');
+    }
+
+    $balanceBefore = round(
+        max(0, (float) $user['total_coupon_amount']),
+        2
+    );
+
+    if ($balanceBefore < $amount) {
+        throw new \RuntimeException('Insufficient cashback balance.');
+    }
+
+    $balanceAfter = round($balanceBefore - $amount, 2);
+
+    // Update the customer's cashback balance.
+    $updated = $this->db
+        ->table('ajobmart_users')
+        ->where('id', $customerId)
+        ->update([
+            'total_coupon_amount' => $balanceAfter
+        ]);
+
+    if (!$updated || $this->db->transStatus() === false) {
+        throw new \RuntimeException('Unable to update cashback balance.');
+    }
+
+    // Insert cashback transaction history.
+    $inserted = $this->db
+        ->table('ajobmart_cashback_transactions')
+        ->insert([
+            'user_id'            => $customerId,
+            'order_id'           => $orderId,
+            'order_number'       => $order['order_number'],
+            'transaction_type'   => 'debit',
+            'amount'             => $amount,
+            'balance_before'     => $balanceBefore,
+            'balance_after'      => $balanceAfter,
+            'payment_gateway'    => $order['payment_gateway'] ?? null,
+            'gateway_payment_id' => $paymentId,
+            'description'        => 'Cashback redeemed against order ' .
+                                    $order['order_number'],
+        ]);
+
+    if (!$inserted || $this->db->transStatus() === false) {
+        throw new \RuntimeException('Unable to save cashback transaction.');
+    }
+
+    return $balanceAfter;
+}
 
 
 public function paymentSuccess()

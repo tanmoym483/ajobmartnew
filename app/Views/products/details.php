@@ -768,6 +768,171 @@
     }
 }
 
+
+
+/* Ajobmart product reviews */
+.aj-product-reviews {
+    margin-top: 22px;
+}
+
+.aj-review-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 25px;
+    padding: 20px;
+    border: 1px solid var(--aj-market-border);
+    border-radius: 10px;
+    background: #fff;
+}
+
+.aj-review-average {
+    min-width: 130px;
+    text-align: center;
+}
+
+.aj-review-average strong {
+    display: block;
+    color: #202a35;
+    font-size: 42px;
+    line-height: 1.2;
+}
+
+.aj-review-stars {
+    color: #f5a623;
+    font-size: 17px;
+    letter-spacing: 2px;
+}
+
+.aj-review-average small {
+    display: block;
+    margin-top: 5px;
+    color: #697580;
+    font-size: 12px;
+}
+
+.aj-review-breakdown {
+    flex: 1;
+    min-width: 180px;
+}
+
+.aj-review-rating-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 7px 0;
+    font-size: 12px;
+    color: #596570;
+}
+
+.aj-review-rating-row span:first-child {
+    width: 38px;
+}
+
+.aj-review-progress {
+    flex: 1;
+    height: 7px;
+    overflow: hidden;
+    border-radius: 10px;
+    background: #edf0f2;
+}
+
+.aj-review-progress span {
+    display: block;
+    height: 100%;
+    border-radius: 10px;
+    background: #f5a623;
+}
+
+.aj-review-count {
+    color: #78828c;
+    font-size: 12px;
+}
+
+.aj-review-card {
+    padding: 18px 0;
+    border-bottom: 1px solid #e9edf1;
+}
+
+.aj-review-card:last-child {
+    border-bottom: 0;
+}
+
+.aj-review-user {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.aj-review-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #fff0e6;
+    color: #e85f00;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.aj-review-user-info strong {
+    display: block;
+    color: #293642;
+    font-size: 13px;
+}
+
+.aj-review-user-info small {
+    color: #89939c;
+    font-size: 11px;
+}
+
+.aj-review-card .aj-review-stars {
+    margin-top: 9px;
+    font-size: 14px;
+}
+
+.aj-review-card h6 {
+    margin: 8px 0 5px;
+    color: #303c47;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.aj-review-card p {
+    margin: 0;
+    color: #596570;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.aj-review-demo-notice {
+    margin-bottom: 14px;
+    padding: 9px 12px;
+    border-radius: 6px;
+    background: #fff8e8;
+    color: #856404;
+    font-size: 12px;
+}
+
+@media (max-width: 575px) {
+    .aj-review-summary {
+        gap: 15px;
+        padding: 14px;
+    }
+
+    .aj-review-average {
+        min-width: 90px;
+    }
+
+    .aj-review-average strong {
+        font-size: 34px;
+    }
+}
+
+
 </style>
 <?php
 $productId = (int) ($product['id'] ?? 0);
@@ -1265,6 +1430,175 @@ $moq = max(1, (int) ($product['min_order_quantity'] ?? 1));
             </div>
         </div>
     </div>
+
+    
+<!-- 4. Customer Reviews -->
+<div class="aj-details-accordion-item">
+
+    <button
+        type="button"
+        class="aj-details-accordion-header"
+        id="ajReviewsToggle"
+        aria-expanded="false"
+        aria-controls="ajReviewsPanel">
+
+        <span class="aj-details-accordion-title">
+            <i class="bi bi-star-half"></i>
+            Customer Reviews & Ratings
+        </span>
+
+        <i class="bi bi-chevron-down aj-details-accordion-arrow"></i>
+    </button>
+
+    <div
+        class="aj-details-accordion-panel"
+        id="ajReviewsPanel"
+        role="region"
+        aria-labelledby="ajReviewsToggle"
+        hidden>
+
+        <div class="aj-product-reviews">
+
+            <div class="aj-review-demo-notice">
+                <i class="bi bi-info-circle"></i>
+                Sample reviews for layout demonstration only. These are not verified customer reviews.
+            </div>
+
+            <!-- Rating Summary -->
+            <div class="aj-review-summary">
+
+                <div class="aj-review-average">
+                    <strong>4.5</strong>
+
+                    <div class="aj-review-stars">
+                        ★★★★★
+                    </div>
+
+                    <small>Sample rating</small>
+                </div>
+
+                <div class="aj-review-breakdown">
+
+                    <div class="aj-review-rating-row">
+                        <span>5 ★</span>
+                        <div class="aj-review-progress">
+                            <span style="width:75%"></span>
+                        </div>
+                        <span>75%</span>
+                    </div>
+
+                    <div class="aj-review-rating-row">
+                        <span>4 ★</span>
+                        <div class="aj-review-progress">
+                            <span style="width:15%"></span>
+                        </div>
+                        <span>15%</span>
+                    </div>
+
+                    <div class="aj-review-rating-row">
+                        <span>3 ★</span>
+                        <div class="aj-review-progress">
+                            <span style="width:7%"></span>
+                        </div>
+                        <span>7%</span>
+                    </div>
+
+                    <div class="aj-review-rating-row">
+                        <span>2 ★</span>
+                        <div class="aj-review-progress">
+                            <span style="width:2%"></span>
+                        </div>
+                        <span>2%</span>
+                    </div>
+
+                    <div class="aj-review-rating-row">
+                        <span>1 ★</span>
+                        <div class="aj-review-progress">
+                            <span style="width:1%"></span>
+                        </div>
+                        <span>1%</span>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Sample Reviews -->
+            <div class="mt-3">
+
+                <div class="aj-review-card">
+
+                    <div class="aj-review-user">
+                        <div class="aj-review-avatar">R</div>
+
+                        <div class="aj-review-user-info">
+                            <strong>Rahul S.</strong>
+                            <small>Sample reviewer · Demo content</small>
+                        </div>
+                    </div>
+
+                    <div class="aj-review-stars">★★★★★</div>
+
+                    <h6>Good product quality</h6>
+
+                    <p>
+                        The product looks good and the overall quality
+                        seems impressive. Nice packaging and good value
+                        for money.
+                    </p>
+
+                </div>
+
+                <div class="aj-review-card">
+
+                    <div class="aj-review-user">
+                        <div class="aj-review-avatar">A</div>
+
+                        <div class="aj-review-user-info">
+                            <strong>Arpita M.</strong>
+                            <small>Sample reviewer · Demo content</small>
+                        </div>
+                    </div>
+
+                    <div class="aj-review-stars">★★★★☆</div>
+
+                    <h6>Worth considering</h6>
+
+                    <p>
+                        The product has a nice appearance and seems
+                        suitable for everyday use. Overall a good
+                        sample review.
+                    </p>
+
+                </div>
+
+                <div class="aj-review-card">
+
+                    <div class="aj-review-user">
+                        <div class="aj-review-avatar">S</div>
+
+                        <div class="aj-review-user-info">
+                            <strong>Soumik D.</strong>
+                            <small>Sample reviewer · Demo content</small>
+                        </div>
+                    </div>
+
+                    <div class="aj-review-stars">★★★★★</div>
+
+                    <h6>Nice experience</h6>
+
+                    <p>
+                        Good-looking product with an attractive price.
+                        Would be worth considering for a future purchase.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
 
     <!-- 4. Additional Information -->
     <?php if (!empty($attributes)): ?>
