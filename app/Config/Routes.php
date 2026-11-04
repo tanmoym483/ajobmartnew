@@ -59,6 +59,7 @@ $routes->group('cart', static function ($routes) {
     $routes->post('add', 'Cart::add');
     $routes->post('update', 'Cart::update');
     $routes->post('remove', 'Cart::remove');
+    $routes->get('cashback-balance', 'Cart::cashbackBalance');
 });
 
 

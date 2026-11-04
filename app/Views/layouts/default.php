@@ -737,12 +737,6 @@ if ($isCustomerLoggedIn) {
                         id="ajCartChargeDetails"
                         hidden>
 
-                        <div class="aj-cart-charge-row">
-                            <span>Coupon Discount</span>
-                            <strong class="aj-charge-discount" id="ajCartCouponDiscount">
-                                −₹0.00
-                            </strong>
-                        </div>
 
                         <div class="aj-cart-charge-row">
                             <span>Platform Fee</span>
@@ -752,6 +746,13 @@ if ($isCustomerLoggedIn) {
                         <div class="aj-cart-charge-row">
                             <span>Delivery Fee</span>
                             <strong id="ajCartDeliveryFee">FREE</strong>
+                        </div>
+
+                        <div class="aj-cart-charge-row">
+                            <span>My Cashback</span>
+                            <strong class="aj-charge-discount" id="ajCartCouponDiscount">
+                                −₹0.00
+                            </strong>
                         </div>
 
                         <div class="aj-cart-charge-note">
@@ -1074,6 +1075,7 @@ window.AJ_CART_CONFIG = {
     updateUrl: <?= json_encode(site_url('cart/update')) ?>,
     removeUrl: <?= json_encode(site_url('cart/remove')) ?>,
     checkoutUrl: <?= json_encode(site_url('checkout')) ?>,
+    cashbackBalanceUrl: <?= json_encode(site_url('cart/cashback-balance')) ?>,
 
     shippingCustomerAddressUrl:
         <?= json_encode(site_url('shipping/customer-address')) ?>,

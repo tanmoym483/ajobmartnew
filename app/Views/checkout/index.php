@@ -290,19 +290,78 @@
 
                     <hr>
 
-                    <div class="d-flex justify-content-between">
+                    
+                    <!-- Product subtotal -->
+                    <div class="d-flex justify-content-between mb-2">
                         <span>Subtotal</span>
                         <strong>
                             ₹<?= number_format($subtotal, 2) ?>
                         </strong>
                     </div>
 
-                    <div class="d-flex justify-content-between mt-2">
-                        <span>Shipping allowance included</span>
+                    <!-- Expandable charges -->
+                    <button
+                        type="button"
+                        class="btn btn-light w-100 d-flex justify-content-between align-items-center mb-2"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#ajCheckoutCharges"
+                        aria-expanded="false"
+                    >
                         <span>
-                            ₹<?= number_format($includedShipping, 2) ?>
+                            <i class="bi bi-receipt me-2"></i>
+                            Delivery & Charges
                         </span>
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+
+                    <div class="collapse" id="ajCheckoutCharges">
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Coupon Discount</span>
+                            <strong class="text-success">
+                                −₹<?= number_format($couponDiscount, 2) ?>
+                            </strong>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Platform Fee</span>
+                            <strong>
+                                ₹<?= number_format($platformFee, 2) ?>
+                            </strong>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Delivery Fee</span>
+                            <strong>
+                                <?= $deliveryFee > 0
+                                    ? '₹' . number_format($deliveryFee, 2)
+                                    : 'FREE' ?>
+                            </strong>
+                        </div>
+
+                        <div class="small text-muted mb-3">
+                            Delivery charges are calculated based on your delivery
+                            location and applicable shipping allowance.
+                        </div>
+
                     </div>
+
+                    <hr>
+
+                    <!-- Final payable -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <strong>Total Payable</strong>
+                            <div class="small text-muted">
+                                Inclusive of displayed charges
+                            </div>
+                        </div>
+
+                        <strong class="fs-5" id="ajCheckoutTotal">
+                            ₹<?= number_format($finalTotal, 2) ?>
+                        </strong>
+                    </div>
+
 
                     <div class="alert alert-info small mt-3 mb-3">
                         The final delivery charge must be validated using

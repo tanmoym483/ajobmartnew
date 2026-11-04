@@ -93,6 +93,72 @@
     };
 }
 
+    window.AJ_CASHBACK_BALANCE = 0;
+
+    async function ajLoadCashbackBalance() {
+
+
+        if (!config.loggedIn || !config.cashbackBalanceUrl) {
+            window.AJ_CASHBACK_BALANCE = 0;
+            return;
+        }
+
+        try {
+            const response = await fetch(config.cashbackBalanceUrl, {
+                method: 'GET',
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.status) {
+                window.AJ_CASHBACK_BALANCE =
+                    Math.max(0, Number(data.cashback_balance) || 0);
+            }
+
+        } catch (error) {
+            console.error('Cashback balance error:', error);
+            window.AJ_CASHBACK_BALANCE = 0;
+        }
+
+        // Recalculate the existing cart totals
+        if (typeof window.ajUpdateCartTotals === 'function') {
+            window.ajUpdateCartTotals(
+                Number(window.AJ_SHIPPING_CHARGE) || 0
+            );
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        ajLoadCashbackBalance();
+    });
+
+    window.ajUpdateHeaderCashback = function (remainingBalance) {
+
+        const element = document.getElementById(
+            'ajHeaderCashbackAmount'
+        );
+
+        const elementmodal = document.getElementById(
+            'ajmodalCashbackAmount'
+        );
+        
+
+        if (!element) return;
+
+        const amount = Math.max(
+            0,
+            Number(remainingBalance) || 0
+        );
+
+        element.textContent = '₹' + amount.toFixed(2);
+        elementmodal.textContent = '₹' + amount.toFixed(2);
+
+    };
+
     function syncCardControls() {
         $('.aj-product-cart-action').each(function () {
             const wrapper = $(this);
@@ -149,6 +215,9 @@ function renderCart() {
     const subtotalElement = document.getElementById('ajCartSubtotal');
     const deliveryElement = document.getElementById('ajCartDelivery');
     const totalElement = document.getElementById('ajCartTotal');
+    const cartcoupondiscount = document.getElementById('ajCartCouponDiscount');
+    const ajCartPlatformFee = document.getElementById('ajCartPlatformFee');
+
 
     if (!cartItems.length) {
         container.empty();
@@ -157,6 +226,9 @@ function renderCart() {
         $('#ajCartSubtotal').text(money(0));
         $('#ajCartDelivery').text('FREE');
         $('#ajCartTotal').text(money(0));
+        $('#ajCartCouponDiscount').text(money(0));
+        $('#ajCartPlatformFee').text(money(0));
+
 
         if (subtotalElement) {
             delete subtotalElement.dataset.baseSubtotal;
@@ -165,6 +237,12 @@ function renderCart() {
         if (totalElement) {
             delete totalElement.dataset.shippingAmount;
             delete totalElement.dataset.shippingPincode;
+        }
+
+        if (typeof window.ajUpdateHeaderCashback === 'function') {
+            window.ajUpdateHeaderCashback(
+                Number(window.AJ_CASHBACK_BALANCE) || 0
+            );
         }
 
         window.AJ_SHIPPING_CHARGE = 0;
@@ -270,18 +348,14 @@ function renderCart() {
             document.getElementById('ajShippingPin')?.value || ''
         ).trim();
 
+    // Recalculate cart totals using the latest available estimate.
     if (hasSavedShipping) {
 
-        // Recalculate subtotal, allowance, delivery,
-        // coupon discount, platform fee and final total.
         if (typeof window.ajUpdateCartTotals === 'function') {
             window.ajUpdateCartTotals(actualShipping);
         }
 
     } else {
-
-        // No shipping estimate available yet.
-        $('#ajCartDelivery').text('Not calculated');
 
         $('#ajCartDeliveryFee').text('Not calculated');
 
@@ -292,6 +366,14 @@ function renderCart() {
         $('#ajCartTotal').text(money(subtotal + 5));
 
         window.AJ_SHIPPING_CHARGE = 0;
+
+    }
+
+    // Request a fresh courier estimate after cart changes.
+    if (typeof window.ajRefreshShippingAfterCartChange === 'function') {
+
+        window.ajRefreshShippingAfterCartChange();
+
     }
 
 }

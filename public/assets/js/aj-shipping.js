@@ -215,44 +215,88 @@ function updateCartTotals(actualShippingAmount) {
 
     // 2. INCLUDED SHIPPING ALLOWANCE
 
+    // 1. Calculate total included shipping allowance.
     const includedAllowance = items.reduce(function (sum, item) {
 
-        return sum +
-            (Number(item.shipping_allowance) || 0) *
-            (Number(item.quantity) || 0);
+        const allowance = Math.max(
+            0,
+            Number(item.shipping_allowance) || 0
+        );
+
+        const quantity = Math.max(
+            0,
+            Number(item.quantity) || 0
+        );
+
+        return sum + (allowance * quantity);
 
     }, 0);
 
+    console.log('========== DELIVERY FEE DEBUG ==========');
 
-    // 3. ACTUAL COURIER SHIPPING
+    console.table(items.map(function (item) {
+        return {
+            ProductID: item.product_id,
+            Quantity: item.quantity,
+            AllowancePerUnit: item.shipping_allowance,
+            TotalAllowance:
+                item.shipping_allowance * item.quantity
+        };
+    }));
 
+    console.log({
+        actualShipping: actualShippingAmount,
+        includedAllowance: includedAllowance,
+        calculatedDifference:
+            Number(actualShippingAmount) - includedAllowance
+    });
+
+    console.log('========================================');
+
+
+    // 2. Actual courier shipping.
     const actualShipping = Math.max(
         0,
         Number(actualShippingAmount) || 0
     );
 
 
-    // 4. CUSTOMER ADDITIONAL DELIVERY CHARGE
+    // 3. Customer delivery fee.
+    let deliveryFee = 0;
 
-    const deliveryFee = Math.max(
-        0,
-        actualShipping - includedAllowance
-    );
+    if (actualShipping > includedAllowance) {
+        deliveryFee = actualShipping - includedAllowance;
+    }
 
+    deliveryFee = Math.round(deliveryFee * 100) / 100;
 
-    // 5. COUPON DISCOUNT
 
     const breakdown = window.AJ_CART_BREAKDOWN || {};
 
-    const couponDiscount = Math.min(
-        subtotal,
-        Math.max(
-            0,
-            Number(breakdown.couponDiscount) || 0
-        )
+    // 5. COUPON DISCOUNT
+
+    // 5. CASHBACK DISCOUNT
+
+    const availableCashback = Math.max(
+        0,
+        Number(window.AJ_CASHBACK_BALANCE) || 0
     );
 
+    const couponDiscount = subtotal >= 100
+        ? Math.min(availableCashback, subtotal / 6)
+        : 0;
 
+    // Remaining cashback balance after cart deduction.
+    const remainingCashback = Math.max(
+        0,
+        availableCashback - couponDiscount
+    );
+
+    if (subtotal <= 0) {
+        window.ajUpdateHeaderCashback(availableCashback);
+    } else {
+        window.ajUpdateHeaderCashback(remainingCashback);
+    }
     // 6. PLATFORM FEE
 
     const configuredPlatformFee = Number(
@@ -287,8 +331,8 @@ function updateCartTotals(actualShippingAmount) {
     //     : 'FREE';
 
     deliveryFeeElement.textContent = deliveryFee > 0
-        ? money(deliveryFee)
-        : 0.00;
+    ? money(deliveryFee)
+    : 'FREE';
 
     couponElement.textContent = '−' + money(couponDiscount);
 
@@ -645,6 +689,54 @@ function renderSavedAddressList() {
         updateCartTotals(result.total_shipping);
         return result;
     }
+
+    async function refreshShippingAfterCartChange() {
+
+    if (shippingRequestInProgress) return;
+
+    const pin = loggedIn
+        ? String(selectedAddress?.pincode || savedAddress?.pincode || '').trim()
+        : String(guestShippingPin || '').trim();
+
+    if (!/^\d{6}$/.test(pin)) {
+        resetShippingOnCartChange();
+        return;
+    }
+
+    const items = getCartItems();
+
+    if (!items.length) {
+        resetShippingOnCartChange();
+        return;
+    }
+
+    shippingRequestInProgress = true;
+
+    try {
+
+        const result = await estimateShipping(pin);
+
+        console.log(
+            'Shipping recalculated after cart change:',
+            result.total_shipping
+        );
+
+    } catch (error) {
+
+        console.error(
+            'Unable to refresh shipping after cart change:',
+            error
+        );
+
+    } finally {
+
+        shippingRequestInProgress = false;
+
+    }
+}
+
+window.ajRefreshShippingAfterCartChange =
+    refreshShippingAfterCartChange;
 
     async function openShippingGate(forceNewAddress = false) {
         hideMessage();

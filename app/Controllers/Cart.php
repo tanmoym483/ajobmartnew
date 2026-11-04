@@ -326,4 +326,27 @@ class Cart extends BaseController
             $this->getCartPayload($customerId)
         ));
     }
+
+    public function cashbackBalance()
+    {
+        if (!session()->get('ajobmart_customer_logged_in')) {
+            return $this->response->setJSON([
+                'status' => false,
+                'cashback_balance' => 0
+            ]);
+        }
+
+        $customerId = session()->get('ajobmart_customer_db_id');
+
+        $user = $this->db->table('ajobmart_users')
+            ->select('total_coupon_amount')
+            ->where('id', $customerId)
+            ->get()
+            ->getRowArray();
+
+        return $this->response->setJSON([
+            'status' => true,
+            'cashback_balance' => (float) ($user['total_coupon_amount'] ?? 0)
+        ]);
+    }
 }

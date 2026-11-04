@@ -18,6 +18,7 @@ class OrderModel extends Model
         'subtotal',
         'shipping_charge',
         'actual_shipping',
+        'cashback_deduct',
         'included_shipping',
         'total_amount',
         'payment_method',

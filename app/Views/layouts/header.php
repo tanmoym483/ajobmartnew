@@ -57,7 +57,7 @@
             <a
                 href="javascript:void(0);"
                 class="aj-coupon-balance"
-                aria-label="Available coupon balance"
+                aria-label="Cashback deducted"
                 data-bs-toggle="modal"
                 data-bs-target="#couponModal"
             >
@@ -66,8 +66,10 @@
                 </span>
 
                 <span class="aj-coupon-details">
-                    <small>My Cashback</small>
-                    <strong>₹<?= number_format($couponAmount, 0) ?></strong>
+                    <small>Cashback Used</small>
+                    <strong id="ajHeaderCashbackAmount">
+                        ₹<?= number_format($couponAmount, 2) ?>
+                    </strong>
                 </span>
             </a>
         <?php
@@ -159,7 +161,7 @@
 
                 <p class="text-muted mb-2">Your available balance</p>
 
-                <h2 class="fw-bold text-success">
+                <h2 class="fw-bold text-success" id="ajmodalCashbackAmount">
                     ₹<?= number_format($couponAmount, 2) ?>
                 </h2>
 

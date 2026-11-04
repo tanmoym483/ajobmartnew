@@ -36,11 +36,11 @@ class Checkout extends BaseController
     }
 
 
+    
     public function index()
     {
         $customerId = (int) session()->get('ajobmart_customer_db_id');
 
-        // Checkout requires customer login.
         if (
             $customerId <= 0 ||
             ! session()->get('ajobmart_customer_logged_in')
@@ -49,7 +49,6 @@ class Checkout extends BaseController
                 ->with('error', 'Please log in to continue checkout.');
         }
 
-        // Retrieve cart from the existing cart model.
         $cartItems = $this->cartModel->getCustomerCart($customerId);
 
         if (empty($cartItems)) {
@@ -57,7 +56,6 @@ class Checkout extends BaseController
                 ->with('error', 'Your cart is empty.');
         }
 
-        // Use the selected saved address, if supplied.
         $addressId = (int) $this->request->getGet('address_id');
 
         $addressQuery = $this->db
@@ -79,6 +77,7 @@ class Checkout extends BaseController
                 ->with('error', 'Please select a valid delivery address.');
         }
 
+        // Product subtotal and shipping allowance
         $subtotal = 0.0;
         $includedShipping = 0.0;
 
@@ -96,20 +95,73 @@ class Checkout extends BaseController
             $includedShipping += $allowance * $quantity;
         }
 
-        // return view('checkout/index', [
-        //     'cartItems'        => $cartItems,
-        //     'address'          => $address,
-        //     'subtotal'         => round($subtotal, 2),
-        //     'includedShipping' => round($includedShipping, 2),
-        // ]);
+        $user = $this->db
+            ->table('ajobmart_users')
+            ->select('total_coupon_amount')
+            ->where('id', $customerId)
+            ->get()
+            ->getRowArray();
+
+        $availableCashback = max(
+            0,
+            (float) ($user['total_coupon_amount'] ?? 0)
+        );
+
+        // 4. CALCULATE CASHBACK DISCOUNT
+
+        $couponDiscount = $subtotal >= 100
+            ? min($availableCashback, $subtotal / 6)
+            : 0;
+
+        $remainingCashback = max(
+            0,
+            $availableCashback - $couponDiscount
+        );
+
+        // Coupon discount
+        $breakdown = session()->get('AJ_CART_BREAKDOWN') ?? [];
+
+        // $couponDiscount = min(
+        //     $subtotal,
+        //     max(0, (float) ($breakdown['couponDiscount'] ?? 0))
+        // );
+
+        // Platform fee
+        $platformFee = max(
+            0,
+            (float) ($breakdown['platformFee'] ?? 5)
+        );
+
+        // Shipping needs to be recalculated for this address.
+        // Replace this placeholder with your ShippingModel quote result.
+        $actualShipping = 0.00;
+
+        $deliveryFee = max(
+            0,
+            $actualShipping - $includedShipping
+        );
+
+        $finalTotal = max(
+            0,
+            $subtotal +
+            $deliveryFee +
+            $platformFee -
+            $couponDiscount
+        );
 
         return $this->view('checkout/index', [
             'cartItems'        => $cartItems,
             'address'          => $address,
             'subtotal'         => round($subtotal, 2),
             'includedShipping' => round($includedShipping, 2),
+            'actualShipping'   => round($actualShipping, 2),
+            'deliveryFee'      => round($deliveryFee, 2),
+            'couponDiscount'   => round($couponDiscount, 2),
+            'platformFee'      => round($platformFee, 2),
+            'finalTotal'       => round($finalTotal, 2),
         ]);
     }
+
 
 
     
@@ -122,7 +174,7 @@ public function placeOrder()
         $customerId <= 0 ||
         !session('ajobmart_customer_logged_in')
     ) {
-        return redirect()->to(site_url('login'))
+        return redirect()->to(site_url('/'))
             ->with('error', 'Please log in before placing your order.');
     }
 
@@ -248,7 +300,41 @@ public function placeOrder()
         2
     );
 
-    $totalAmount = round($subtotal + $shippingCharge, 2);
+    // Coupon discount
+    $user = $this->db
+        ->table('ajobmart_users')
+        ->select('total_coupon_amount')
+        ->where('id', $customerId)
+        ->get()
+        ->getRowArray();
+
+    $availableCashback = max(
+        0,
+        (float) ($user['total_coupon_amount'] ?? 0)
+    );
+
+    // 4. CALCULATE CASHBACK DISCOUNT
+
+    $couponDiscount = $subtotal >= 100
+        ? min($availableCashback, $subtotal / 6)
+        : 0;
+
+    $remainingCashback = max(
+        0,
+        $availableCashback - $couponDiscount
+    );
+
+    // Platform fee
+    $platformFee = 5.00;
+
+    // Final payable amount
+    $totalAmount = round(
+        $subtotal +
+        $shippingCharge +
+        $platformFee -
+        $couponDiscount,
+        2
+    );
 
     if ($totalAmount <= 0) {
         return redirect()->back()
@@ -259,17 +345,19 @@ public function placeOrder()
         . strtoupper(bin2hex(random_bytes(4)));
 
     $orderData = [
-        'order_number' => $orderNumber,
-        'user_id' => $customerId,
-        'address_id' => $addressId,
-        'subtotal' => $subtotal,
-        'shipping_charge' => $shippingCharge,
-        'actual_shipping' => $actualShipping,
-        'included_shipping' => $includedShipping,
-        'total_amount' => $totalAmount,
-        'payment_method' => $paymentMethod,
-        'payment_gateway' => $paymentGateway,
-        'payment_status' => 'pending',
+        'order_number'       => $orderNumber,
+        'user_id'            => $customerId,
+        'address_id'         => $addressId,
+        'subtotal'           => $subtotal,
+        'shipping_charge'    => $shippingCharge,
+        'actual_shipping'    => $actualShipping,
+        'included_shipping'  => $includedShipping,
+        'cashback_deduct'    => $couponDiscount,
+        'platform_fee'       => $platformFee,
+        'total_amount'       => $totalAmount,
+        'payment_method'     => $paymentMethod,
+        'payment_gateway'    => $paymentGateway,
+        'payment_status'     => 'pending',
         'order_status' => $paymentMethod === 'cod'
             ? 'confirmed'
             : 'pending_payment',
@@ -511,11 +599,62 @@ public function verifyRazorpayPayment()
         // Update order, payment attempt and cart in one database transaction.
         $this->db->transBegin();
 
+        try {
+
+        // 1. GET CASHBACK DEDUCTION SAVED IN THIS ORDER
+
+        $cashbackDeduct = round(
+            max(0, (float) ($order['cashback_deduct'] ?? 0)),
+            2
+        );
+
+        // 2. DEDUCT CASHBACK ONLY AFTER SUCCESSFUL PAYMENT
+
+        if ($cashbackDeduct > 0) {
+
+            // Atomic deduction: prevents balance from becoming negative
+            // if the customer has insufficient cashback balance.
+            $this->db->query(
+                "UPDATE ajobmart_users
+                SET total_coupon_amount = total_coupon_amount - ?
+                WHERE id = ?
+                AND total_coupon_amount >= ?",
+                [
+                    $cashbackDeduct,
+                    $customerId,
+                    $cashbackDeduct
+                ]
+            );
+
+            if ($this->db->affectedRows() !== 1) {
+                throw new \RuntimeException(
+                    'Cashback deduction failed or insufficient cashback balance.'
+                );
+            }
+
+            $updatedUser = $this->db->table('ajobmart_users')
+                ->select('total_coupon_amount')
+                ->where('id', $customerId)
+                ->get()
+                ->getRowArray();
+
+            session()->set(
+                'ajobmart_customer_coupon_amount',
+                (float) ($updatedUser['total_coupon_amount'] ?? 0)
+            );
+        }
+
+
+
+        // 3. UPDATE ORDER STATUS
+
         $orderUpdated = $this->orderModel->updateOrder($internalOrderId, [
             'payment_status' => 'paid',
             'order_status' => 'confirmed',
             'razorpay_payment_id' => $paymentId,
         ]);
+
+        // 4. UPDATE PAYMENT ATTEMPT
 
         $attemptUpdated = $this->orderModel->updatePaymentAttempt(
             (int) $paymentAttempt['id'],
@@ -526,6 +665,8 @@ public function verifyRazorpayPayment()
             ]
         );
 
+        // 5. CLEAR CUSTOMER CART
+
         $cartCleared = $this->cartModel->clearCustomerCart($customerId);
 
         if (
@@ -534,12 +675,22 @@ public function verifyRazorpayPayment()
             !$cartCleared ||
             $this->db->transStatus() === false
         ) {
-            throw new \RuntimeException('Unable to finalize paid order.');
+            throw new \RuntimeException(
+                'Unable to finalize paid order.'
+            );
         }
+
+        // 6. COMMIT EVERYTHING
 
         $this->db->transCommit();
 
         return redirect()->to(site_url('checkout/payment-success'));
+            } catch (\Throwable $e) {
+
+        $this->db->transRollback();
+
+        throw $e;
+    }
     } catch (\Throwable $e) {
         $this->db->transRollback();
 
@@ -553,6 +704,7 @@ public function verifyRazorpayPayment()
             ->with('error', 'Payment verification failed. If money was deducted, please contact support.');
     }
 }
+
 
 
 public function paymentSuccess()
