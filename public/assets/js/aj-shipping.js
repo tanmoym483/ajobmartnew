@@ -398,57 +398,58 @@ window.ajUpdateCartTotals = updateCartTotals;
     }
 
     function renderCartDeliveryAddress(address = selectedAddress) {
-        const container = document.getElementById('ajCartDeliveryAddress');
 
-        if (!container) return;
+    const container = document.getElementById('ajCartDeliveryAddress');
 
-        container.replaceChildren();
+    if (!container) return;
 
-        if (loggedIn && address) {
-            const recipient = document.createElement('div');
-            recipient.className = 'aj-delivery-recipient';
-            recipient.textContent = [
-                address.recipient_name,
-                address.mobile
-            ].filter(Boolean).join(' · ') || 'Selected recipient';
+    container.replaceChildren();
 
-            const details = document.createElement('div');
-            details.className = 'aj-delivery-address-text';
-            details.textContent = [
-                address.address_line1,
-                address.address_line2,
-                address.landmark,
-                address.city,
-                address.state,
-                address.pincode
-            ].filter(value => String(value || '').trim()).join(', ');
+    if (loggedIn && address) {
 
-            const type = document.createElement('span');
-            type.className = 'badge bg-light text-dark border mt-1';
-            type.textContent = address.address_type || 'home';
+        const recipient = document.createElement('div');
+        recipient.className = 'aj-delivery-recipient';
 
-            container.append(recipient, details, type);
-            return;
-        }
+        recipient.textContent = [
+            address.recipient_name,
+            address.pincode
+        ].filter(Boolean).join(' · ');
 
-        if (!loggedIn && guestShippingPin) {
-            const pin = document.createElement('div');
-            pin.className = 'aj-delivery-recipient';
-            pin.textContent = 'PIN: ' + guestShippingPin;
+        const details = document.createElement('div');
+        details.className = 'aj-delivery-address-text';
 
-            const note = document.createElement('div');
-            note.className = 'aj-delivery-address-text';
-            note.textContent = 'Guest delivery estimate';
+        details.textContent = [
+            address.address_line1,
+            address.city,
+            address.state
+        ].filter(Boolean).join(', ');
 
-            container.append(pin, note);
-            return;
-        }
+        container.append(recipient, details);
 
-        const message = document.createElement('div');
-        message.className = 'small text-muted';
-        message.textContent = 'Delivery address not selected';
-        container.appendChild(message);
+        return;
     }
+
+    if (!loggedIn && guestShippingPin) {
+
+        const pin = document.createElement('div');
+        pin.className = 'aj-delivery-recipient';
+        pin.textContent = 'PIN: ' + guestShippingPin;
+
+        const note = document.createElement('div');
+        note.className = 'aj-delivery-address-text';
+        note.textContent = 'Guest delivery estimate';
+
+        container.append(pin, note);
+
+        return;
+    }
+
+    const message = document.createElement('div');
+    message.className = 'small text-muted';
+    message.textContent = 'Delivery address not selected';
+
+    container.appendChild(message);
+}
 
     function fillAddressForm(address) {
         const values = {
@@ -838,47 +839,60 @@ window.ajRefreshShippingAfterCartChange =
 }
 
     async function openCartFlow() {
-    try {
-        if (config.loggedIn) {
-            // Load all saved addresses and select the default one.
+
+    // =========================================
+    // OPEN CART IMMEDIATELY
+    // =========================================
+    if (config.loggedIn) {
+
+        // Show cart without waiting for address/shipping API.
+        showExistingCart();
+
+        // =====================================
+        // LOAD ADDRESS IN BACKGROUND
+        // =====================================
+        try {
+
             await loadCustomerAddress();
 
             if (savedAddress) {
-                // Set the saved address PIN.
+
                 const pin = String(savedAddress.pincode || '').trim();
 
                 if (pinInput && /^\d{6}$/.test(pin)) {
                     pinInput.value = pin;
                 }
 
-                // Render the address in the cart modal header.
+                // Update address in cart header.
                 renderCartDeliveryAddress();
 
-                // Calculate shipping before opening the cart.
+                // Calculate shipping in background.
                 if (/^\d{6}$/.test(pin)) {
-                    await estimateShipping(pin);
+                    estimateShipping(pin).catch(function (error) {
+                        console.error('Shipping estimate error:', error);
+                    });
                 }
 
-                // Refresh cart totals and open the cart.
-                await showExistingCart();
                 return;
             }
 
-            // No saved address: ask the customer to add one.
+            // No address available.
             openShippingGate(true);
-            return;
+
+        } catch (error) {
+
+            console.error('Cart address loading error:', error);
+
+            renderCartDeliveryAddress();
         }
 
-        // Guest customer.
-        openShippingGate(false);
-
-    } catch (error) {
-        console.error('Cart opening / delivery address error:', error);
-
-        // Keep the cart accessible if shipping calculation fails.
-        renderCartDeliveryAddress();
-        await showExistingCart();
+        return;
     }
+
+    // =========================================
+    // GUEST CUSTOMER
+    // =========================================
+    openShippingGate(false);
 }
 
     /*

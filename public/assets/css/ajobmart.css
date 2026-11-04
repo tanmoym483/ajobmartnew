@@ -5277,3 +5277,28 @@ input {
         min-width: 125px;
     }
 }
+
+#ajCartDeliveryAddress {
+    font-size: 11px;
+    line-height: 1.35;
+    overflow: hidden;
+}
+
+#ajCartDeliveryAddress .aj-delivery-recipient {
+    color: #202a35;
+    font-weight: 700;
+    font-size: 12px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#ajCartDeliveryAddress .aj-delivery-address-text {
+    color: #66717e;
+    font-size: 11px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

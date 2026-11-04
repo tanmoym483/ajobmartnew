@@ -614,10 +614,11 @@ if ($isCustomerLoggedIn) {
 
             
         <div class="aj-cart-modal-header">
+            <h5 id="cartModalLabel">My Cart</h5>
+                &nbsp;
+                <div class="aj-cart-modal-items">0 Items</div>
             <div class="flex-grow-1">
-                <h5 id="cartModalLabel">My Cart</h5>
-
-                <span class="aj-cart-modal-items">0 Items</span>
+                
 
                 
                 <div class="aj-cart-delivery-selector" id="ajCartDeliverySelector">

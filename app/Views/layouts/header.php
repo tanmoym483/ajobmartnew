@@ -96,12 +96,12 @@
             </a> -->
 
             <a href="javascript:void(0);"
-   class="aj-cart-icon aj--cart"
-   id="ajCartButton"
-   data-aj-shipping-cart-trigger>
-    <i class="bi bi-cart3"></i>
-    <span class="aj-cart-count">0</span>
-</a>
+                class="aj-cart-icon aj--cart"
+                id="ajCartButton"
+                data-aj-shipping-cart-trigger>
+                    <i class="bi bi-cart3"></i>
+                    <span class="aj-cart-count">0</span>
+            </a>
             
 
 
