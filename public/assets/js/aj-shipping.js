@@ -841,58 +841,82 @@ window.ajRefreshShippingAfterCartChange =
     async function openCartFlow() {
 
     // =========================================
-    // OPEN CART IMMEDIATELY
+    // GUEST CUSTOMER
     // =========================================
-    if (config.loggedIn) {
-
-        // Show cart without waiting for address/shipping API.
-        showExistingCart();
-
-        // =====================================
-        // LOAD ADDRESS IN BACKGROUND
-        // =====================================
-        try {
-
-            await loadCustomerAddress();
-
-            if (savedAddress) {
-
-                const pin = String(savedAddress.pincode || '').trim();
-
-                if (pinInput && /^\d{6}$/.test(pin)) {
-                    pinInput.value = pin;
-                }
-
-                // Update address in cart header.
-                renderCartDeliveryAddress();
-
-                // Calculate shipping in background.
-                if (/^\d{6}$/.test(pin)) {
-                    estimateShipping(pin).catch(function (error) {
-                        console.error('Shipping estimate error:', error);
-                    });
-                }
-
-                return;
-            }
-
-            // No address available.
-            openShippingGate(true);
-
-        } catch (error) {
-
-            console.error('Cart address loading error:', error);
-
-            renderCartDeliveryAddress();
-        }
-
+    if (!config.loggedIn) {
+        openShippingGate(false);
         return;
     }
 
     // =========================================
-    // GUEST CUSTOMER
+    // LOGGED-IN CUSTOMER
     // =========================================
-    openShippingGate(false);
+    try {
+
+        // First check the customer's saved address.
+        await loadCustomerAddress();
+
+        // If the default address was not returned,
+        // check the complete saved-address list.
+        if (!savedAddress) {
+            await loadSavedAddresses();
+        }
+
+        const address = selectedAddress || savedAddress;
+
+        // =====================================
+        // NO SAVED ADDRESS
+        // OPEN ADD NEW ADDRESS FORM FIRST
+        // =====================================
+        if (!address || !address.id) {
+
+            selectedAddress = null;
+            savedAddress = null;
+
+            // Do NOT open the cart modal.
+            // Open the new address form directly.
+            await openShippingGate(true);
+
+            return;
+        }
+
+        // =====================================
+        // ADDRESS EXISTS
+        // OPEN CART MODAL
+        // =====================================
+        selectedAddress = address;
+        savedAddress = address;
+
+        const pin = String(address.pincode || '').trim();
+
+        if (pinInput && /^\d{6}$/.test(pin)) {
+            pinInput.value = pin;
+        }
+
+        renderCartDeliveryAddress(address);
+
+        // Open cart only after confirming an address exists.
+        await showExistingCart();
+
+        // Calculate shipping in the background.
+        if (/^\d{6}$/.test(pin)) {
+
+            estimateShipping(pin).catch(function (error) {
+                console.error('Shipping estimate error:', error);
+            });
+
+        }
+
+    } catch (error) {
+
+        console.error('Cart/address loading error:', error);
+
+        showMessage(
+            error.message || 'Unable to load your delivery address.',
+            'danger'
+        );
+
+    }
 }
 
     /*

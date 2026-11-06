@@ -463,7 +463,7 @@ public function placeOrder()
 
         $this->db->transCommit();
 
-        return view('checkout/razorpay', [
+        return $this->view('checkout/razorpay', [
             'keyId' => $keyId,
             'razorpayOrderId' => $razorpayOrderId,
             'internalOrderId' => $orderId,
@@ -474,11 +474,30 @@ public function placeOrder()
             'customerMobile' => session('ajobmart_customer_mobile'),
         ]);
     } catch (\Throwable $e) {
+
+        // Roll back any active Razorpay database transaction.
         if ($this->db->transStatus() !== false) {
             $this->db->transRollback();
         }
 
-        log_message('error', 'Razorpay initiation failed: ' . $e->getMessage());
+        // Cancel the unpaid order and restore deducted stock.
+        $restored = $this->orderModel->cancelUnpaidOrderAndRestoreStock(
+            (int) $orderId,
+            'failed'
+        );
+
+        if (!$restored) {
+            log_message(
+                'error',
+                'Unable to restore stock for Razorpay order ID: ' . $orderId
+            );
+        }
+
+        log_message(
+            'error',
+            'Razorpay initiation failed for order '
+            . $orderId . ': ' . $e->getMessage()
+        );
 
         return redirect()->to(site_url('checkout'))
             ->with('error', 'Unable to initiate Razorpay payment. Please try again.');
@@ -658,11 +677,15 @@ public function verifyRazorpayPayment()
 
         $this->db->transCommit();
 
-        // Update session cashback balance only after successful commit.
-        session()->set(
-            'ajobmart_customer_coupon_amount',
-            $cashbackBalanceAfter
-        );
+        // Update cashback session only when cashback was deducted.
+
+        if ($cashbackDeduct > 0) {
+
+            session()->set(
+                'ajobmart_customer_coupon_amount',
+                $cashbackBalanceAfter
+            );
+        }
 
         return redirect()->to(site_url('checkout/payment-success'));
             } catch (\Throwable $e) {
