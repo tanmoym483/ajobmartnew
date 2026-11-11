@@ -64,6 +64,7 @@ $routes->group('cart', static function ($routes) {
 });
 
 $routes->post('cart/update-wow-offer', 'Cart::updateWowOffer');
+$routes->post('cart/sync-guest', 'Cart::syncGuestCart');
 
 
 $routes->get(

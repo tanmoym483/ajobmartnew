@@ -96,4 +96,70 @@ class CartModel extends Model
 
             return $this->where('customer_id', $customerId)->delete();
     }
+
+    
+    public function syncGuestCart(int $customerId, array $guestItems): bool
+    {
+        $this->db->transStart();
+
+        foreach ($guestItems as $item) {
+
+            $productId = (int) (
+                $item['product_id']
+                ?? $item['productId']
+                ?? $item['id']
+                ?? 0
+            );
+
+            $quantity = max(
+                1,
+                (int) ($item['quantity'] ?? $item['qty'] ?? 1)
+            );
+
+            // Read guest WOW offer status.
+            $wowOfferApplied = (
+                (int) ($item['wow_offer_applied'] ?? 0) === 1
+            ) ? 1 : 0;
+
+            if ($productId <= 0) {
+                continue;
+            }
+
+            // Check whether product already exists in customer cart.
+            $existing = $this->db->table('ajobmart_cart_items')
+                ->where('customer_id', $customerId)
+                ->where('product_id', $productId)
+                ->get()
+                ->getRowArray();
+
+            if ($existing) {
+
+                // Merge quantity and update WOW offer status.
+                $this->db->table('ajobmart_cart_items')
+                    ->where('id', $existing['id'])
+                    ->update([
+                        'quantity'          => (int) $existing['quantity'] + $quantity,
+                        'wow_offer_applied' => $wowOfferApplied,
+                        'updated_at'        => date('Y-m-d H:i:s'),
+                    ]);
+
+            } else {
+
+                // Insert guest cart product into customer cart.
+                $this->db->table('ajobmart_cart_items')->insert([
+                    'customer_id'       => $customerId,
+                    'product_id'        => $productId,
+                    'quantity'          => $quantity,
+                    'wow_offer_applied' => $wowOfferApplied,
+                    'created_at'        => date('Y-m-d H:i:s'),
+                    'updated_at'        => date('Y-m-d H:i:s'),
+                ]);
+            }
+        }
+
+        $this->db->transComplete();
+
+        return $this->db->transStatus();
+    }
+
 }

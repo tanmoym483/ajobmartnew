@@ -436,4 +436,32 @@ class Cart extends BaseController
         ));
     }
 
+    public function syncGuestCart()
+    {
+        if (!session()->get('ajobmart_customer_logged_in')) {
+            return $this->response->setJSON([
+                'status'  => false,
+                'message' => 'Please login first.',
+            ]);
+        }
+
+        $customerId = (int) session()->get('ajobmart_customer_db_id');
+
+        $guestItems = $this->request->getJSON(true)['items'] ?? [];
+
+        if (!is_array($guestItems)) {
+            $guestItems = [];
+        }
+
+        $success = $this->cartModel->syncGuestCart(
+            $customerId,
+            $guestItems
+        );
+
+        return $this->response->setJSON([
+            'status'  => $success,
+            'message' => $success ? 'Cart synchronized successfully.' : 'Cart synchronization failed.',
+        ]);
+    }
+
 }

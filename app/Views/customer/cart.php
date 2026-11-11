@@ -933,7 +933,7 @@
                                 <i class="bi bi-lightning-charge-fill"></i>
                                 <strong>WOW SPECIAL OFFER</strong>
                             </div>
-                            <span>20% OFF</span>
+                            <span id="ajCartWowPercent">20% OFF</span>
                         </div>
 
                         <div class="aj-wow-summary-bottom">

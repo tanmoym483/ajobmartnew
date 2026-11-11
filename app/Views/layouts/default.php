@@ -1346,13 +1346,92 @@ function showLoginPopup() {
             });
         }
 
+    
     }).then(function (result) {
+
         if (result.isConfirmed && result.value && result.value.status) {
-            window.location.href =
-                result.value.redirect || '<?= site_url('/') ?>';
+
+            // Normal login: preserve existing redirect
+            if (window.ajLoginReturnToCart !== true) {
+                window.location.href =
+                    result.value.redirect || '<?= site_url('/') ?>';
+                return;
+            }
+
+            // Guest checkout login: synchronize cart first
+            ajSyncGuestCartAfterLogin()
+                .then(function () {
+
+                    window.ajLoginReturnToCart = false;
+
+                    // Continue to checkout
+                    window.location.href = '<?= site_url('checkout') ?>';
+
+                })
+                .catch(function (error) {
+
+                    console.error('Guest cart synchronization:', error);
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Cart Sync Failed',
+                        text: error.message ||
+                            'Unable to save your cart. Please try again.'
+                    });
+
+                });
         }
     });
+
 }
+
+
+window.ajSyncGuestCartAfterLogin = function () {
+
+    const guestCartKey = 'ajobmart_guest_cart_v1';
+
+    let guestItems = [];
+
+    try {
+        guestItems = JSON.parse(
+            localStorage.getItem(guestCartKey) || '[]'
+        );
+    } catch (error) {
+        return Promise.reject(
+            new Error('Unable to read your guest cart.')
+        );
+    }
+
+    // No guest products: nothing to synchronize
+    if (!Array.isArray(guestItems) || guestItems.length === 0) {
+        return Promise.resolve(true);
+    }
+
+    console.log('Guest Cart Data:', guestItems);
+console.log('Guest Cart JSON:', JSON.stringify(guestItems, null, 2));
+    return $.ajax({
+        url: '<?= site_url('cart/sync-guest') ?>',
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            items: guestItems
+        })
+    }).then(function (response) {
+
+        if (!response.status) {
+            throw new Error(
+                response.message || 'Cart synchronization failed.'
+            );
+        }
+
+        // Remove guest cart only after server confirms success
+        localStorage.removeItem(guestCartKey);
+
+        return true;
+    });
+};
+
 
 
 

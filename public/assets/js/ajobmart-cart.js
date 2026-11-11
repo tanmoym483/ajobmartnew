@@ -67,33 +67,40 @@
     }
 
     function normalizeGuestItem(item) {
-    return {
-        product_id: Number(item.product_id ?? item.productId ?? item.id),
-        quantity: Number(item.quantity ?? item.qty) || 1,
-        product_name: item.product_name || 'Product',
+        return {
+            product_id: Number(item.product_id ?? item.productId ?? item.id),
+            quantity: Number(item.quantity ?? item.qty) || 1,
+            product_name: item.product_name || 'Product',
 
-        listing_price: Number(item.listing_price) || 0,
+            listing_price: Number(item.listing_price) || 0,
 
-        // Support both database/API naming conventions.
-        shipping_allowance: Number(
-            item.shipping_allowance ??
-            item.product_shipping_allowance ??
-            item.shippingAllowance
-        ) || 0,
+            shipping_allowance: Number(
+                item.shipping_allowance ??
+                item.product_shipping_allowance ??
+                item.shippingAllowance
+            ) || 0,
 
-        selling_price: Number(item.selling_price) || 0,
-        mrp: Number(item.mrp) || 0,
-        wow_offer_applied:
-            Number(item.wow_offer_applied) === 1 ? 1 : 0,
-        image_path: item.image_path || '',
-        image_url: item.image_url || '',
-        min_order_quantity: Math.max(
-            1,
-            Number(item.min_order_quantity) || 1
-        ),
-        stock_quantity: Number(item.stock_quantity) || 0
-    };
-}
+            selling_price: Number(item.selling_price) || 0,
+            mrp: Number(item.mrp) || 0,
+
+            wow_offer_applied:
+                Number(item.wow_offer_applied) === 1 ? 1 : 0,
+
+            wow_offer_percent: Number(item.wow_offer_percent) || 20,
+
+            wow_offer_discount: Number(item.wow_offer_discount) || 0,
+
+            image_path: item.image_path || '',
+            image_url: item.image_url || '',
+
+            min_order_quantity: Math.max(
+                1,
+                Number(item.min_order_quantity) || 1
+            ),
+
+            stock_quantity: Number(item.stock_quantity) || 0
+        };
+    }
 
     window.AJ_CASHBACK_BALANCE = 0;
 
@@ -391,9 +398,17 @@ function renderCart() {
 
         subtotal += lineTotal;
         // WOW offer discount: 20% per eligible cart item
+        // WOW offer discount for eligible guest cart products
         if (Number(item.wow_offer_applied) === 1) {
 
-            const itemDiscount = Math.floor(price * 20 / 100);
+            const wowPercent = Math.max(
+                0,
+                Number(item.wow_offer_percent) || 20
+            );
+
+            const itemDiscount = Math.floor(
+                price * wowPercent / 100
+            );
 
             wowDiscount += itemDiscount * quantity;
         }
@@ -474,6 +489,7 @@ function renderCart() {
     // WOW OFFER DISCOUNT DISPLAY
     const wowRow = document.getElementById('ajCartWowDiscount');
     const wowDiscountRow = document.getElementById('ajCartWowDiscountRow');
+    const wowPercentElement = document.getElementById('ajCartWowPercent');
 
     if (wowRow && wowDiscountRow) {
 
@@ -489,6 +505,10 @@ function renderCart() {
 
             wowRow.textContent = '-' + money(0);
         }
+    }
+
+    if (wowPercentElement) {
+        wowPercentElement.textContent = 'WOW OFFER';
     }
 
     // Store values for the existing cart totals calculation
@@ -609,7 +629,17 @@ function renderCart() {
         const item = findItem(productId);
 
         if (item) {
+
             item.wow_offer_applied = applied;
+
+            item.wow_offer_percent = applied === 1 ? 20 : 0;
+
+            item.wow_offer_discount = applied === 1
+                ? Math.floor(
+                    Number(item.listing_price) * 20 / 100
+                )
+                : 0;
+
             saveGuestCart();
             renderCart();
         }
@@ -650,6 +680,7 @@ function renderCart() {
         }
     }
 
+    
     function addGuestProduct(productId) {
         const product = productCatalog[productId];
 
@@ -663,6 +694,7 @@ function renderCart() {
         );
 
         const stock = Number(product.stock_quantity) || 0;
+
         let item = findItem(productId);
 
         const newQuantity = item
@@ -674,21 +706,45 @@ function renderCart() {
             return;
         }
 
+        // Read WOW offer status from product details page.
+        const wowElement = document.getElementById('ajWowOffer');
+
+        const wowApplied =
+            wowElement?.dataset.offerApplied === 'true' ? 1 : 0;
+
+        const wowPercent = wowApplied === 1 ? 20 : 0;
+
+        const wowDiscount = wowApplied === 1
+            ? Math.floor(
+                Number(product.listing_price) * wowPercent / 100
+            )
+            : 0;
+
         if (!item) {
             item = normalizeGuestItem({
                 ...product,
                 product_id: productId,
-                quantity: minimum
+                quantity: minimum,
+
+                wow_offer_applied: wowApplied,
+                wow_offer_percent: wowPercent,
+                wow_offer_discount: wowDiscount
             });
 
             cartItems.push(item);
+
         } else {
             item.quantity = newQuantity;
+
+            item.wow_offer_applied = wowApplied;
+            item.wow_offer_percent = wowPercent;
+            item.wow_offer_discount = wowDiscount;
         }
 
         saveGuestCart();
         renderCart();
     }
+
 
     function addProduct(productId) {
         if (cartRequestRunning) return;
