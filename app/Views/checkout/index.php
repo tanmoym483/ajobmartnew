@@ -211,7 +211,7 @@
     </label>
 
     <!-- Cashfree -->
-    <label class="d-flex align-items-center gap-3 border rounded p-3 mb-2"
+    <!-- <label class="d-flex align-items-center gap-3 border rounded p-3 mb-2"
            for="ajGatewayCashfree"
            style="cursor:pointer;">
         <input
@@ -237,10 +237,10 @@
         </span>
 
         <i class="bi bi-chevron-right text-muted"></i>
-    </label>
+    </label> -->
 
     <!-- PayU -->
-    <label class="d-flex align-items-center gap-3 border rounded p-3 mb-2"
+    <!-- <label class="d-flex align-items-center gap-3 border rounded p-3 mb-2"
            for="ajGatewayPayU"
            style="cursor:pointer;">
         <input
@@ -266,7 +266,7 @@
         </span>
 
         <i class="bi bi-chevron-right text-muted"></i>
-    </label>
+    </label> -->
 </div>
         </div>
 
