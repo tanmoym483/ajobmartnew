@@ -47,6 +47,7 @@ class Cart extends BaseController
         return $product ?: null;
     }
 
+    
     private function getCartPayload(int $customerId): array
     {
         $items = $this->cartModel->getCustomerCart($customerId);
@@ -59,7 +60,24 @@ class Cart extends BaseController
             $price = (float) $item['listing_price'];
             $quantity = (int) $item['quantity'];
 
+            $item['wow_offer_applied'] = (int) (
+                $item['wow_offer_applied'] ?? 0
+            );
+
+            // Keep original listing price for cart and shipping calculations.
             $item['line_total'] = round($price * $quantity, 2);
+
+            // Calculate the online offer separately.
+            $item['wow_offer_discount_percent'] = 20;
+
+            $item['wow_offer_price'] = max(
+                0,
+                floor($price - floor($price * 20 / 100))
+            );
+
+            $item['wow_offer_discount'] = $item['wow_offer_applied']
+                ? round(($price - $item['wow_offer_price']) * $quantity, 2)
+                : 0;
 
             $item['image_url'] = !empty($item['image_path'])
                 ? site_url(
@@ -75,6 +93,7 @@ class Cart extends BaseController
                 && $price >= 0;
 
             $validItems[] = $item;
+
             $subtotal += $item['line_total'];
             $count += $quantity;
         }
@@ -87,6 +106,20 @@ class Cart extends BaseController
             'delivery' => 0.00,
             'total' => round($subtotal, 2),
         ];
+    }
+
+
+    public function index()
+    {
+        $data = [
+            'title' => 'My Cart',
+            'isCustomerLoggedIn' => (bool) session()->get('ajobmart_customer_logged_in'),
+            'customerName' => session()->get('ajobmart_customer_name') ?? '',
+            'customerImage' => session()->get('ajobmart_customer_image')
+                ?: base_url('assets/images/default-user.png'),
+        ];
+
+        return $this->view('customer/cart', $data);
     }
 
     public function fetch()
@@ -126,6 +159,8 @@ class Cart extends BaseController
         }
 
         $productId = (int) $this->request->getPost('product_id');
+        $wowOfferApplied = (int) $this->request->getPost('wow_offer_applied');
+        $wowOfferApplied = $wowOfferApplied === 1 ? 1 : 0;
 
         if ($productId <= 0) {
             return $this->json([
@@ -193,6 +228,7 @@ class Cart extends BaseController
                     'customer_id' => $customerId,
                     'product_id' => $productId,
                     'quantity' => $newQuantity,
+                    'wow_offer_applied' => $wowOfferApplied,
                     'created_at' => date('Y-m-d H:i:s'),
                     'updated_at' => date('Y-m-d H:i:s'),
                 ]);
@@ -349,4 +385,55 @@ class Cart extends BaseController
             'cashback_balance' => (float) ($user['total_coupon_amount'] ?? 0)
         ]);
     }
+
+
+    public function updateWowOffer()
+    {
+        $customerId = $this->customerId();
+
+        if (!$customerId) {
+            return $this->json([
+                'status' => false,
+                'code' => 'LOGIN_REQUIRED',
+            ], 401);
+        }
+
+        $productId = (int) $this->request->getPost('product_id');
+
+        $applied = (int) $this->request->getPost('applied');
+
+        if ($productId <= 0 || !in_array($applied, [0, 1], true)) {
+            return $this->json([
+                'status' => false,
+                'message' => 'Invalid offer request.',
+            ], 422);
+        }
+
+        $existing = $this->cartModel->findCustomerProduct(
+            $customerId,
+            $productId
+        );
+
+        if (!$existing) {
+            return $this->json([
+                'status' => false,
+                'message' => 'Cart item not found.',
+            ], 404);
+        }
+
+        $this->cartModel->update($existing['id'], [
+            'wow_offer_applied' => $applied,
+        ]);
+
+        return $this->json(array_merge(
+            [
+                'status' => true,
+                'message' => $applied
+                    ? 'Wow Offer applied.'
+                    : 'Wow Offer removed.',
+            ],
+            $this->getCartPayload($customerId)
+        ));
+    }
+
 }

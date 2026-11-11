@@ -22,6 +22,13 @@ class OrderModel extends Model
         'platform_fee',
         'included_shipping',
         'total_amount',
+
+        // WOW discount details
+        'wow_eligible_subtotal',
+        'product_wow_discount',
+        'payment_wow_discount',
+        'wow_discount_rate',
+
         'payment_method',
         'payment_gateway',
         'payment_status',

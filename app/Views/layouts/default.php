@@ -594,7 +594,7 @@ if ($isCustomerLoggedIn) {
 <!-- =========================================
      CART MODAL
 ========================================= -->
-
+<!-- 
 <div
     class="modal fade aj-cart-modal"
     id="cartModal"
@@ -608,9 +608,7 @@ if ($isCustomerLoggedIn) {
         <div class="modal-content">
 
 
-            <!-- ================================
-                 CART HEADER
-            ================================= -->
+            
 
             
         <div class="aj-cart-modal-header">
@@ -660,14 +658,11 @@ if ($isCustomerLoggedIn) {
 
 
 
-            <!-- ================================
-                 CART BODY
-            ================================= -->
+            
 
             <div class="aj-cart-modal-body">
 
 
-                <!-- Empty Cart -->
 
                 <div class="aj-cart-empty" id="ajCartEmpty">
                     <div class="aj-cart-empty-icon">
@@ -681,14 +676,12 @@ if ($isCustomerLoggedIn) {
                 </div>
 
 
-                <!-- Cart Products -->
 
                 <div
                     class="aj-cart-products"
                     id="ajCartProducts"
                 >
 
-                    <!-- Product example -->
 
                     
 
@@ -697,22 +690,18 @@ if ($isCustomerLoggedIn) {
             </div>
 
 
-            <!-- ================================
-                 CART FOOTER
-            ================================= -->
+           
 
             
             <div class="aj-cart-modal-footer">
 
                 <div class="aj-cart-summary">
 
-                    <!-- Product subtotal -->
                     <div class="aj-cart-summary-row">
                         <span>Subtotal</span>
                         <strong id="ajCartSubtotal">₹0.00</strong>
                     </div>
 
-                    <!-- Charges toggler -->
                     <button
                         type="button"
                         class="aj-cart-charge-toggle"
@@ -726,13 +715,11 @@ if ($isCustomerLoggedIn) {
                         </span>
 
                         <span class="aj-cart-charge-toggle-right">
-                            <!-- <strong id="ajCartDelivery">FREE</strong> -->
                             <i class="bi bi-chevron-down" id="ajCartChargeArrow"></i>
                         </span>
 
                     </button>
 
-                    <!-- Expandable breakdown -->
                     <div
                         class="aj-cart-charge-details"
                         id="ajCartChargeDetails"
@@ -764,7 +751,6 @@ if ($isCustomerLoggedIn) {
 
                     </div>
 
-                    <!-- Final total -->
                     <div class="aj-cart-total">
                         <div>
                             <span>Total Payable</span>
@@ -793,7 +779,7 @@ if ($isCustomerLoggedIn) {
 
     </div>
 
-</div>
+</div> -->
 
 
 
@@ -1068,8 +1054,11 @@ if ($isCustomerLoggedIn) {
 <script>
 const site_url = <?= json_encode(rtrim(site_url(), '/') . '/') ?>;
 
+
 window.AJ_CART_CONFIG = {
     loggedIn: <?= session()->get('ajobmart_customer_logged_in') ? 'true' : 'false' ?>,
+
+    siteUrl: <?= json_encode(rtrim(site_url(), '/') . '/') ?>,
 
     fetchUrl: <?= json_encode(site_url('cart/fetch')) ?>,
     addUrl: <?= json_encode(site_url('cart/add')) ?>,
@@ -1089,6 +1078,7 @@ window.AJ_CART_CONFIG = {
 
     shippingSaveAddressUrl:
         <?= json_encode(site_url('shipping/save-address')) ?>,
+    wowOfferUrl: <?= json_encode(site_url('cart/update-wow-offer')) ?>,
 
     csrfName: <?= json_encode(csrf_token()) ?>,
     csrfHash: <?= json_encode(csrf_hash()) ?>,

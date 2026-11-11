@@ -55,12 +55,15 @@ $routes->get(
 );
 
 $routes->group('cart', static function ($routes) {
+    $routes->get('/', 'Cart::index');
     $routes->get('fetch', 'Cart::fetch');
     $routes->post('add', 'Cart::add');
     $routes->post('update', 'Cart::update');
     $routes->post('remove', 'Cart::remove');
     $routes->get('cashback-balance', 'Cart::cashbackBalance');
 });
+
+$routes->post('cart/update-wow-offer', 'Cart::updateWowOffer');
 
 
 $routes->get(

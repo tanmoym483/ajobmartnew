@@ -933,6 +933,244 @@
 }
 
 
+/* WOW Offer Card */
+.aj-wow-offer {
+    margin: 18px 0;
+    border: 1px solid #f3d28b;
+    border-radius: 13px;
+    background: linear-gradient(135deg, #fffdf5, #fff7e6);
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.10);
+    overflow: hidden;
+}
+
+.aj-wow-offer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 16px;
+    cursor: pointer;
+    gap: 12px;
+}
+
+.aj-wow-offer-heading {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.aj-wow-icon {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: #fff0c2;
+    color: #d58b00;
+    font-size: 20px;
+}
+
+.aj-wow-offer-heading strong {
+    display: block;
+    color: #b66c00;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: .5px;
+}
+
+.aj-wow-offer-heading small {
+    display: block;
+    color: #777;
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.aj-wow-arrow {
+    color: #b66c00;
+    font-size: 15px;
+    transition: transform .25s ease;
+}
+
+.aj-wow-offer.is-open .aj-wow-arrow {
+    transform: rotate(180deg);
+}
+
+.aj-wow-offer-content {
+    padding: 0 16px 15px;
+    border-top: 1px dashed #e9cf98;
+}
+
+.aj-wow-offer-details {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 14px 0;
+}
+
+.aj-wow-discount {
+    min-width: 105px;
+    padding: 10px;
+    text-align: center;
+    border-radius: 10px;
+    background: #fff0c2;
+}
+
+.aj-wow-discount strong {
+    display: block;
+    color: #c07800;
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.aj-wow-discount span {
+    display: block;
+    color: #74500c;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.aj-wow-offer-details p {
+    margin: 0;
+    color: #555;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.aj-wow-apply-btn {
+    width: 100%;
+    padding: 10px 15px;
+    border: 0;
+    border-radius: 8px;
+    background: #e89b16;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s ease;
+}
+
+.aj-wow-apply-btn:hover {
+    background: #c98208;
+}
+
+.aj-wow-applied-message {
+    margin-top: 10px;
+    color: #168348;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.aj-wow-applied-message i {
+    margin-right: 5px;
+}
+
+@media (max-width: 576px) {
+    .aj-wow-offer-details {
+        align-items: flex-start;
+    }
+}
+
+.aj-wow-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.aj-wow-header-price {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.aj-wow-header-price strong {
+    display: block;
+    color: #168348;
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.aj-wow-header-price del {
+    display: block;
+    color: #888;
+    font-size: 11px;
+}
+
+.aj-wow-arrow {
+    flex-shrink: 0;
+}
+
+@media (max-width: 420px) {
+    .aj-wow-offer-header {
+        padding: 11px;
+    }
+
+    .aj-wow-header-right {
+        gap: 7px;
+    }
+
+    .aj-wow-header-price strong {
+        font-size: 16px;
+    }
+
+    .aj-wow-offer-heading strong {
+        font-size: 13px;
+    }
+
+    .aj-wow-offer-heading small {
+        font-size: 10px;
+    }
+}
+
+/* Product details cart buttons */
+.aj-product-cart-action {
+    align-items: center;
+}
+
+.aj-product-cart-action .aj-add-cart,
+.aj-product-cart-action .aj-go-to-cart {
+    width: 100%;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    border: none;
+    border-radius: 9px;
+    background: #f39c12;
+    color: #fff;
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.aj-product-cart-action .aj-add-cart:disabled {
+    background: #999;
+    cursor: not-allowed;
+}
+
+.aj-product-cart-action .aj-go-to-cart {
+    background: #198754;
+}
+
+
+@media (max-width: 767.98px) {
+
+    #ajProductCartAction.aj-mobile-floating {
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 40px !important;
+        width: 100% !important;
+        z-index: 999999 !important;
+        background: #fff !important;
+        padding: 12px 15px !important;
+        box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.15);
+    }
+
+}
+
+
 </style>
 <?php
 $productId = (int) ($product['id'] ?? 0);
@@ -1152,6 +1390,95 @@ $moq = max(1, (int) ($product['min_order_quantity'] ?? 1));
                 </div>
             </div>
 
+            <!-- WOW Online Payment Offer -->
+            <?php
+$onlineDiscountPercent = 20;
+$onlineDiscountAmount = floor($price * $onlineDiscountPercent / 100);
+$onlineOfferPrice = max(0, floor($price - $onlineDiscountAmount));
+
+$wowOfferApplied = (bool) ($wowOfferApplied ?? false);
+
+$formatPrice = static function ($value) {
+    return number_format((float) $value, 0);
+};
+?>
+
+<div class="aj-wow-offer"
+     id="ajWowOffer"
+     data-product-id="<?= (int) $productId ?>"
+     data-original-price="<?= esc($price) ?>"
+     data-offer-price="<?= esc($onlineOfferPrice) ?>"
+     data-applied="<?= $wowOfferApplied ? '1' : '0' ?>">
+
+    <div class="aj-wow-offer-header"
+         id="ajWowOfferToggle"
+         role="button"
+         tabindex="0"
+         aria-expanded="false"
+         aria-controls="ajWowOfferContent">
+
+        <div class="aj-wow-offer-heading">
+            <span class="aj-wow-icon">
+                <i class="bi bi-stars"></i>
+            </span>
+
+            <div>
+                <strong>WOW OFFER!</strong>
+                <small>20% OFF on online payment</small>
+            </div>
+        </div>
+
+        <div class="aj-wow-header-right">
+            <div class="aj-wow-header-price">
+                <strong id="ajWowOfferPrice">
+                    ₹<?= $formatPrice($onlineOfferPrice) ?>
+                </strong>
+                <del>₹<?= $formatPrice($price) ?></del>
+            </div>
+
+            <i class="bi bi-chevron-down aj-wow-arrow"></i>
+        </div>
+    </div>
+
+    <div class="aj-wow-offer-content"
+         id="ajWowOfferContent"
+         hidden>
+
+        <div class="aj-wow-offer-details">
+            <div class="aj-wow-discount">
+                <strong>20% OFF</strong>
+                <span>Online Payment</span>
+            </div>
+
+            <p>
+                Get an additional 20% discount when you pay online
+                using an eligible payment method.
+            </p>
+        </div>
+
+        <button type="button"
+                class="aj-wow-apply-btn"
+                id="ajWowApplyBtn"
+                <?= $wowOfferApplied ? 'hidden' : '' ?>>
+            Apply Offer
+        </button>
+
+        <button type="button"
+                class="aj-wow-apply-btn"
+                id="ajWowRemoveBtn"
+                <?= $wowOfferApplied ? '' : 'hidden' ?>>
+            Remove Offer
+        </button>
+
+        <div class="aj-wow-applied-message"
+             id="ajWowAppliedMessage"
+             <?= $wowOfferApplied ? '' : 'hidden' ?>>
+            <i class="bi bi-check-circle-fill"></i>
+            Offer selected! Choose online payment at checkout.
+        </div>
+    </div>
+</div>
+
             <div class="aj-details-availability">
                 <div>
                     <span class="aj-details-label">Availability</span>
@@ -1182,20 +1509,34 @@ $moq = max(1, (int) ($product['min_order_quantity'] ?? 1));
 
             <!-- Keep the existing Ajobmart cart classes. -->
             <div
-                class="aj-product-cart-action"
-                data-product-id="<?= $productId ?>">
+            class="aj-product-cart-action"
+            id="ajProductCartAction"
+            data-product-id="<?= $productId ?>">
 
-                <button
-                    type="button"
-                    class="aj-add-cart"
-                    data-product-id="<?= $productId ?>"
-                    <?= $stock <= 0 ? 'disabled' : '' ?>>
+            <button
+                type="button"
+                class="aj-add-cart"
+                id="ajProductAddCart"
+                data-product-id="<?= $productId ?>"
+                <?= $stock <= 0 ? 'disabled' : '' ?>>
 
-                    <i class="bi bi-cart-plus"></i>
-                    <?= $stock > 0 ? 'Add to Cart' : 'Out of Stock' ?>
-                </button>
+                <i class="bi bi-cart-plus"></i>
+                <?= $stock > 0 ? 'Add to Cart-' : 'Out of Stock' ?>
+                <span id="ajAddCartAmount">
+                    ₹<?= $formatPrice($price) ?>
+                </span>
+            </button>
 
-            </div>
+            <a href="<?= site_url('cart') ?>"
+            class="aj-go-to-cart"
+            id="ajProductGoToCart"
+            style="display:none;">
+
+                <i class="bi bi-cart-check"></i>
+                Go to Cart
+            </a>
+
+        </div>
 
             
 <!-- Product details accordion -->
@@ -1878,5 +2219,182 @@ $moq = max(1, (int) ($product['min_order_quantity'] ?? 1));
         }
     });
 })();
+
+(function () {
+    'use strict';
+
+    const offer = document.getElementById('ajWowOffer');
+    const toggle = document.getElementById('ajWowOfferToggle');
+    const content = document.getElementById('ajWowOfferContent');
+
+    const applyButton = document.getElementById('ajWowApplyBtn');
+    const removeButton = document.getElementById('ajWowRemoveBtn');
+    const appliedMessage = document.getElementById('ajWowAppliedMessage');
+
+    if (!offer || !toggle || !content || !applyButton || !removeButton) {
+        return;
+    }
+
+    const productId = Number(offer.dataset.productId);
+    const originalPrice = Number(offer.dataset.originalPrice);
+    const offerPrice = Number(offer.dataset.offerPrice);
+
+    function updateAddCartAmount(amount) {
+        if (typeof window.ajUpdateProductAddCartAmount === 'function') {
+            window.ajUpdateProductAddCartAmount(amount);
+        }
+    }
+
+    function setOfferApplied(applied) {
+        offer.dataset.applied = applied ? '1' : '0';
+        offer.dataset.offerApplied = applied ? 'true' : 'false';
+
+        applyButton.hidden = applied;
+        removeButton.hidden = !applied;
+        appliedMessage.hidden = !applied;
+
+        updateAddCartAmount(
+            applied ? offerPrice : originalPrice
+        );
+
+        // Notify the cart integration that this product's offer changed.
+        document.dispatchEvent(new CustomEvent('aj:wow-offer-change', {
+            detail: {
+                product_id: productId,
+                applied: applied,
+                original_price: originalPrice,
+                offer_price: offerPrice
+            }
+        }));
+    }
+
+    function toggleOffer() {
+        const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+
+        toggle.setAttribute('aria-expanded', String(!isOpen));
+        content.hidden = isOpen;
+        offer.classList.toggle('is-open', !isOpen);
+    }
+
+    toggle.addEventListener('click', toggleOffer);
+
+    toggle.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggleOffer();
+        }
+    });
+
+    applyButton.addEventListener('click', function () {
+        if (!Number.isFinite(offerPrice) || offerPrice < 0) {
+            console.error('Invalid Wow Offer price');
+            return;
+        }
+
+        setOfferApplied(true);
+    });
+
+    removeButton.addEventListener('click', function () {
+        setOfferApplied(false);
+    });
+
+    // Restore the state supplied by the server when the product page loads.
+    setOfferApplied(offer.dataset.applied === '1');
+
+})();
+
+
+
+
+
+(function () {
+    'use strict';
+
+    function initFloatingCart() {
+
+        const cartAction = document.getElementById('ajProductCartAction');
+
+        if (!cartAction) {
+            console.error('Ajobmart: #ajProductCartAction not found');
+            return;
+        }
+
+        const mobileQuery = window.matchMedia('(max-width: 767.98px)');
+
+        // Create a placeholder to preserve the original layout.
+        const placeholder = document.createElement('div');
+
+        placeholder.style.width = '100%';
+        placeholder.style.height = cartAction.offsetHeight + 'px';
+        placeholder.style.visibility = 'hidden';
+        placeholder.style.pointerEvents = 'none';
+
+        cartAction.parentNode.insertBefore(placeholder, cartAction);
+
+        let observer;
+
+        function updateFloatingState(isVisible) {
+            const shouldFloat = mobileQuery.matches && !isVisible;
+
+            cartAction.classList.toggle(
+                'aj-mobile-floating',
+                shouldFloat
+            );
+        }
+
+        function startObserver() {
+
+            if (observer) {
+                observer.disconnect();
+            }
+
+            if (!mobileQuery.matches) {
+                updateFloatingState(true);
+                return;
+            }
+
+            placeholder.style.height =
+                cartAction.offsetHeight + 'px';
+
+            observer = new IntersectionObserver(function (entries) {
+                updateFloatingState(entries[0].isIntersecting);
+            }, {
+                threshold: 0
+            });
+
+            observer.observe(placeholder);
+        }
+
+        // Update placeholder when button size changes.
+        if (window.ResizeObserver) {
+            const resizeObserver = new ResizeObserver(function () {
+                placeholder.style.height =
+                    cartAction.offsetHeight + 'px';
+            });
+
+            resizeObserver.observe(cartAction);
+        }
+
+        window.addEventListener('resize', startObserver);
+
+        if (mobileQuery.addEventListener) {
+            mobileQuery.addEventListener('change', startObserver);
+        } else {
+            mobileQuery.addListener(startObserver);
+        }
+
+        startObserver();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initFloatingCart);
+    } else {
+        initFloatingCart();
+    }
+
+})();
+
+
+
 
 </script>

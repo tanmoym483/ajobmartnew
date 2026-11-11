@@ -95,10 +95,10 @@
                 </span>
             </a> -->
 
-            <a href="javascript:void(0);"
+            <a href="<?= site_url('cart/') ?>"
                 class="aj-cart-icon aj--cart"
-                id="ajCartButton"
-                data-aj-shipping-cart-trigger>
+                id=""
+                >
                     <i class="bi bi-cart3"></i>
                     <span class="aj-cart-count">0</span>
             </a>

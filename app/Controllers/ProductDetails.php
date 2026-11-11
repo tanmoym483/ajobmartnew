@@ -8,6 +8,7 @@ class ProductDetails extends BaseController
 {
     protected $layout = 'layouts/default';
 
+    
     public function index($id)
     {
         $id = (int) $id;
@@ -47,10 +48,31 @@ class ProductDetails extends BaseController
             ->get()
             ->getResultArray();
 
+        // Fetch saved WOW offer status for logged-in customer.
+        $wowOfferApplied = 0;
+
+        if (session()->get('ajobmart_customer_logged_in')) {
+            $customerId = (int) session()->get('ajobmart_customer_db_id');
+
+            if ($customerId > 0) {
+                $cartItem = $this->db
+                    ->table('ajobmart_cart_items')
+                    ->select('wow_offer_applied')
+                    ->where('customer_id', $customerId)
+                    ->where('product_id', $id)
+                    ->get()
+                    ->getRowArray();
+
+                $wowOfferApplied = (int) ($cartItem['wow_offer_applied'] ?? 0);
+            }
+        }
+
         return $this->view('products/details', [
-            'product'    => $product,
-            'images'     => $images,
-            'attributes' => $attributes,
+            'product'         => $product,
+            'images'          => $images,
+            'attributes'      => $attributes,
+            'wowOfferApplied' => $wowOfferApplied,
         ]);
     }
+
 }

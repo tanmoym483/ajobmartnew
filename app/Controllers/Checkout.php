@@ -77,23 +77,57 @@ class Checkout extends BaseController
                 ->with('error', 'Please select a valid delivery address.');
         }
 
-        // Product subtotal and shipping allowance
+        // Product price and discount calculations
         $subtotal = 0.0;
+        $totalMrp = 0.0;
         $includedShipping = 0.0;
+        $totalSelling = 0.0;
+        $wowProductDiscount = 0.0;
+        $wowProductDiscountCod = 0.0;
+        $wowEligibleSubtotal = 0.0;
 
         foreach ($cartItems as $item) {
-            $quantity = max(0, (int) ($item['quantity'] ?? 0));
-            $price = (float) ($item['listing_price'] ?? 0);
-            $allowance = (float) ($item['shipping_allowance'] ?? 0);
 
-            if ($quantity <= 0 || $price < 0 || $allowance < 0) {
+            $quantity = max(0, (int) ($item['quantity'] ?? 0));
+
+            $price = (float) ($item['listing_price'] ?? 0);
+            $mrp = (float) ($item['mrp'] ?? 0);
+            $allowance = (float) ($item['shipping_allowance'] ?? 0);
+            $sellingPrice = (float) ($item['selling_price'] ?? 0);
+
+            if (
+                $quantity <= 0 ||
+                $price < 0 ||
+                $mrp < 0 ||
+                $allowance < 0
+            ) {
                 return redirect()->to(site_url('/'))
                     ->with('error', 'Your cart contains an invalid item.');
             }
 
             $subtotal += $price * $quantity;
+            $totalMrp += $mrp * $quantity;
             $includedShipping += $allowance * $quantity;
+            $totalSelling += $sellingPrice * $quantity;
+
+            // Only eligible WOW products
+            if ((int) ($item['wow_offer_applied'] ?? 0) === 1) {
+
+                $onlineUnitDiscount = floor($price * 20 / 100);
+                $codUnitDiscount = floor($price * 10 / 100);
+
+                $wowProductDiscount += $onlineUnitDiscount * $quantity;
+                $wowProductDiscountCod += $codUnitDiscount * $quantity;
+            }
         }
+
+
+
+        // Total savings from MRP and product WOW discount
+        $totalSavings = max(
+            0,
+            $totalMrp - $subtotal 
+        );
 
         $user = $this->db
             ->table('ajobmart_users')
@@ -141,9 +175,17 @@ class Checkout extends BaseController
             $actualShipping - $includedShipping
         );
 
+        $sellingTotal = max(
+            0, 
+            $totalSelling +
+            $deliveryFee +
+            $platformFee -
+            $couponDiscount);
+
         $finalTotal = max(
             0,
-            $subtotal +
+            $subtotal -
+            $wowProductDiscount +
             $deliveryFee +
             $platformFee -
             $couponDiscount
@@ -153,12 +195,19 @@ class Checkout extends BaseController
             'cartItems'        => $cartItems,
             'address'          => $address,
             'subtotal'         => round($subtotal, 2),
+            'selling_total'    => round($totalSelling, 2),
             'includedShipping' => round($includedShipping, 2),
             'actualShipping'   => round($actualShipping, 2),
             'deliveryFee'      => round($deliveryFee, 2),
             'couponDiscount'   => round($couponDiscount, 2),
             'platformFee'      => round($platformFee, 2),
+            'sellsTotal'       => round($sellingTotal, 2),
             'finalTotal'       => round($finalTotal, 2),
+            'totalMrp'            => round($totalMrp, 2),
+            'totalSavings'        => round($totalSavings, 2),
+            'wowEligibleSubtotal' => round($wowEligibleSubtotal, 2),
+            'wowProductDiscount' => round($wowProductDiscount, 2),
+            'wowProductDiscountCod' => round($wowProductDiscountCod, 2),
         ]);
     }
 
@@ -214,10 +263,12 @@ public function placeOrder()
     // Validate cart quantities and calculate product totals from listing_price.
     $subtotal = 0.0;
     $includedShipping = 0.0;
+    $sellingtotal = 0.0;
 
     foreach ($cartItems as $item) {
         $quantity = (int) ($item['quantity'] ?? 0);
         $price = (float) ($item['listing_price'] ?? 0);
+        $sellingprice = (float) ($item['selling_price'] ?? 0);
         $allowance = (float) ($item['shipping_allowance'] ?? 0);
         $stock = (int) ($item['stock_quantity'] ?? 0);
         $minimum = max(1, (int) ($item['min_order_quantity'] ?? 1));
@@ -250,10 +301,14 @@ public function placeOrder()
 
         $subtotal += $price * $quantity;
         $includedShipping += $allowance * $quantity;
+        $sellingtotal += $sellingprice * $quantity;
     }
 
     $subtotal = round($subtotal, 2);
     $includedShipping = round($includedShipping, 2);
+    $sellingtotal = round($sellingtotal, 2);
+
+    $sellingwithincludedshipping = $sellingtotal + $includedShipping;
 
     if ($subtotal <= 0) {
         return redirect()->back()
@@ -315,8 +370,8 @@ public function placeOrder()
 
     // 4. CALCULATE CASHBACK DISCOUNT
 
-    $couponDiscount = $subtotal >= 100
-        ? min($availableCashback, $subtotal / 6)
+    $couponDiscount = $sellingtotal >= 100
+        ? min($availableCashback, $sellingtotal / 6)
         : 0;
 
     $remainingCashback = max(
@@ -324,17 +379,67 @@ public function placeOrder()
         $availableCashback - $couponDiscount
     );
 
+    
     // Platform fee
     $platformFee = 5.00;
 
-    // Final payable amount
-    $totalAmount = round(
-        $subtotal +
-        $shippingCharge +
-        $platformFee -
-        $couponDiscount,
+    // ========================================
+    // WOW DISCOUNT CALCULATION
+    // ========================================
+
+    $wowDiscountRate = $paymentMethod === 'online' ? 20 : 10;
+
+    $wowEligibleSubtotal = 0.0;
+    $productWowDiscount = 0.0;
+
+    foreach ($cartItems as $item) {
+
+        // Only products with WOW offer enabled
+        if ((int) ($item['wow_offer_applied'] ?? 0) !== 1) {
+            continue;
+        }
+
+        $price = (float) ($item['listing_price'] ?? 0);
+        $quantity = (int) ($item['quantity'] ?? 0);
+
+        $wowEligibleSubtotal += $price * $quantity;
+
+        // Product WOW discount: per-unit calculation
+        $unitWowDiscount = floor(
+            $price * $wowDiscountRate / 100
+        );
+
+        $productWowDiscount += $unitWowDiscount * $quantity;
+    }
+
+    // Separate payment-method WOW discount,
+    // matching the checkout JavaScript calculation.
+    $paymentWowDiscount = floor(
+        $wowEligibleSubtotal * $wowDiscountRate / 100
+    );
+
+    $productWowDiscount = round($productWowDiscount, 2);
+    $paymentWowDiscount = round($paymentWowDiscount, 2);
+
+    // Total WOW discount
+    $totalWowDiscount = round(
+        $productWowDiscount + $paymentWowDiscount,
         2
     );
+
+    // Final payable amount after cashback and WOW discount
+    $totalAmount = round(
+        max(
+            0,
+            $subtotal +
+            $shippingCharge +
+            $platformFee -
+            $couponDiscount -
+            $productWowDiscount
+        ),
+        2
+    );
+
 
     if ($totalAmount <= 0) {
         return redirect()->back()
@@ -361,6 +466,10 @@ public function placeOrder()
         'order_status' => $paymentMethod === 'cod'
             ? 'confirmed'
             : 'pending_payment',
+        'wow_eligible_subtotal' => $wowEligibleSubtotal,
+        'product_wow_discount' => $productWowDiscount,
+        'payment_wow_discount' => $paymentWowDiscount,
+        'wow_discount_rate' => $wowDiscountRate,
     ];
 
     // echo '<pre>'; print_r($shippingResult['seller_shipments']); die;
@@ -379,37 +488,94 @@ public function placeOrder()
             ->with('error', 'Unable to create your order. Please try again.');
     }
 
-    // COD: confirm the order and clear the cart.
+    // COD: confirm order, deduct cashback and clear cart.
     if ($paymentMethod === 'cod') {
+
         $this->db->transBegin();
 
         try {
+
+            // 1. Confirm COD order
             $updated = $this->orderModel->updateOrder($orderId, [
                 'payment_status' => 'pending',
-                'order_status' => 'confirmed',
+                'order_status'   => 'confirmed',
             ]);
 
-            if (!$updated || !$this->cartModel->clearCustomerCart($customerId)) {
-                throw new \RuntimeException('Unable to confirm COD order.');
+            if (!$updated) {
+                throw new \RuntimeException(
+                    'Unable to confirm COD order.'
+                );
             }
 
+            // 2. Deduct cashback for COD order
+            $cashbackBalanceAfter = null;
+
+            if ($couponDiscount > 0) {
+
+                // Add order ID for cashback transaction
+                $cashbackOrder = $orderData;
+                $cashbackOrder['id'] = $orderId;
+
+                $cashbackBalanceAfter = $this->deductOrderCashback(
+                    $cashbackOrder,
+                    $customerId,
+                    null
+                );
+            }
+
+            // 3. Clear customer cart
+            $cartCleared = $this->cartModel->clearCustomerCart(
+                $customerId
+            );
+
+            if (!$cartCleared) {
+                throw new \RuntimeException(
+                    'Unable to clear customer cart.'
+                );
+            }
+
+            // 4. Validate transaction
             if ($this->db->transStatus() === false) {
-                throw new \RuntimeException('COD order transaction failed.');
+                throw new \RuntimeException(
+                    'COD order transaction failed.'
+                );
             }
 
+            // 5. Commit transaction
             $this->db->transCommit();
 
+            // 6. Update cashback session after successful commit
+            if ($cashbackBalanceAfter !== null) {
+
+                session()->set(
+                    'ajobmart_customer_coupon_amount',
+                    $cashbackBalanceAfter
+                );
+            }
+
             return redirect()->to(site_url('my-orders'))
-                ->with('success', 'Your order has been placed successfully.');
+                ->with(
+                    'success',
+                    'Your COD order has been placed successfully.'
+                );
+
         } catch (\Throwable $e) {
+
             $this->db->transRollback();
 
-            log_message('error', 'COD order confirmation failed: ' . $e->getMessage());
+            log_message(
+                'error',
+                'COD order confirmation failed: ' . $e->getMessage()
+            );
 
             return redirect()->to(site_url('checkout'))
-                ->with('error', 'Unable to confirm your COD order.');
+                ->with(
+                    'error',
+                    'Unable to confirm your COD order.'
+                );
         }
     }
+
 
     // Razorpay: create the gateway order.
     try {

@@ -1,4 +1,88 @@
+<style>
 
+/* CHECKOUT PRICE DETAILS */
+
+.aj-checkout-price-details {
+    background: #fff;
+    padding: 5px 0;
+}
+
+.aj-checkout-price-details h6 {
+    color: #202b3b;
+    font-size: 15px;
+}
+
+.aj-checkout-price-details .d-flex {
+    font-size: 13px;
+}
+
+/* Savings */
+
+.aj-checkout-savings {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px;
+    border-radius: 10px;
+    background: #edf9f1;
+    color: #148348;
+    font-size: 13px;
+}
+
+/* Product WOW */
+
+.aj-checkout-product-wow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: #fff8e9;
+    border: 1px dashed #edc46f;
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+.aj-checkout-product-wow > div {
+    color: #95600b;
+}
+
+/* Final total */
+
+.aj-checkout-final-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background: #f1f8f3;
+    border-radius: 12px;
+}
+
+.aj-checkout-final-total > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.aj-checkout-final-total > div strong {
+    font-size: 15px;
+    color: #172033;
+}
+
+.aj-checkout-final-total small {
+    font-size: 10px;
+    color: #87909e;
+}
+
+.aj-checkout-final-total > strong {
+    font-size: 23px;
+    font-weight: 800;
+    color: #148348;
+    white-space: nowrap;
+}
+
+</style>
 <div class="container py-4">
     <div class="d-flex align-items-center gap-3 mb-4">
         <a
@@ -291,47 +375,83 @@
                     <hr>
 
                     
-                    <!-- Product subtotal -->
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Subtotal</span>
-                        <strong>
-                            ₹<?= number_format($subtotal, 2) ?>
-                        </strong>
-                    </div>
+                    
+                    <!-- CHECKOUT PRICE DETAILS -->
 
-                    <!-- Expandable charges -->
-                    <button
-                        type="button"
-                        class="btn btn-light w-100 d-flex justify-content-between align-items-center mb-2"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#ajCheckoutCharges"
-                        aria-expanded="false"
-                    >
-                        <span>
+                    <div class="aj-checkout-price-details">
+
+                        <h6 class="fw-bold mb-3">
                             <i class="bi bi-receipt me-2"></i>
-                            Delivery & Charges
-                        </span>
-                        <i class="bi bi-chevron-down"></i>
-                    </button>
+                            Price Details
+                        </h6>
 
-                    <div class="collapse" id="ajCheckoutCharges">
-
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Coupon Discount</span>
-                            <strong class="text-success">
-                                −₹<?= number_format($couponDiscount, 2) ?>
-                            </strong>
-                        </div>
-
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Platform Fee</span>
+                        <!-- MRP -->
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted">Total MRP</span>
                             <strong>
-                                ₹<?= number_format($platformFee, 2) ?>
+                                ₹<?= number_format($totalMrp, 2) ?>
                             </strong>
                         </div>
 
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Delivery Fee</span>
+                        <!-- PRODUCT SUBTOTAL -->
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted">Product Subtotal</span>
+                            <strong>
+                                ₹<?= number_format($subtotal, 2) ?>
+                            </strong>
+                        </div>
+
+                        <!-- TOTAL SAVINGS -->
+                        <div class="aj-checkout-savings mb-3">
+                            <div>
+                                <i class="bi bi-piggy-bank-fill me-2"></i>
+                                <strong>You are saving</strong>
+                            </div>
+
+                            <strong id="ajCheckoutTotalSavings">
+                                ₹<?= number_format($totalSavings, 2) ?>
+                            </strong>
+                        </div>
+
+                        <!-- PRODUCT WOW DISCOUNT -->
+                        <?php if ($wowProductDiscount > 0): ?>
+
+                            <!-- PRODUCT WOW DISCOUNT -->
+                            <div
+                                class="aj-checkout-product-wow mb-3"
+                                id="ajCheckoutProductWow"
+                                style="<?= $wowProductDiscount > 0 ? '' : 'display:none;' ?>"
+                            >
+                                <div>
+                                    <i class="bi bi-lightning-charge-fill me-2"></i>
+                                    <strong id="ajCheckoutProductWowLabel">
+                                        Product WOW Discount
+                                    </strong>
+                                </div>
+
+                                <strong
+                                    class="text-success"
+                                    id="ajCheckoutProductWowAmount"
+                                >
+                                    -₹<?= number_format($wowProductDiscount, 2) ?>
+                                </strong>
+                            </div>
+
+                        <?php endif; ?>
+
+                        <hr>
+
+                        <!-- ADDITIONAL CHARGES -->
+                        <div class="fw-bold small mb-3">
+                            Additional Charges
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted">
+                                <i class="bi bi-truck me-2"></i>
+                                Delivery Fee
+                            </span>
+
                             <strong>
                                 <?= $deliveryFee > 0
                                     ? '₹' . number_format($deliveryFee, 2)
@@ -339,28 +459,54 @@
                             </strong>
                         </div>
 
-                        <div class="small text-muted mb-3">
-                            Delivery charges are calculated based on your delivery
-                            location and applicable shipping allowance.
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted">
+                                <i class="bi bi-wallet2 me-2"></i>
+                                Cashback Used
+                            </span>
+
+                            <strong class="text-success">
+                                -₹<?= number_format($couponDiscount, 2) ?>
+                            </strong>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted">
+                                Platform Fee
+                            </span>
+
+                            <strong>
+                                ₹<?= number_format($platformFee, 2) ?>
+                            </strong>
                         </div>
 
                     </div>
 
                     <hr>
 
-                    <!-- Final payable -->
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    
+
+
+
+                    <!-- FINAL PAYABLE -->
+                    <div class="aj-checkout-final-total mb-3">
+
                         <div>
                             <strong>Total Payable</strong>
-                            <div class="small text-muted">
-                                Inclusive of displayed charges
-                            </div>
+                            <small>After applicable discounts and charges</small>
                         </div>
 
-                        <strong class="fs-5" id="ajCheckoutTotal">
+                        <strong
+                            id="ajCheckoutTotal"
+                            data-original-total="<?= esc(number_format((float) $finalTotal, 2, '.', '')) ?>"
+                            data-subtotal="<?= esc(number_format((float) $subtotal, 2, '.', '')) ?>"
+                            data-original-savings="<?= esc(number_format((float) $totalSavings, 2, '.', '')) ?>"
+                        >
                             ₹<?= number_format($finalTotal, 2) ?>
                         </strong>
+
                     </div>
+
 
 
                     <div class="alert alert-info small mt-3 mb-3">
@@ -430,6 +576,139 @@ document.addEventListener('DOMContentLoaded', function () {
     codRadio.addEventListener('change', updatePaymentOptions);
 
     updatePaymentOptions();
+
+    
+
+// ========================================
+// WOW DISCOUNT CALCULATION
+// ========================================
+
+
+
+
+
+
+
+
+const checkoutTotal = document.getElementById('ajCheckoutTotal');
+
+const wowEligibleSubtotal = <?= json_encode((float) $wowEligibleSubtotal) ?>;
+
+if (checkoutTotal) {
+
+    const originalTotal = Number(checkoutTotal.dataset.originalTotal) || 0;
+
+    function formatWowCurrency(amount) {
+        return '₹' + Number(amount).toLocaleString('en-IN', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    
+    function calculateWowDiscount() {
+
+        const isOnline = onlineRadio.checked;
+
+        // ========================================
+        // PAYMENT METHOD DISCOUNT PERCENTAGE
+        // ========================================
+
+        const discountPercentage = isOnline ? 20 : 10;
+
+        // ========================================
+        // PRODUCT WOW DISCOUNT
+        // ========================================
+
+        const productWowOnline = <?= json_encode((float) $wowProductDiscount) ?>;
+        const productWowCod = <?= json_encode((float) $wowProductDiscountCod) ?>;
+
+        const selectedProductWow = isOnline
+            ? productWowOnline
+            : productWowCod;
+
+        const productWowSection = document.getElementById('ajCheckoutProductWow');
+        const productWowAmount = document.getElementById('ajCheckoutProductWowAmount');
+
+        if (productWowSection && productWowAmount) {
+
+            productWowSection.style.display =
+                selectedProductWow > 0 ? 'flex' : 'none';
+
+            productWowAmount.textContent =
+                '-' + formatWowCurrency(selectedProductWow);
+        }
+
+        // ========================================
+        // PAYMENT METHOD WOW DISCOUNT
+        // ========================================
+
+        // Only eligible cart products
+        const paymentDiscountAmount = Math.floor(
+            wowEligibleSubtotal * discountPercentage / 100
+        );
+
+        
+
+        
+
+        
+
+        
+
+
+        // ========================================
+        // FINAL PAYABLE CALCULATION
+        // ========================================
+
+        // Original total already includes the online (20%) product WOW discount.
+        // Adjust it when COD is selected.
+        const productDiscountDifference =
+            productWowOnline - selectedProductWow;
+
+        const payableAmount = Math.max(
+            originalTotal +
+            productDiscountDifference -
+            paymentDiscountAmount,
+            0
+        );
+
+        // Update final payable amount
+        checkoutTotal.textContent =
+            formatWowCurrency(Math.round(payableAmount));
+
+        // ========================================
+        // UPDATE TOTAL SAVINGS
+        // ========================================
+
+        const totalSavingsElement =
+            document.getElementById('ajCheckoutTotalSavings');
+
+        if (totalSavingsElement) {
+
+            const originalSavings =
+                Number(checkoutTotal.dataset.originalSavings) || 0;
+
+            const updatedSavings =
+                originalSavings -
+                productWowOnline +
+                selectedProductWow +
+                paymentDiscountAmount;
+
+            totalSavingsElement.textContent =
+                formatWowCurrency(Math.max(0, updatedSavings));
+        }
+    }
+
+
+    onlineRadio.addEventListener('change', calculateWowDiscount);
+    codRadio.addEventListener('change', calculateWowDiscount);
+
+    // Initial calculation
+    calculateWowDiscount();
+}
+
+
 });
 
 </script>

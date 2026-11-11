@@ -83,6 +83,8 @@
 
         selling_price: Number(item.selling_price) || 0,
         mrp: Number(item.mrp) || 0,
+        wow_offer_applied:
+            Number(item.wow_offer_applied) === 1 ? 1 : 0,
         image_path: item.image_path || '',
         image_url: item.image_url || '',
         min_order_quantity: Math.max(
@@ -159,76 +161,196 @@
 
     };
 
-    function syncCardControls() {
-        $('.aj-product-cart-action').each(function () {
-            const wrapper = $(this);
-            const productId = Number(wrapper.data('product-id'));
-            const item = findItem(productId);
+    
+function syncCardControls() {
+    $('.aj-product-cart-action').each(function () {
+
+        const wrapper = $(this);
+        const productId = Number(wrapper.data('product-id'));
+        const item = findItem(productId);
+
+        // PRODUCT DETAILS PAGE
+        if (wrapper.attr('id') === 'ajProductCartAction') {
+
+            const addButton = wrapper.find('#ajProductAddCart');
+            const goToCart = wrapper.find('#ajProductGoToCart');
 
             if (!item) {
-                wrapper.html(`
-                    <button type="button"
-                            class="aj-add-cart"
-                            data-product-id="${productId}">
-                        <i class="bi bi-cart-plus"></i>
-                        Add to Cart
-                    </button>
-                `);
+                if (addButton.length) {
+                    addButton.show();
+                }
+
+                if (goToCart.length) {
+                    goToCart.hide();
+                }
+
                 return;
             }
 
-            const minimum = Math.max(
-                1, Number(item.min_order_quantity) || 1
-            );
+            if (addButton.length) {
+                addButton.hide();
+            }
 
+            if (goToCart.length) {
+                goToCart.show();
+            }
+
+            return;
+        }
+
+        // PRODUCT LISTING CARDS
+        if (!item) {
             wrapper.html(`
-                <div class="aj-cart-quantity"
-                     data-product-id="${productId}">
-                    <button type="button"
-                            class="aj-cart-qty-btn"
-                            data-action="decrement"
-                            data-product-id="${productId}"
-                            aria-label="Decrease quantity">−</button>
-
-                    <span class="aj-cart-qty-value">
-                        ${Number(item.quantity)}
-                    </span>
-
-                    <button type="button"
-                            class="aj-cart-qty-btn"
-                            data-action="increment"
-                            data-product-id="${productId}"
-                            aria-label="Increase quantity">+</button>
-                </div>
+                <button type="button"
+                        class="aj-add-cart"
+                        data-product-id="${productId}">
+                    <i class="bi bi-cart-plus"></i>
+                    Add to Cart
+                </button>
             `);
-        });
+
+            return;
+        }
+
+        const minimum = Math.max(
+            1, Number(item.min_order_quantity) || 1
+        );
+
+        wrapper.html(`
+            <div class="aj-cart-quantity"
+                 data-product-id="${productId}">
+                <button type="button"
+                        class="aj-cart-qty-btn"
+                        data-action="decrement"
+                        data-product-id="${productId}"
+                        aria-label="Decrease quantity">−</button>
+
+                <span class="aj-cart-qty-value">
+                    ${Number(item.quantity)}
+                </span>
+
+                <button type="button"
+                        class="aj-cart-qty-btn"
+                        data-action="increment"
+                        data-product-id="${productId}"
+                        aria-label="Increase quantity">+</button>
+            </div>
+        `);
+    });
+}
+
+// Update product detail Add to Cart button amount
+window.ajUpdateProductAddCartAmount = function (amount) {
+    const amountElement = document.getElementById('ajAddCartAmount');
+
+    if (!amountElement) {
+        return;
     }
 
+    const price = Number(amount);
+
+    if (!Number.isFinite(price)) {
+        return;
+    }
+
+    amountElement.textContent = '₹' + price.toFixed(2);
+};
+// function syncCardControls() {
+//         $('.aj-product-cart-action').each(function () {
+//             const wrapper = $(this);
+//             const productId = Number(wrapper.data('product-id'));
+//             const item = findItem(productId);
+
+//             if (!item) {
+//                 wrapper.html(`
+//                     <button type="button"
+//                             class="aj-add-cart"
+//                             data-product-id="${productId}">
+//                         <i class="bi bi-cart-plus"></i>
+//                         Add to Cart
+//                     </button>
+//                 `);
+//                 return;
+//             }
+
+//             const minimum = Math.max(
+//                 1, Number(item.min_order_quantity) || 1
+//             );
+
+//             wrapper.html(`
+//                 <div class="aj-cart-quantity"
+//                      data-product-id="${productId}">
+//                     <button type="button"
+//                             class="aj-cart-qty-btn"
+//                             data-action="decrement"
+//                             data-product-id="${productId}"
+//                             aria-label="Decrease quantity">−</button>
+
+//                     <span class="aj-cart-qty-value">
+//                         ${Number(item.quantity)}
+//                     </span>
+
+//                     <button type="button"
+//                             class="aj-cart-qty-btn"
+//                             data-action="increment"
+//                             data-product-id="${productId}"
+//                             aria-label="Increase quantity">+</button>
+//                 </div>
+//             `);
+//         });
+//     }
+
     
+
 function renderCart() {
     const container = $('#ajCartProducts');
-    const empty = $('#ajCartEmpty');
 
     updateBadge();
     syncCardControls();
 
     const subtotalElement = document.getElementById('ajCartSubtotal');
-    const deliveryElement = document.getElementById('ajCartDelivery');
+    const deliveryElement = document.getElementById('ajCartDeliveryFee');
     const totalElement = document.getElementById('ajCartTotal');
-    const cartcoupondiscount = document.getElementById('ajCartCouponDiscount');
-    const ajCartPlatformFee = document.getElementById('ajCartPlatformFee');
 
+    const hasItems = Array.isArray(cartItems) && cartItems.length > 0;
 
-    if (!cartItems.length) {
+    // Show or hide cart sections.
+    const productsSection = document.getElementById(
+        'ajCartProductsSection'
+    );
+
+    const summarySection = document.getElementById(
+        'ajCartSummarySection'
+    );
+
+    const trustSection = document.querySelector('.aj-cart-trust');
+    const emptyCart = document.getElementById('ajEmptyCart');
+
+    if (productsSection) {
+        productsSection.style.display = hasItems ? '' : 'none';
+    }
+
+    if (summarySection) {
+        summarySection.style.display = hasItems ? '' : 'none';
+    }
+
+    if (trustSection) {
+        trustSection.style.display = hasItems ? '' : 'none';
+    }
+
+    if (emptyCart) {
+        emptyCart.style.display = hasItems ? 'none' : '';
+    }
+
+    // EMPTY CART
+    if (!hasItems) {
         container.empty();
-        empty.show();
 
         $('#ajCartSubtotal').text(money(0));
-        $('#ajCartDelivery').text('FREE');
-        $('#ajCartTotal').text(money(0));
-        $('#ajCartCouponDiscount').text(money(0));
+        $('#ajCartDeliveryFee').text('—');
+        $('#ajCartCouponDiscount').text('-' + money(0));
         $('#ajCartPlatformFee').text(money(0));
-
+        $('#ajCartTotal').text(money(0));
 
         if (subtotalElement) {
             delete subtotalElement.dataset.baseSubtotal;
@@ -236,8 +358,11 @@ function renderCart() {
 
         if (totalElement) {
             delete totalElement.dataset.shippingAmount;
+            delete totalElement.dataset.actualShipping;
             delete totalElement.dataset.shippingPincode;
         }
+
+        window.AJ_SHIPPING_CHARGE = 0;
 
         if (typeof window.ajUpdateHeaderCashback === 'function') {
             window.ajUpdateHeaderCashback(
@@ -245,13 +370,13 @@ function renderCart() {
             );
         }
 
-        window.AJ_SHIPPING_CHARGE = 0;
         return;
     }
 
-    empty.hide();
-
+    // CART HAS PRODUCTS
+    let totalMrp = 0;
     let subtotal = 0;
+    let wowDiscount = 0;
     let html = '';
 
     cartItems.forEach(function (item) {
@@ -259,15 +384,39 @@ function renderCart() {
         const quantity = Number(item.quantity) || 1;
         const price = Number(item.listing_price) || 0;
         const lineTotal = price * quantity;
-        subtotal += lineTotal;
+        const mrp = Number(item.mrp) || 0;
+        const mrpTotal = mrp * quantity;
 
-        const image = item.image_url ||
-            (item.image_path
-                ? config.sharedImageBaseUrl
-                    ? config.sharedImageBaseUrl +
-                      String(item.image_path).replace(/^[\\/]+/, '')
-                    : ''
-                : '');
+        totalMrp += mrpTotal;
+
+        subtotal += lineTotal;
+        // WOW offer discount: 20% per eligible cart item
+        if (Number(item.wow_offer_applied) === 1) {
+
+            const itemDiscount = Math.floor(price * 20 / 100);
+
+            wowDiscount += itemDiscount * quantity;
+        }
+        
+
+        const imagePath = String(item.image_path || '')
+            .replace(/^[\\/]+/, '')
+            .replace(/^shared-images\//, '');
+
+        const siteBase = String(
+            config.siteUrl || window.site_url || ''
+        ).trim();
+
+        let image = '';
+
+        if (item.image_url && /^https?:\/\//i.test(item.image_url)) {
+            image = item.image_url;
+        } else if (imagePath && siteBase) {
+            image = new URL(
+                'shared-images/' + imagePath,
+                siteBase.replace(/\/?$/, '/')
+            ).href;
+        }
 
         html += `
             <div class="aj-cart-product" data-product-id="${id}">
@@ -319,18 +468,53 @@ function renderCart() {
     });
 
     container.html(html);
+
     $('#ajCartSubtotal').text(money(subtotal));
 
-    // Preserve the latest product subtotal.
+    // WOW OFFER DISCOUNT DISPLAY
+    const wowRow = document.getElementById('ajCartWowDiscount');
+    const wowDiscountRow = document.getElementById('ajCartWowDiscountRow');
+
+    if (wowRow && wowDiscountRow) {
+
+        if (wowDiscount > 0) {
+
+            wowDiscountRow.style.display = '';
+
+            wowRow.textContent = '-' + money(wowDiscount);
+
+        } else {
+
+            wowDiscountRow.style.display = 'none';
+
+            wowRow.textContent = '-' + money(0);
+        }
+    }
+
+    // Store values for the existing cart totals calculation
+    window.AJ_WOW_DISCOUNT = wowDiscount;
+    window.AJ_CART_SUBTOTAL = subtotal;
+
+    const mrpElement = document.getElementById('ajCartMrp');
+    const savingsElement = document.getElementById('ajCartTotalSavings');
+
+    const totalSavings =
+        
+        totalMrp - subtotal;
+
+
+    if (savingsElement) {
+        savingsElement.textContent = '₹' + totalSavings.toFixed(2);
+    }
+
+    if (mrpElement) {
+        mrpElement.textContent = '₹' + totalMrp.toFixed(2);
+    }
+
     if (subtotalElement) {
         subtotalElement.dataset.baseSubtotal = String(subtotal);
     }
 
-    // Preserve shipping only when the estimate is still for the
-    // current cart and its PIN has not been invalidated.
-    // Preserve the extra shipping fee calculated for the selected PIN.
-
-    // Preserve shipping estimate and calculate final payable amount.
     const shippingPin =
         totalElement?.dataset.shippingPincode || '';
 
@@ -340,15 +524,16 @@ function renderCart() {
     const actualShipping =
         Number(totalElement?.dataset.actualShipping);
 
+    const currentPin = (
+        document.getElementById('ajShippingPin')?.value || ''
+    ).trim();
+
     const hasSavedShipping =
         shippingPin !== '' &&
         savedShipping !== undefined &&
         Number.isFinite(actualShipping) &&
-        shippingPin === (
-            document.getElementById('ajShippingPin')?.value || ''
-        ).trim();
+        shippingPin === currentPin;
 
-    // Recalculate cart totals using the latest available estimate.
     if (hasSavedShipping) {
 
         if (typeof window.ajUpdateCartTotals === 'function') {
@@ -358,25 +543,19 @@ function renderCart() {
     } else {
 
         $('#ajCartDeliveryFee').text('Not calculated');
-
-        $('#ajCartCouponDiscount').text('−' + money(0));
-
+        $('#ajCartCouponDiscount').text('-' + money(0));
         $('#ajCartPlatformFee').text(money(5));
-
         $('#ajCartTotal').text(money(subtotal + 5));
 
         window.AJ_SHIPPING_CHARGE = 0;
-
     }
 
-    // Request a fresh courier estimate after cart changes.
+    // Recalculate shipping after cart changes.
     if (typeof window.ajRefreshShippingAfterCartChange === 'function') {
-
         window.ajRefreshShippingAfterCartChange();
-
     }
-
 }
+
 
 
     function applyServerCart(response) {
@@ -392,6 +571,8 @@ function renderCart() {
 
         renderCart();
     }
+
+
 
     function request(url, data) {
         const payload = Object.assign({}, data || {});
@@ -412,6 +593,51 @@ function renderCart() {
             return response;
         });
     }
+
+    document.addEventListener('aj:wow-offer-change', function (event) {
+    const detail = event.detail || {};
+
+    const productId = Number(detail.product_id);
+    const applied = Number(detail.applied);
+
+    if (!productId || ![0, 1].includes(applied)) {
+        return;
+    }
+
+    // Guest cart: update localStorage.
+    if (!config.loggedIn) {
+        const item = findItem(productId);
+
+        if (item) {
+            item.wow_offer_applied = applied;
+            saveGuestCart();
+            renderCart();
+        }
+
+        return;
+    }
+
+    // Logged-in customer: update the database through the controller.
+    request(config.wowOfferUrl, {
+        product_id: productId,
+        applied: applied
+    })
+    .then(function (response) {
+        if (response && response.status) {
+            if (Array.isArray(response.items)) {
+                applyServerCart(response);
+            }
+        } else {
+            console.error(
+                'Unable to update WOW offer:',
+                response?.message || 'Unknown error'
+            );
+        }
+    })
+    .catch(function (error) {
+        console.error('WOW offer update failed:', error);
+    });
+});
 
     function showError(message) {
         if (window.Swal) {
@@ -474,7 +700,11 @@ function renderCart() {
 
         cartRequestRunning = true;
 
-        request(config.addUrl, { product_id: productId })
+        request(config.addUrl, { product_id: productId, wow_offer_applied: (
+        document.getElementById('ajWowOffer')?.dataset.offerApplied === 'true'
+            ? 1
+            : 0
+    ) })
             .done(function (response) {
                 applyServerCart(response);
             })
@@ -604,32 +834,80 @@ function renderCart() {
 
     // Call this from your existing AJAX success callback with response.products.
     window.ajCartRegisterProducts = function (products) {
+
         (products || []).forEach(function (product) {
+
             const id = Number(product.id);
             if (!id) return;
+
+            const imagePath = product.image_path || '';
 
             productCatalog[id] = {
                 product_id: id,
                 product_name: product.product_name || 'Product',
+
                 listing_price: Number(product.listing_price) || 0,
+
                 shipping_allowance: Number(
                     product.shipping_allowance ??
                     product.product_shipping_allowance ??
                     product.shippingAllowance
                 ) || 0,
+
+                selling_price: Number(product.selling_price) || 0,
+
                 mrp: Number(product.mrp) || 0,
+
                 stock_quantity: Number(product.stock_quantity) || 0,
+
                 min_order_quantity: Math.max(
-                    1, Number(product.min_order_quantity) || 1
+                    1,
+                    Number(product.min_order_quantity) || 1
                 ),
-                image_path: product.image_path || '',
-                image_url: product.image_path
+
+                image_path: imagePath,
+
+                image_url: imagePath
                     ? (window.site_url || '') +
-                      'shared-images/' +
-                      String(product.image_path).replace(/^[\\/]+/, '')
+                    'shared-images/' +
+                    String(imagePath).replace(/^[\\/]+/, '')
                     : ''
             };
         });
+
+        // Update existing guest cart with registered product information.
+        if (!window.AJ_CART_CONFIG?.loggedIn) {
+
+            let guestCart = readGuestCart();
+
+            guestCart = guestCart.map(function (item) {
+
+                const id = Number(
+                    item.product_id || item.productId || item.id
+                );
+
+                const product = productCatalog[id];
+
+                if (!product) return item;
+
+                return {
+                    ...item,
+                    product_name: product.product_name,
+                    listing_price: product.listing_price,
+                    selling_price: product.selling_price,
+                    shipping_allowance: product.shipping_allowance,
+                    mrp: product.mrp,
+                    stock_quantity: product.stock_quantity,
+                    min_order_quantity: product.min_order_quantity,
+                    image_path: product.image_path,
+                    image_url: product.image_url
+                };
+            });
+
+            cartItems = guestCart.map(normalizeGuestItem);
+            saveGuestCart();
+            renderCart();
+        }
 
         syncCardControls();
     };
@@ -683,23 +961,128 @@ function renderCart() {
 
 
     window.ajGetShippingCartItems = function () {
-    
-    return (cartItems || []).map(function (item) {
-        return {
-            product_id: Number(
-                item.product_id ?? item.productId ?? item.id
-            ),
-            quantity: Number(
-                item.quantity ?? item.qty ?? item.cart_quantity ?? 1
-            ),
-            listing_price: Number(item.listing_price) || 0,
-            shipping_allowance: Number(item.shipping_allowance) || 0
-        };
-    }).filter(function (item) {
-        return item.product_id > 0 && item.quantity > 0;
-    });
-};
 
+        return (cartItems || []).map(function (item) {
+            return {
+                product_id: Number(
+                    item.product_id ?? item.productId ?? item.id
+                ),
+                quantity: Number(
+                    item.quantity ?? item.qty ?? item.cart_quantity ?? 1
+                ),
+                listing_price: Number(item.listing_price) || 0,
+
+                // Added selling price
+                selling_price: Number(
+                    item.selling_price ??
+                    item.product_selling_price ??
+                    0
+                ),
+
+                shipping_allowance: Number(item.shipping_allowance) || 0
+            };
+        }).filter(function (item) {
+            return item.product_id > 0 && item.quantity > 0;
+        });
+
+    };
+
+    window.ajCalculateCartShipping = async function (address) {
+
+    const config = window.AJ_CART_CONFIG;
+
+    if (!config || !address) {
+        return;
+    }
+
+    const pincode = String(
+        address.pincode || address.pin_code || ''
+    ).trim();
+
+    if (!/^[0-9]{6}$/.test(pincode)) {
+        console.warn('Invalid delivery PIN code.');
+        return;
+    }
+
+    const items = window.ajGetShippingCartItems();
+
+    if (!items || !items.length) {
+        return;
+    }
+
+    const feeElement = document.getElementById('ajCartDeliveryFee');
+
+    if (feeElement) {
+        feeElement.textContent = 'Calculating...';
+    }
+
+    try {
+
+        const response = await fetch(config.shippingEstimateUrl, {
+
+            method: 'POST',
+
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                [config.csrfHeader]: config.csrfHash
+            },
+
+            body: JSON.stringify({
+                pincode: pincode,
+                items: items
+            })
+
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+
+            throw new Error(
+                result.message || 'Unable to calculate delivery charge.'
+            );
+
+        }
+
+        // Calculate customer-payable shipping across all sellers.
+        const customerShipping = (
+            result.seller_shipments || []
+        ).reduce(function (total, seller) {
+
+            return total + Number(seller.customer_shipping || 0);
+
+        }, 0);
+
+        window.AJ_SHIPPING_CHARGE = customerShipping;
+
+        if (feeElement) {
+            feeElement.textContent =
+                '₹' + customerShipping.toFixed(2);
+        }
+
+        // Refresh the cart total using your existing calculation.
+        if (typeof window.ajUpdateCartTotals === 'function') {
+            window.ajUpdateCartTotals();
+        }
+
+        console.log('Shipping estimate:', result);
+
+        return result;
+
+    } catch (error) {
+
+        console.error('Shipping calculation error:', error);
+
+        window.AJ_SHIPPING_CHARGE = 0;
+
+        if (feeElement) {
+            feeElement.textContent = 'Unavailable';
+        }
+
+        return null;
+    }
+};
 
 
 // $(async function () {
@@ -741,6 +1124,35 @@ function renderCart() {
 //     }
 // });
 
+window.ajToggleCartSections = function (hasItems) {
 
+    const productsSection = document.getElementById(
+        'ajCartProductsSection'
+    );
+
+    const summarySection = document.getElementById(
+        'ajCartSummarySection'
+    );
+
+    const trustSection = document.querySelector('.aj-cart-trust');
+
+    const emptyCart = document.getElementById('ajEmptyCart');
+
+    if (productsSection) {
+        productsSection.style.display = hasItems ? '' : 'none';
+    }
+
+    if (summarySection) {
+        summarySection.style.display = hasItems ? '' : 'none';
+    }
+
+    if (trustSection) {
+        trustSection.style.display = hasItems ? '' : 'none';
+    }
+
+    if (emptyCart) {
+        emptyCart.style.display = hasItems ? 'none' : '';
+    }
+};
 
 })(jQuery);

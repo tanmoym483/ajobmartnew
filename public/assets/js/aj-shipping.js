@@ -21,7 +21,6 @@
 
     if (
         !shippingElement ||
-        !cartElement ||
         !addressModalElement ||
         !form ||
         !pinInput ||
@@ -30,7 +29,7 @@
         !messageBox ||
         !window.bootstrap
     ) {
-        console.error('Ajobmart shipping/cart modal elements or Bootstrap were not found.');
+        console.error('Ajobmart shipping elements or Bootstrap were not found.');
         return;
     }
 
@@ -136,6 +135,13 @@
                 item.price ??
                 0
             ),
+
+            selling_price: Number(
+                item.selling_price ??
+                item.product_selling_price ??
+                0
+            ),
+
             shipping_allowance: Number(
                 item.shipping_allowance ??
                 item.product_shipping_allowance ??
@@ -212,6 +218,7 @@ function updateCartTotals(actualShippingAmount) {
 
     }, 0);
 
+    const wowDiscount = Number(window.AJ_WOW_DISCOUNT) || 0;
 
     // 2. INCLUDED SHIPPING ALLOWANCE
 
@@ -260,6 +267,14 @@ function updateCartTotals(actualShippingAmount) {
         Number(actualShippingAmount) || 0
     );
 
+    // SELLER SELLING PRICE TOTAL
+    const sellingTotal = items.reduce(function (sum, item) {
+
+        return sum +
+            (Number(item.selling_price) || 0) *
+            (Number(item.quantity) || 0);
+
+    }, 0);
 
     // 3. Customer delivery fee.
     let deliveryFee = 0;
@@ -282,8 +297,8 @@ function updateCartTotals(actualShippingAmount) {
         Number(window.AJ_CASHBACK_BALANCE) || 0
     );
 
-    const couponDiscount = subtotal >= 100
-        ? Math.min(availableCashback, subtotal / 6)
+    const couponDiscount = sellingTotal >= 100
+        ? Math.min(availableCashback, sellingTotal / 6)
         : 0;
 
     // Remaining cashback balance after cart deduction.
@@ -315,7 +330,8 @@ function updateCartTotals(actualShippingAmount) {
 
     const finalTotal = Math.max(
         0,
-        subtotal +
+        subtotal -
+        wowDiscount +
         deliveryFee +
         platformFee -
         couponDiscount
@@ -544,6 +560,14 @@ window.ajUpdateCartTotals = updateCartTotals;
 
         savedAddress = selectedAddress;
 
+        // Persist the actual selected address
+        if (selectedAddress) {
+            sessionStorage.setItem(
+                'ajSelectedDeliveryAddressId',
+                String(selectedAddress.id)
+            );
+        }
+
         renderSavedAddressList();
         renderCartDeliveryAddress();
 
@@ -627,13 +651,12 @@ function renderSavedAddressList() {
     }
 
     async function showExistingCart() {
+
         if (typeof window.ajCartRefresh === 'function') {
             await window.ajCartRefresh();
         }
 
-        bootstrap.Modal
-            .getOrCreateInstance(cartElement)
-            .show();
+        renderCartDeliveryAddress();
     }
 
     async function estimateShipping(pin) {
@@ -798,6 +821,7 @@ window.ajRefreshShippingAfterCartChange =
     }
 
     async function selectDeliveryAddress(address) {
+
     if (!address || !address.id) {
         throw new Error('Please select a valid delivery address.');
     }
@@ -808,11 +832,9 @@ window.ajRefreshShippingAfterCartChange =
         throw new Error('The selected address has an invalid PIN code.');
     }
 
-    // Update BOTH selected-address variables.
     selectedAddress = address;
     savedAddress = address;
 
-    // Preserve the selected address after a page refresh.
     sessionStorage.setItem(
         'ajSelectedDeliveryAddressId',
         String(address.id)
@@ -823,19 +845,18 @@ window.ajRefreshShippingAfterCartChange =
     renderSavedAddressList();
     renderCartDeliveryAddress(address);
 
-    // Calculate shipping for the newly selected address.
+    // Calculate shipping for the selected address.
     await estimateShipping(pin);
 
+    // Refresh the cart without opening another modal.
     if (typeof window.ajCartRefresh === 'function') {
         await window.ajCartRefresh();
     }
 
-    // Close the address modal, then reopen the cart.
-    addressModalElement.addEventListener('hidden.bs.modal', function openCart() {
-        bootstrap.Modal.getOrCreateInstance(cartElement).show();
-    }, { once: true });
-
-    bootstrap.Modal.getOrCreateInstance(addressModalElement).hide();
+    // Close only the address selection modal.
+    bootstrap.Modal
+        .getOrCreateInstance(addressModalElement)
+        .hide();
 }
 
     async function openCartFlow() {
@@ -924,46 +945,51 @@ window.ajRefreshShippingAfterCartChange =
      * - Logged-in customer: close cart and open the saved-address list.
      * - Guest: close cart and open the existing PIN modal.
      */
-    const addressSelector = document.getElementById('ajCartDeliverySelector');
+    const addressSelector = document.getElementById(
+            'ajCartDeliverySelector'
+        );
 
-    if (addressSelector) {
-        addressSelector.addEventListener('click', async function (event) {
-            event.preventDefault();
+        if (addressSelector) {
 
-            if (shippingRequestInProgress || addressSelectionInProgress) {
-                return;
-            }
+            addressSelector.addEventListener('click', async function (event) {
 
-            if (!loggedIn) {
-                const cartModal = bootstrap.Modal.getOrCreateInstance(cartElement);
+                event.preventDefault();
 
-                cartElement.addEventListener('hidden.bs.modal', function onHidden() {
-                    cartElement.removeEventListener('hidden.bs.modal', onHidden);
-                    openShippingGate(false);
-                }, { once: true });
-
-                cartModal.hide();
-                return;
-            }
-
-            const cartModal = bootstrap.Modal.getOrCreateInstance(cartElement);
-
-            cartElement.addEventListener('hidden.bs.modal', async function onHidden() {
-                cartElement.removeEventListener('hidden.bs.modal', onHidden);
+                if (shippingRequestInProgress || addressSelectionInProgress) {
+                    return;
+                }
 
                 try {
-                    await loadSavedAddresses();
-                    openAddressModal();
-                } catch (error) {
-                    console.error('Unable to load saved addresses:', error);
-                    await openShippingGate(false);
-                    showMessage(error.message || 'Unable to load saved addresses.', 'danger');
-                }
-            }, { once: true });
 
-            cartModal.hide();
-        });
-    }
+                    if (!loggedIn) {
+
+                        await openShippingGate(false);
+
+                        return;
+                    }
+
+                    await loadSavedAddresses();
+
+                    if (!savedAddresses.length) {
+
+                        await openShippingGate(true);
+
+                        return;
+                    }
+
+                    openAddressModal();
+
+                } catch (error) {
+
+                    console.error('Unable to open delivery addresses:', error);
+
+                    alert(
+                        error.message || 'Unable to load delivery addresses.'
+                    );
+                }
+
+            });
+        }
 
     /*
      * Select a saved address from the address list.
@@ -1123,15 +1149,7 @@ window.ajRefreshShippingAfterCartChange =
 
             shippingModal.hide();
 
-            shippingElement.addEventListener('hidden.bs.modal', async function onHidden() {
-                shippingElement.removeEventListener('hidden.bs.modal', onHidden);
-
-                try {
-                    await showExistingCart();
-                } catch (error) {
-                    console.error('Unable to open cart after shipping estimate:', error);
-                }
-            }, { once: true });
+            await showExistingCart();
 
         } catch (error) {
             showMessage(error.message || 'Unable to calculate shipping.', 'danger');
@@ -1155,41 +1173,6 @@ window.ajRefreshShippingAfterCartChange =
     renderCartDeliveryAddress();
     
 
-document.getElementById('ajSavedAddressList')?.addEventListener('click', async function (event) {
-    const button = event.target.closest('[data-address-id]');
-
-    if (!button) return;
-
-    const addressId = Number(button.dataset.addressId);
-
-    const address = savedAddresses.find(
-        item => Number(item.id) === addressId
-    );
-
-    if (!address) {
-        console.error('Selected address not found:', addressId);
-        return;
-    }
-
-    console.log('Address clicked:', address);
-
-    selectedAddress = address;
-    savedAddress = address;
-
-    renderSavedAddressList();
-
-    console.log('Selected address updated:', selectedAddress);
-    console.log('Destination PIN:', address.pincode);
-
-    try {
-        await estimateShipping(address.pincode);
-        await window.ajCartRefresh();
-
-        console.log('Shipping recalculated for:', address.pincode);
-    } catch (error) {
-        console.error('Address/shipping update failed:', error);
-    }
-});
 
 
 
@@ -1263,4 +1246,32 @@ if (chargeToggle && chargeDetails) {
 }
 
 
+function initializeCartPage() {
+
+    if (!document.querySelector('.aj-cart-page')) {
+        return;
+    }
+
+    if (window.AJ_CART_PAGE_INITIALIZED) {
+        return;
+    }
+
+    window.AJ_CART_PAGE_INITIALIZED = true;
+
+    openCartFlow();
+}
+
+if (document.readyState === 'loading') {
+
+    document.addEventListener(
+        'DOMContentLoaded',
+        initializeCartPage,
+        { once: true }
+    );
+
+} else {
+
+    initializeCartPage();
+
+}
 })();

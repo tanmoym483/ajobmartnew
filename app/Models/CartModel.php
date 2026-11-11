@@ -15,6 +15,7 @@ class CartModel extends Model
         'customer_id',
         'product_id',
         'quantity',
+        'wow_offer_applied',
     ];
 
     protected $useTimestamps = true;
@@ -35,10 +36,12 @@ class CartModel extends Model
                 'p.listing_price',
                 'p.mrp',
                 'p.stock_quantity',
+                'p.selling_price',
                 'p.shipping_allowance',
                 'p.min_order_quantity',
                 'p.status',
                 'p.approval_status',
+                'c.wow_offer_applied',
                 '(
                     SELECT pi.image_path
                     FROM ajobmart_product_images pi

@@ -524,7 +524,7 @@ function loadtofetchpopularProducts() {
                                     </del>
                                 ` : ''}
                             </div>
-
+                            <!--
                             <div class="aj-product-cart-action"
                                 data-product-id="${Number(product.id) || 0}">
 
@@ -536,6 +536,7 @@ function loadtofetchpopularProducts() {
                                 </button>
 
                             </div>
+                            -->
                         </div>
                     </div>
                 `;
