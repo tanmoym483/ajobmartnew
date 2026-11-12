@@ -5302,3 +5302,681 @@ input {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+
+.aj-cart-wow-item {
+    margin: 10px 0;
+}
+
+.aj-cart-wow-applied,
+.aj-cart-wow-available {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.aj-cart-wow-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #fff3cd;
+    color: #856404;
+    padding: 5px 9px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.aj-cart-wow-apply {
+    background: #198754;
+    color: #fff;
+    border: 0;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.aj-cart-wow-remove {
+    background: #dc3545;
+    color: #fff;
+    border: 0;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.aj-cart-wow-apply:hover {
+    background: #157347;
+}
+
+.aj-cart-wow-remove:hover {
+    background: #bb2d3b;
+}
+
+.swal2-slide-in-bottom {
+    animation: wowSlideUp 0.5s ease-out;
+}
+
+.swal2-slide-out-bottom {
+    animation: wowSlideDown 0.4s ease-in;
+}
+
+@keyframes wowSlideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes wowSlideDown {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+}
+
+/* =================================
+   WOW OFFER PRODUCT CARD
+================================= */
+
+.aj-cart-wow-item {
+    position: relative;
+    overflow: hidden;
+    margin: 12px 0 5px;
+    padding: 12px;
+    border-radius: 13px;
+    isolation: isolate;
+    animation: ajWowCardEnter .65s ease both;
+}
+
+/* Available offer */
+
+.aj-cart-wow-item.is-available {
+    background: linear-gradient(120deg, #fff8df, #fff1c2, #fffaf0);
+    border: 1px solid #f5c542;
+    box-shadow: 0 4px 14px rgba(230, 166, 30, .13);
+}
+
+/* Applied offer */
+
+.aj-cart-wow-item.is-applied {
+    background: linear-gradient(120deg, #eafff1, #d9ffe8, #f2fff6);
+    border: 1px solid #38b96b;
+    box-shadow: 0 4px 15px rgba(22, 163, 74, .15);
+}
+
+/* Shine animation */
+
+.aj-wow-card-shine {
+    position: absolute;
+    top: -50%;
+    left: -100%;
+    width: 45%;
+    height: 200%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,.75),
+        transparent
+    );
+    transform: rotate(25deg);
+    animation: ajWowShine 4s ease-in-out infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.aj-wow-card-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.aj-wow-card-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.aj-wow-icon {
+    width: 39px;
+    height: 39px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    background: linear-gradient(135deg, #ffb800, #ff7b00);
+    color: white;
+    font-size: 20px;
+    animation: ajWowIconPulse 2s ease-in-out infinite;
+}
+
+.is-applied .aj-wow-icon {
+    background: linear-gradient(135deg, #22c55e, #07843b);
+}
+
+.aj-wow-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.aj-wow-card-info strong {
+    font-size: 11px;
+    font-weight: 800;
+    color: #a65b00;
+    letter-spacing: .35px;
+}
+
+.is-applied .aj-wow-card-info strong {
+    color: #087c38;
+}
+
+.aj-wow-card-info span {
+    font-size: 10px;
+    color: #665438;
+    line-height: 1.4;
+}
+
+.is-applied .aj-wow-card-info span {
+    color: #267246;
+}
+
+/* Apply button */
+
+.aj-cart-wow-apply,
+.aj-cart-wow-remove {
+    border: 0;
+    border-radius: 20px;
+    padding: 8px 12px;
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.aj-cart-wow-apply {
+    color: #fff;
+    background: linear-gradient(135deg, #ff9800, #f05a00);
+    box-shadow: 0 3px 10px rgba(240, 90, 0, .3);
+    animation: ajWowButtonPulse 1.8s infinite;
+}
+
+.aj-cart-wow-remove {
+    color: #087c38;
+    background: #fff;
+    border: 1px solid #9be4b4;
+}
+
+.aj-cart-wow-apply:hover,
+.aj-cart-wow-remove:hover {
+    transform: translateY(-2px);
+}
+
+.aj-cart-wow-apply:active,
+.aj-cart-wow-remove:active {
+    transform: scale(.94);
+}
+
+/* Bottom label */
+
+.aj-wow-card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 9px;
+    padding-top: 7px;
+    border-top: 1px dashed rgba(160, 110, 20, .25);
+    font-size: 9px;
+    color: #856b3b;
+}
+
+.aj-wow-card-bottom i {
+    margin-right: 3px;
+}
+
+.aj-wow-limited {
+    font-weight: 800;
+    letter-spacing: .5px;
+}
+
+/* Animations */
+
+@keyframes ajWowCardEnter {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes ajWowShine {
+    0%, 65% {
+        left: -100%;
+    }
+    100% {
+        left: 160%;
+    }
+}
+
+@keyframes ajWowIconPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.08);
+    }
+}
+
+@keyframes ajWowButtonPulse {
+    0%, 100% {
+        box-shadow: 0 3px 10px rgba(240, 90, 0, .25);
+    }
+    50% {
+        box-shadow: 0 3px 17px rgba(240, 90, 0, .55);
+    }
+}
+
+.aj-cart-product {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.aj-cart-product-image {
+    flex: 0 0 75px;
+    width: 75px;
+}
+
+.aj-cart-product-image img {
+    width: 75px;
+    height: 85px;
+    object-fit: contain;
+}
+
+.aj-cart-product-details {
+    flex: 1;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(145px, 190px);
+    align-items: center;
+    gap: 12px;
+}
+
+.aj-cart-product-info {
+    min-width: 0;
+}
+
+.aj-cart-product-info h6 {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.aj-cart-product-price {
+    font-size: 12px;
+}
+
+.aj-cart-product-bottom {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.aj-cart-line-total {
+    display: block;
+    margin-top: 8px;
+}
+
+/* WOW CARD BESIDE PRODUCT */
+
+.aj-cart-wow-item {
+    position: relative;
+    overflow: hidden;
+    min-width: 0;
+    padding: 12px;
+    border-radius: 13px;
+    isolation: isolate;
+    animation: ajWowCardEnter .5s ease both;
+}
+
+.aj-cart-wow-item.is-available {
+    background: linear-gradient(135deg, #fff8df, #ffedb4);
+    border: 1px solid #efbd42;
+}
+
+.aj-cart-wow-item.is-applied {
+    background: linear-gradient(135deg, #eafff1, #d3f9df);
+    border: 1px solid #38b96b;
+}
+
+.aj-wow-card-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.aj-wow-icon {
+    flex-shrink: 0;
+    font-size: 23px;
+    color: #ed9700;
+}
+
+.is-applied .aj-wow-icon {
+    color: #16a34a;
+}
+
+.aj-wow-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.aj-wow-card-info strong {
+    font-size: 10px;
+    color: #a65b00;
+    font-weight: 800;
+}
+
+.is-applied .aj-wow-card-info strong {
+    color: #087c38;
+}
+
+.aj-wow-card-info span {
+    font-size: 10px;
+    line-height: 1.4;
+    color: #665438;
+}
+
+.aj-cart-wow-apply,
+.aj-cart-wow-remove {
+    width: 100%;
+    margin-top: 10px;
+    border: 0;
+    border-radius: 20px;
+    padding: 8px 5px;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.aj-cart-wow-apply {
+    background: linear-gradient(135deg, #ff9800, #f05a00);
+    color: #fff;
+    animation: ajWowButtonPulse 1.8s infinite;
+}
+
+.aj-cart-wow-remove {
+    background: #fff;
+    color: #087c38;
+    border: 1px solid #9be4b4;
+}
+
+.aj-wow-card-bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 3px;
+    margin-top: 9px;
+    padding-top: 7px;
+    border-top: 1px dashed #dfc47e;
+    font-size: 9px;
+    color: #856b3b;
+}
+
+@keyframes ajWowCardEnter {
+    from {
+        opacity: 0;
+        transform: translateX(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes ajWowButtonPulse {
+    50% {
+        box-shadow: 0 0 12px rgba(240, 90, 0, .45);
+    }
+}
+
+@media(max-width: 480px) {
+    .aj-cart-product-image {
+        flex-basis: 60px;
+        width: 60px;
+    }
+
+    .aj-cart-product-image img {
+        width: 60px;
+        height: 70px;
+    }
+
+    .aj-cart-product {
+        gap: 8px;
+    }
+
+    .aj-cart-product-details {
+        grid-template-columns: minmax(0, 1fr) 125px;
+        gap: 7px;
+    }
+
+    .aj-cart-wow-item {
+        padding: 8px;
+    }
+
+    .aj-wow-card-info strong {
+        font-size: 9px;
+    }
+
+    .aj-wow-card-info span {
+        font-size: 9px;
+    }
+}
+
+/* WOW TOGGLER */
+
+.aj-cart-wow-item {
+    width: 100%;
+    border-radius: 11px;
+    overflow: hidden;
+    border: 1px solid #f2cf72;
+    background: #fffaf0;
+}
+
+.aj-cart-wow-item.is-applied {
+    border-color: #6acb8a;
+    background: #f0fff5;
+}
+
+/* Toggle button */
+
+.aj-wow-toggle {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 11px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+}
+
+.aj-wow-toggle-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #b87500;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.is-applied .aj-wow-toggle-left {
+    color: #138442;
+}
+
+.aj-wow-toggle-left > i {
+    font-size: 17px;
+    animation: ajWowSparkle 1.8s infinite;
+}
+
+.aj-wow-arrow {
+    font-size: 13px;
+    color: #b87500;
+    transition: transform .3s ease;
+}
+
+.is-applied .aj-wow-arrow {
+    color: #138442;
+}
+
+/* Expanded content */
+
+.aj-wow-expand {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows .35s ease;
+}
+
+.aj-wow-expand-inner {
+    overflow: hidden;
+    padding: 0 11px;
+    opacity: 0;
+    transition: opacity .3s ease, padding .3s ease;
+}
+
+/* Open state */
+
+.aj-cart-wow-item.is-open .aj-wow-expand {
+    grid-template-rows: 1fr;
+}
+
+.aj-cart-wow-item.is-open .aj-wow-expand-inner {
+    padding: 0 11px 11px;
+    opacity: 1;
+}
+
+.aj-cart-wow-item.is-open .aj-wow-arrow {
+    transform: rotate(180deg);
+}
+
+.aj-wow-card-description {
+    font-size: 11px;
+    color: #806331;
+    margin-bottom: 9px;
+}
+
+.is-applied .aj-wow-card-description {
+    color: #267246;
+}
+
+/* Apply / Remove */
+
+.aj-cart-wow-apply,
+.aj-cart-wow-remove {
+    width: 100%;
+    border: 0;
+    border-radius: 7px;
+    padding: 9px;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.aj-cart-wow-apply {
+    color: #fff;
+    background: linear-gradient(120deg, #ffad00, #f07800);
+    animation: ajWowButtonGlow 1.8s infinite;
+}
+
+.aj-cart-wow-remove {
+    color: #138442;
+    background: #dcfce7;
+    border: 1px solid #9be4b4;
+}
+
+@keyframes ajWowSparkle {
+    50% {
+        transform: scale(1.2) rotate(12deg);
+    }
+}
+
+@keyframes ajWowButtonGlow {
+    50% {
+        box-shadow: 0 0 12px rgba(240, 120, 0, .35);
+    }
+}
+
+.aj-wow-swal-content {
+    text-align: center;
+}
+
+.aj-wow-swal-emojis {
+    font-size: 19px;
+    letter-spacing: 4px;
+    margin: 5px 0;
+    animation: ajWowEmojiBounce 1s ease-in-out infinite;
+}
+
+.aj-wow-swal-amount {
+    font-size: 29px;
+    font-weight: 900;
+    color: #16a34a;
+    margin: 7px 0;
+    animation: ajWowAmountPop .6s ease;
+}
+
+.aj-wow-swal-message {
+    font-size: 12px;
+    font-weight: 700;
+    color: #555;
+}
+
+@keyframes ajWowEmojiBounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes ajWowAmountPop {
+    0% {
+        transform: scale(.5);
+        opacity: 0;
+    }
+    70% {
+        transform: scale(1.15);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

@@ -399,6 +399,9 @@ function renderCart() {
         subtotal += lineTotal;
         // WOW offer discount: 20% per eligible cart item
         // WOW offer discount for eligible guest cart products
+        // WOW offer discount per product
+        item.wow_offer_discount = 0;
+
         if (Number(item.wow_offer_applied) === 1) {
 
             const wowPercent = Math.max(
@@ -410,7 +413,9 @@ function renderCart() {
                 price * wowPercent / 100
             );
 
-            wowDiscount += itemDiscount * quantity;
+            item.wow_offer_discount = itemDiscount * quantity;
+
+            wowDiscount += item.wow_offer_discount;
         }
         
 
@@ -435,6 +440,7 @@ function renderCart() {
 
         html += `
             <div class="aj-cart-product" data-product-id="${id}">
+
                 <div class="aj-cart-product-image">
                     ${image
                         ? `<img src="${escapeHtml(image)}"
@@ -445,39 +451,112 @@ function renderCart() {
                 </div>
 
                 <div class="aj-cart-product-details">
-                    <h6>${escapeHtml(item.product_name || 'Product')}</h6>
 
-                    <span class="aj-cart-product-price">
-                        ${money(price)}
-                    </span>
+                    <!-- LEFT: PRODUCT INFORMATION -->
+                    <div class="aj-cart-product-info">
 
-                    <div class="aj-cart-product-bottom">
-                        <div class="aj-cart-quantity">
+                        <h6>${escapeHtml(item.product_name || 'Product')}</h6>
+
+                        <span class="aj-cart-product-price">
+                            ${money(price)}
+                        </span>
+
+                        <div class="aj-cart-product-bottom">
+
+                            <div class="aj-cart-quantity">
+
+                                <button type="button"
+                                        class="aj-cart-qty-btn"
+                                        data-action="decrement"
+                                        data-product-id="${id}">−</button>
+
+                                <span>${quantity}</span>
+
+                                <button type="button"
+                                        class="aj-cart-qty-btn"
+                                        data-action="increment"
+                                        data-product-id="${id}">+</button>
+
+                            </div>
+
                             <button type="button"
-                                    class="aj-cart-qty-btn"
-                                    data-action="decrement"
-                                    data-product-id="${id}">−</button>
+                                    class="aj-cart-remove"
+                                    data-product-id="${id}"
+                                    aria-label="Remove product">
+                                <i class="bi bi-trash"></i>
+                            </button>
 
-                            <span>${quantity}</span>
-
-                            <button type="button"
-                                    class="aj-cart-qty-btn"
-                                    data-action="increment"
-                                    data-product-id="${id}">+</button>
                         </div>
 
-                        <button type="button"
-                                class="aj-cart-remove"
-                                data-product-id="${id}"
-                                aria-label="Remove product">
-                            <i class="bi bi-trash"></i>
-                        </button>
+                        <strong class="aj-cart-line-total">
+                            ${money(lineTotal)}
+                        </strong>
+
                     </div>
 
-                    <strong class="aj-cart-line-total">
-                        ${money(lineTotal)}
-                    </strong>
+                    <!-- RIGHT: WOW OFFER -->
+                    <div class="aj-cart-wow-item ${Number(item.wow_offer_applied) === 1 ? 'is-applied' : 'is-available'}"
+                        data-wow-product-id="${id}">
+
+                        <!-- Toggle Header -->
+                        <button type="button"
+                                class="aj-wow-toggle"
+                                aria-expanded="false"
+                                data-product-id="${id}">
+
+                            <span class="aj-wow-toggle-left">
+                                <i class="bi bi-stars"></i>
+
+                                <span>
+                                    ${Number(item.wow_offer_applied) === 1
+                                        ? 'WOW OFFER APPLIED'
+                                        : 'SPECIAL WOW OFFER'}
+                                </span>
+                            </span>
+
+                            <i class="bi bi-chevron-down aj-wow-arrow"></i>
+
+                        </button>
+
+                        <!-- Expandable Offer Section -->
+                        <div class="aj-wow-expand">
+
+                            <div class="aj-wow-expand-inner">
+
+                                <div class="aj-wow-card-description">
+                                    ${Number(item.wow_offer_applied) === 1
+                                        ? 'Your exclusive WOW discount is active!'
+                                        : 'Unlock an exclusive discount on this product.'}
+                                </div>
+
+                                ${
+                                    Number(item.wow_offer_applied) === 1
+                                    ? `
+                                        <button type="button"
+                                                class="aj-cart-wow-remove text-danger"
+                                                data-product-id="${id}">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            Remove Offer
+                                        </button>
+                                    `
+                                    : `
+                                        <button type="button"
+                                                class="aj-cart-wow-apply"
+                                                data-product-id="${id}">
+                                            <i class="bi bi-lightning-fill"></i>
+                                            Apply WOW Offer
+                                        </button>
+                                    `
+                                }
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
                 </div>
+
             </div>
         `;
     });
@@ -554,6 +633,7 @@ function renderCart() {
         Number.isFinite(actualShipping) &&
         shippingPin === currentPin;
 
+    
     if (hasSavedShipping) {
 
         if (typeof window.ajUpdateCartTotals === 'function') {
@@ -576,6 +656,172 @@ function renderCart() {
     }
 }
 
+// APPLY WOW OFFER
+$(document).on('click', '.aj-cart-wow-apply', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const productId = Number($(this).data('product-id'));
+
+    updateCartWowOffer(productId, 1, true);
+});
+
+// REMOVE WOW OFFER
+$(document).on('click', '.aj-cart-wow-remove', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const productId = Number($(this).data('product-id'));
+
+    updateCartWowOffer(productId, 0, false);
+});
+
+function updateCartWowOffer(productId, applied, celebrate = false) {
+    productId = Number(productId);
+    applied = Number(applied);
+
+    const item = findItem(productId);
+
+    if (!item || ![0, 1].includes(applied)) {
+        return;
+    }
+
+    // Guest customer
+    if (!config.loggedIn) {
+        item.wow_offer_applied = applied;
+        item.wow_offer_percent = applied === 1 ? 20 : 0;
+
+        item.wow_offer_discount = applied === 1
+            ? Math.floor(Number(item.listing_price) * 20 / 100)
+            : 0;
+
+        saveGuestCart();
+        renderCart();
+
+        if (celebrate && applied === 1) {
+            const updatedItem = findItem(productId);
+
+            showWowCelebration(
+                updatedItem?.wow_offer_discount || 0
+            );
+        }
+
+        return;
+    }
+
+    // Logged-in customer
+    request(config.wowOfferUrl, {
+        product_id: productId,
+        applied: applied
+    })
+    .then(function (response) {
+
+        if (!response || response.status !== true) {
+            Swal.fire(
+                'Error',
+                response?.message || 'Unable to update WOW Offer.',
+                'error'
+            );
+            return;
+        }
+
+        if (Array.isArray(response.items)) {
+            applyServerCart(response);
+        } else {
+            item.wow_offer_applied = applied;
+            item.wow_offer_percent = applied === 1 ? 20 : 0;
+            renderCart();
+        }
+
+        if (celebrate && applied === 1) {
+            const updatedItem = findItem(productId);
+
+            showWowCelebration(
+                updatedItem?.wow_offer_discount || 0
+            );
+        }
+
+    })
+    .catch(function () {
+        Swal.fire(
+            'Error',
+            'Unable to update WOW Offer.',
+            'error'
+        );
+    });
+}
+
+function showWowCelebration(discountAmount) {
+
+    discountAmount = Number(discountAmount) || 0;
+
+    if (typeof confetti === 'function') {
+        confetti({
+            particleCount: 160,
+            spread: 100,
+            startVelocity: 45,
+            origin: { y: 0.65 }
+        });
+
+        setTimeout(function () {
+            confetti({
+                particleCount: 80,
+                spread: 120,
+                startVelocity: 35,
+                origin: { y: 0.6 }
+            });
+        }, 250);
+    }
+
+    Swal.fire({
+        icon: 'success',
+        title: '🎊 WOW! YOU WON! 🏆',
+        html: `
+            <div class="aj-wow-swal-content">
+
+                <div class="aj-wow-swal-emojis">
+                    🎉 ✨ 🥳 💰 🎁
+                </div>
+
+                <div class="aj-wow-swal-amount">
+                    ₹${discountAmount.toFixed(2)}
+                </div>
+
+                <div class="aj-wow-swal-message">
+                    🥳 Congratulations! You saved money!
+                </div>
+
+                <div class="aj-wow-swal-emojis">
+                    💃 🎊 ⭐ 🎉
+                </div>
+
+            </div>
+        `,
+        position: 'bottom',
+        toast: true,
+        showConfirmButton: false,
+        timer: 3500,
+        timerProgressBar: true
+    });
+}
+
+$(document).on('click', '.aj-wow-toggle', function (e) {
+    e.preventDefault();
+
+    const productId = Number($(this).data('product-id'));
+
+    const card = document.querySelector(
+        `.aj-cart-wow-item[data-wow-product-id="${productId}"]`
+    );
+
+    if (!card) {
+        return;
+    }
+
+    const isOpen = card.classList.toggle('is-open');
+
+    this.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+});
 
 
     function applyServerCart(response) {
