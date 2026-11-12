@@ -611,3 +611,336 @@ $(document).ready(function () {
     // }, 10000);
 
 });
+
+function loadHomeProductSection(url, containerId, sectionType) {
+
+    const container = $('#' + containerId);
+
+    $.ajax({
+        url: site_url + url,
+        method: 'GET',
+        dataType: 'json',
+
+        beforeSend: function () {
+            container.html(`
+                <div class="text-center w-100 py-4">
+                    <span class="spinner-border spinner-border-sm"></span>
+                    Loading...
+                </div>
+            `);
+        },
+
+        success: function (response) {
+
+            if (!response.status ||
+                !Array.isArray(response.products) ||
+                response.products.length === 0) {
+
+                container.html('');
+                container.closest('.aj-home-section').hide();
+                return;
+            }
+
+            container.closest('.aj-home-section').show();
+
+            if (typeof window.ajCartRegisterProducts === 'function') {
+                window.ajCartRegisterProducts(response.products);
+            }
+
+            let html = '';
+
+            response.products.forEach(function (product) {
+                html += renderHomeProductCard(product, sectionType);
+            });
+
+            container.html(html);
+
+            if (typeof window.ajCartRefresh === 'function') {
+                window.ajCartRefresh();
+            }
+        },
+
+        error: function (xhr) {
+            console.error(sectionType + ' loading error:', xhr.responseText);
+            container.html('');
+        }
+    });
+}
+
+function renderHomeProductCard(product, sectionType) {
+
+    const name = product.product_name || 'Product';
+    const category = product.category || 'General';
+
+    const price = parseFloat(product.listing_price) || 0;
+    const mrp = parseFloat(product.mrp) || 0;
+
+    const imagePath = product.image_path || '';
+
+    const cleanImagePath = imagePath.replace(/^[/\\]+/, '');
+
+    const imageUrl = imagePath
+        ? site_url + 'shared-images/' + cleanImagePath
+        : '';
+
+    const discount = mrp > price && mrp > 0
+        ? Math.round(((mrp - price) / mrp) * 100)
+        : 0;
+
+    const safeName = escapeHomeHtml(name);
+    const safeCategory = escapeHomeHtml(category);
+    const safeImageUrl = escapeHomeHtml(imageUrl);
+
+    const productId = Number(product.id) || 0;
+
+    const productUrl = site_url + 'product-details/' + productId;
+
+    // Section badge
+    let sectionBadge = '';
+
+    if (sectionType === 'popular') {
+        sectionBadge = 'POPULAR';
+    } else if (sectionType === 'new') {
+        sectionBadge = 'NEW';
+    } else if (sectionType === 'deals') {
+        sectionBadge = 'BEST DEAL';
+    } else if (sectionType === 'trending') {
+        sectionBadge = 'TRENDING';
+    }
+
+    return `
+        <div class="aj-product-card"
+             data-product-id="${productId}">
+
+            <div class="aj-product-image">
+
+                
+
+                ${discount > 0 ? `
+                    <span class="aj-discount">
+                        ${discount}%
+                    </span>
+                ` : ''}
+
+                <button class="aj-wishlist"
+                        type="button"
+                        data-product-id="${productId}"
+                        aria-label="Add to wishlist">
+
+                    <i class="bi bi-heart"></i>
+
+                </button>
+
+                <a href="${productUrl}"
+                   class="aj-product-details-link"
+                   aria-label="View ${safeName} details">
+
+                    ${imageUrl !== '' ? `
+                        <img
+                            src="${safeImageUrl}"
+                            alt="${safeName}"
+                            class="aj-popular-product-img"
+                            loading="lazy"
+                            onerror="this.style.display='none';">
+                    ` : `
+                        <div class="aj-product-image-placeholder">
+                            📦
+                        </div>
+                    `}
+
+                </a>
+
+            </div>
+
+            <div class="aj-product-info">
+
+                <span class="aj-product-category">
+                    ${safeCategory}
+                </span>
+
+                <h3>
+                    <a href="${productUrl}"
+                       class="aj-product-title-link">
+                        ${safeName}
+                    </a>
+                </h3>
+
+                <div class="aj-product-price">
+
+                    <strong>
+                        ₹${price.toLocaleString('en-IN', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        })}
+                    </strong>
+
+                    ${mrp > price ? `
+                        <del>
+                            ₹${mrp.toLocaleString('en-IN', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            })}
+                        </del>
+                    ` : ''}
+
+                </div>
+
+                <!--
+                <div class="aj-product-cart-action"
+                     data-product-id="${productId}">
+
+                    <button type="button"
+                            class="aj-add-cart"
+                            data-product-id="${productId}">
+
+                        <i class="bi bi-cart-plus"></i>
+                        Add to Cart
+
+                    </button>
+
+                </div>
+                -->
+
+            </div>
+
+        </div>
+    `;
+}
+
+function escapeHomeHtml(value) {
+
+    return String(value ?? '').replace(/[&<>"']/g, function (char) {
+
+        return {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        }[char];
+
+    });
+}
+
+$(document).ready(function () {
+
+    // Existing popular products endpoint
+    loadHomeProductSection(
+        'fetchpopularproduct',
+        'popularProductsContainer',
+        'popular'
+    );
+
+    // New arrivals
+    loadHomeProductSection(
+        'home-products/new-arrivals',
+        'ajNewArrivals',
+        'new'
+    );
+
+    // Best deals
+    loadHomeProductSection(
+        'home-products/best-deals',
+        'ajBestDeals',
+        'deals'
+    );
+
+    // Trending
+    loadHomeProductSection(
+        'home-products/trending',
+        'ajTrendingProducts',
+        'trending'
+    );
+
+});
+
+
+/* =========================================
+   AJOBMART HOMEPAGE CAROUSEL
+========================================= */
+
+
+(function () {
+    'use strict';
+
+    const carousel = document.getElementById('ajHomeCarousel');
+
+    if (!carousel) return;
+
+    const track = carousel.querySelector('.aj-v3-carousel-track');
+    const slides = Array.from(
+        carousel.querySelectorAll('.aj-v3-carousel-slide')
+    );
+
+    const dots = carousel.querySelectorAll('.aj-v3-carousel-dots button');
+    const prev = carousel.querySelector('.aj-v3-carousel-prev');
+    const next = carousel.querySelector('.aj-v3-carousel-next');
+
+    if (!slides.length) return;
+
+    let currentIndex = 0;
+    let autoplay;
+
+    // Position slides horizontally
+    slides.forEach((slide, index) => {
+        slide.style.transform = `translateX(${index * 100}%)`;
+    });
+
+    function showSlide(index) {
+
+        currentIndex = (index + slides.length) % slides.length;
+
+        slides.forEach((slide, i) => {
+
+            const position = i - currentIndex;
+
+            slide.style.transform = `translateX(${position * 100}%)`;
+
+            slide.classList.toggle('active', i === currentIndex);
+        });
+
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === currentIndex);
+        });
+    }
+
+    function startAutoplay() {
+        stopAutoplay();
+
+        autoplay = setInterval(function () {
+            showSlide(currentIndex + 1);
+        }, 3000);
+    }
+
+    function stopAutoplay() {
+        if (autoplay) {
+            clearInterval(autoplay);
+            autoplay = null;
+        }
+    }
+
+    prev?.addEventListener('click', function () {
+        showSlide(currentIndex - 1);
+        startAutoplay();
+    });
+
+    next?.addEventListener('click', function () {
+        showSlide(currentIndex + 1);
+        startAutoplay();
+    });
+
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', function () {
+            showSlide(index);
+            startAutoplay();
+        });
+    });
+
+    carousel.addEventListener('mouseenter', stopAutoplay);
+    carousel.addEventListener('mouseleave', startAutoplay);
+
+    showSlide(0);
+    startAutoplay();
+
+})();
+

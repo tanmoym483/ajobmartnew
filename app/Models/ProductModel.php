@@ -38,6 +38,21 @@ class ProductModel extends Model
     ];
 
 
+    private function getHomeProducts()
+    {
+        return $this->db->table('ajobmart_products p')
+            ->select('p.*')
+            ->select("
+                (SELECT pi.image_path
+                FROM ajobmart_product_images pi
+                WHERE pi.product_id = p.id
+                ORDER BY pi.is_primary DESC, pi.sort_order ASC, pi.id ASC
+                LIMIT 1) AS image_path
+            ", false)
+            ->where('p.status', 'active')
+            ->where('p.approval_status', 'approved');
+    }
+
     public function getSellerInventory(): array
     {
         return $this->db->table('ajobmart_products p')
@@ -101,5 +116,81 @@ class ProductModel extends Model
             'low_stock_products'   => 0,
             'out_of_stock_products'=> 0,
         ];
+    }
+
+
+    public function getPopularProducts(): array
+    {
+        return $this->db->table('ajobmart_products p')
+            ->select('p.*')
+            ->select("
+                COALESCE(ps.view_count, 0) AS view_count,
+                COALESCE(ps.cart_add_count, 0) AS cart_add_count,
+                COALESCE(ps.wishlist_count, 0) AS wishlist_count,
+                COALESCE(ps.sold_quantity, 0) AS sold_quantity
+            ", false)
+            ->select("
+                (COALESCE(ps.sold_quantity, 0) * 10
+                + COALESCE(ps.cart_add_count, 0) * 3
+                + COALESCE(ps.wishlist_count, 0) * 2
+                + COALESCE(ps.view_count, 0)) AS popularity_score
+            ", false)
+            ->select("
+                (SELECT pi.image_path
+                FROM ajobmart_product_images pi
+                WHERE pi.product_id = p.id
+                ORDER BY pi.is_primary DESC, pi.sort_order ASC, pi.id ASC
+                LIMIT 1) AS image_path
+            ", false)
+            ->join(
+                'ajobmart_product_stats ps',
+                'ps.product_id = p.id',
+                'left'
+            )
+            ->where('p.status', 'active')
+            ->where('p.approval_status', 'approved')
+            ->orderBy('popularity_score', 'DESC')
+            ->orderBy('p.id', 'DESC')
+            ->limit(12)
+            ->get()
+            ->getResultArray();
+    }
+
+    public function getNewArrivals(): array
+    {
+        return $this->getHomeProducts()
+            ->orderBy('p.created_at', 'DESC')
+            ->limit(12)
+            ->get()
+            ->getResultArray();
+    }
+
+    public function getBestDeals(): array
+    {
+        return $this->getHomeProducts()
+            ->where('p.mrp > p.listing_price', null, false)
+            ->orderBy(
+                '((p.mrp - p.listing_price) / p.mrp)',
+                'DESC',
+                false
+            )
+            ->limit(12)
+            ->get()
+            ->getResultArray();
+    }
+
+    public function getTrendingProducts(): array
+    {
+        return $this->getPopularProducts();
+    }
+
+    public function getProductsByCategory(int $categoryId): array
+    {
+        return $this->getHomeProducts()
+            ->where('p.category_id', $categoryId)
+            ->orderBy('p.id', 'DESC')
+            ->limit(12)
+            ->get()
+            ->getResultArray();
     }
 }

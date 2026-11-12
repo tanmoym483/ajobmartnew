@@ -102,3 +102,8 @@ $routes->get(
 
 $routes->get('my-orders', 'Orders::index');
 
+
+$routes->get('home-products/new-arrivals', 'HomeProducts::newArrivals');
+$routes->get('home-products/best-deals', 'HomeProducts::bestDeals');
+$routes->get('home-products/trending', 'HomeProducts::trending');
+$routes->get('home-products/category/(:num)', 'HomeProducts::byCategory/$1');
