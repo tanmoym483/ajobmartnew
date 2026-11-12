@@ -54,6 +54,8 @@ class ProductModel extends Model
                   LIMIT 1) AS image_path',
                 false
             )
+            ->where('status', 'active')
+            ->where('approval_status', 'approved')
             ->orderBy('p.id', 'DESC')
             ->get()
             ->getResultArray();
