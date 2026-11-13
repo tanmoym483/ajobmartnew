@@ -930,10 +930,15 @@ $(document).on('click', '.aj-wow-toggle', function (e) {
     function addGuestProduct(productId) {
         const product = productCatalog[productId];
 
-        if (!product) {
-            showError('Please wait for products to finish loading.');
-            return;
-        }
+        console.log('Clicked Product ID:', productId);
+    console.log('Product Catalog:', productCatalog);
+    console.log('Product Found:', productCatalog[productId]);
+
+
+    if (!product) {
+        showError('Please wait for products to finish loading.');
+        return;
+    }
 
         const minimum = Math.max(
             1, Number(product.min_order_quantity) || 1
@@ -1139,7 +1144,9 @@ $(document).on('click', '.aj-wow-toggle', function (e) {
 
         (products || []).forEach(function (product) {
 
-            const id = Number(product.id);
+            const id = Number(
+                product.id || product.product_id || product.productId
+            );
             if (!id) return;
 
             const imagePath = product.image_path || '';

@@ -1241,6 +1241,22 @@ $stock = (int) ($product['stock_quantity'] ?? 0);
 $moq = max(1, (int) ($product['min_order_quantity'] ?? 1));
 ?>
 
+<?php
+// Get the first available image path for cart registration.
+$cartImagePath = '';
+
+foreach ($images ?? [] as $cartImage) {
+    $candidatePath = trim((string) ($cartImage['image_path'] ?? ''));
+
+    if ($candidatePath !== '') {
+        $cartImagePath = str_replace('\\', '/', $candidatePath);
+        break;
+    }
+}
+?>
+
+
+
 <div class="container py-4 aj-product-details-page">
 
     <nav aria-label="breadcrumb" class="mb-4">
@@ -2397,4 +2413,58 @@ $formatPrice = static function ($value) {
 
 
 
+</script>
+<script>
+(function () {
+    'use strict';
+
+    function registerCurrentProduct() {
+
+        if (typeof window.ajCartRegisterProducts !== 'function') {
+            console.error(
+                'Ajobmart Cart: ajCartRegisterProducts() is not available. Check whether ajobmart-cart.js is loaded.'
+            );
+            return;
+        }
+
+        window.ajCartRegisterProducts([
+            {
+                id: <?= json_encode($productId) ?>,
+                product_id: <?= json_encode($productId) ?>,
+                product_name: <?= json_encode($productName) ?>,
+
+                listing_price: <?= json_encode($price) ?>,
+                selling_price: <?= json_encode($sellingPrice) ?>,
+                mrp: <?= json_encode($mrp) ?>,
+
+                stock_quantity: <?= json_encode($stock) ?>,
+                min_order_quantity: <?= json_encode($moq) ?>,
+
+                shipping_allowance: <?= json_encode(
+                    (float) ($product['shipping_allowance'] ?? 0)
+                ) ?>,
+
+                image_path: <?= json_encode($cartImagePath) ?>
+            }
+        ]);
+
+        console.log(
+            'Ajobmart: Product registered for cart:',
+            <?= json_encode($productId) ?>
+        );
+    }
+
+    // Wait until normal footer scripts, including ajobmart-cart.js,
+    // have had an opportunity to load.
+    if (document.readyState === 'loading') {
+        document.addEventListener(
+            'DOMContentLoaded',
+            registerCurrentProduct,
+            { once: true }
+        );
+    } else {
+        registerCurrentProduct();
+    }
+
+})();
 </script>
