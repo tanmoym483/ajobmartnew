@@ -1846,7 +1846,7 @@ input {
 @media (max-width: 380px) {
 
     .aj-logo-text {
-        display: none;
+        display: block;
     }
 
 
@@ -7687,5 +7687,272 @@ input {
 
     .aj-product-price del {
         font-size: 11px;
+    }
+}
+
+
+
+
+/* =========================================
+   AJOBMART - ANIMATED LIGHT EFFECT
+   Keeps existing background colours
+========================================= */
+
+/* Common animation layer */
+
+.aj-navbar,
+.aj-search-wrapper,
+.aj-v3-category-nav {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+}
+
+/* -----------------------------------------
+   1. NAVBAR - MOVING LIGHT
+----------------------------------------- */
+
+.aj-navbar {
+    background: #5ba2d8 !important;
+}
+
+.aj-navbar::before,
+.aj-search-wrapper::before,
+.aj-v3-category-nav::before {
+    content: "";
+    position: absolute;
+    inset: -100%;
+
+    pointer-events: none;
+    z-index: -1;
+
+    background: radial-gradient(
+        ellipse at center,
+        rgba(255,255,255,0.28) 0%,
+        rgba(255,255,255,0.10) 25%,
+        transparent 65%
+    );
+
+    animation: ajMovingLight 12s ease-in-out infinite alternate;
+}
+
+@keyframes ajMovingLight {
+    0% {
+        transform: translate(-25%, -10%) scale(0.9);
+    }
+
+    50% {
+        transform: translate(15%, 15%) scale(1.15);
+    }
+
+    100% {
+        transform: translate(30%, -15%) scale(1);
+    }
+}
+
+/* -----------------------------------------
+   2. SEARCH - SOFT LIGHT WAVES
+----------------------------------------- */
+
+.aj-search-wrapper {
+    background: #DCEEFF;
+}
+
+.aj-search-wrapper::after {
+    content: "";
+    position: absolute;
+
+    top: -100%;
+    left: -60%;
+
+    width: 45%;
+    height: 300%;
+
+    pointer-events: none;
+    z-index: -1;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,0.45),
+        transparent
+    );
+
+    transform: rotate(25deg);
+
+    animation: ajSearchLightWave 10s ease-in-out infinite;
+}
+
+@keyframes ajSearchLightWave {
+    0% {
+        left: -60%;
+    }
+
+    100% {
+        left: 130%;
+    }
+}
+
+/* -----------------------------------------
+   3. CATEGORY - FLOATING GLOW
+----------------------------------------- */
+
+.aj-v3-category-nav {
+    background: #D5F0FA;
+}
+
+.aj-v3-category-nav::after {
+    content: "";
+    position: absolute;
+
+    width: 220px;
+    height: 220px;
+
+    top: -130px;
+    right: 10%;
+
+    border-radius: 50%;
+
+    pointer-events: none;
+    z-index: -1;
+
+    background: rgba(255,255,255,0.38);
+    filter: blur(35px);
+
+    animation: ajCategoryGlow 9s ease-in-out infinite alternate;
+}
+
+@keyframes ajCategoryGlow {
+    0% {
+        transform: translateX(-80px) scale(0.8);
+    }
+
+    100% {
+        transform: translateX(160px) scale(1.3);
+    }
+}
+
+/* -----------------------------------------
+   4. REDUCED MOTION
+----------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .aj-navbar::before,
+    .aj-search-wrapper::before,
+    .aj-search-wrapper::after,
+    .aj-v3-category-nav::before,
+    .aj-v3-category-nav::after {
+        animation: none !important;
+    }
+}
+
+
+/* =========================================
+   AJOBMART - ANIMATED CLOUDY SKY HEADER
+========================================= */
+
+.aj-navbar,
+.aj-search-wrapper,
+.aj-v3-category-nav {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+}
+
+/* Keep content above cloud effects */
+
+.aj-navbar > *,
+.aj-search-wrapper > *,
+.aj-v3-category-nav > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* -----------------------------------------
+   CLOUD LAYER
+----------------------------------------- */
+
+.aj-navbar::before,
+.aj-search-wrapper::before,
+.aj-v3-category-nav::before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
+
+    top: 0;
+    left: -100%;
+
+    width: 200%;
+    height: 100%;
+
+    background-image:
+        radial-gradient(
+            ellipse 95px 27px at 12% 48%,
+            rgba(255,255,255,0.25) 0%,
+            rgba(255,255,255,0.12) 55%,
+            transparent 100%
+        ),
+        radial-gradient(
+            ellipse 125px 35px at 38% 70%,
+            rgba(255,255,255,0.20) 0%,
+            rgba(255,255,255,0.10) 60%,
+            transparent 100%
+        ),
+        radial-gradient(
+            ellipse 110px 30px at 68% 35%,
+            rgba(255,255,255,0.24) 0%,
+            rgba(255,255,255,0.10) 60%,
+            transparent 100%
+        ),
+        radial-gradient(
+            ellipse 140px 40px at 90% 65%,
+            rgba(255,255,255,0.20) 0%,
+            transparent 100%
+        );
+
+    background-repeat: repeat-x;
+    background-size: 900px 100%;
+
+    animation: ajCloudDrift 45s linear infinite;
+}
+
+/* Navbar clouds */
+
+.aj-navbar::before {
+    opacity: 0.85;
+}
+
+/* Search clouds */
+
+.aj-search-wrapper::before {
+    opacity: 0.65;
+}
+
+/* Category clouds */
+
+.aj-v3-category-nav::before {
+    opacity: 0.5;
+}
+
+@keyframes ajCloudDrift {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(45%);
+    }
+}
+
+/* -----------------------------------------
+   REDUCED MOTION
+----------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .aj-navbar::before,
+    .aj-search-wrapper::before,
+    .aj-v3-category-nav::before {
+        animation: none !important;
     }
 }
