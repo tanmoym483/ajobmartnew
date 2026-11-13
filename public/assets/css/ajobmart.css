@@ -950,7 +950,7 @@ input {
 
 
 .aj-product-info {
-    padding: 15px;
+    padding: 3px;
 }
 
 
@@ -968,7 +968,7 @@ input {
 
 
 .aj-product-info h3 {
-    margin: 6px 0 8px;
+    margin: 3px 0 3px;
 
     font-size: 15px;
 
@@ -6730,5 +6730,1048 @@ input {
         box-shadow:
             0 0 0 2px #f1f3f5,
             0 3px 12px rgba(0, 0, 0, 0.10) !important;
+    }
+}
+
+
+/* CATEGORY NAVIGATION */
+
+.aj-v3-category-nav {
+    background: #fff;
+    border-bottom: 1px solid #eeeeee;
+    position: relative;
+    z-index: 20;
+}
+
+.aj-v3-category-nav-inner {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    padding: 12px 20px;
+    max-width: 1400px;
+    margin: auto;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+.aj-v3-category-nav-inner::-webkit-scrollbar {
+    display: none;
+}
+
+/* CATEGORY ITEM */
+
+.aj-v3-nav-category {
+    flex: 0 0 auto;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    min-width: 75px;
+    padding: 4px 8px;
+
+    color: #444;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+
+    transition: all .25s ease;
+}
+
+/* ICON ABOVE TEXT */
+
+.aj-v3-nav-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+    background: #f5f5f5;
+
+    transition: all .25s ease;
+}
+
+.aj-v3-nav-icon i {
+    font-size: 20px;
+    color: #333;
+}
+
+.aj-v3-nav-text {
+    white-space: nowrap;
+    transition: all .25s ease;
+}
+
+/* ACTIVE CATEGORY */
+
+.aj-v3-nav-category.active {
+    color: #111;
+    font-weight: 700;
+}
+
+.aj-v3-nav-category.active .aj-v3-nav-icon {
+    background: #eeeeee;
+}
+
+/* COMPACT MODE */
+
+.aj-v3-category-nav-inner.compact {
+    gap: 10px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.aj-v3-category-nav-inner.compact .aj-v3-nav-category {
+    flex-direction: row;
+    min-width: auto;
+    gap: 0;
+    padding: 8px 14px;
+    border-radius: 25px;
+    background: #f5f5f5;
+}
+
+.aj-v3-category-nav-inner.compact .aj-v3-nav-icon {
+    display: none;
+}
+
+.aj-v3-category-nav-inner.compact .aj-v3-nav-category.active {
+    background: #222;
+    color: #fff;
+}
+
+/* MOBILE */
+
+@media (max-width: 767px) {
+
+    .aj-v3-category-nav-inner {
+        gap: 12px;
+        padding: 10px 12px;
+    }
+
+    .aj-v3-nav-category {
+        min-width: 65px;
+        font-size: 11px;
+    }
+
+    .aj-v3-nav-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+    }
+
+    .aj-v3-nav-icon i {
+        font-size: 18px;
+    }
+}
+
+
+
+/* =========================================
+   CATEGORY NAVIGATION STICKY
+========================================= */
+
+.aj-v3-category-nav {
+    background: #ffffff;
+    z-index: 1000;
+}
+
+/* Mobile sticky category bar */
+@media (max-width: 768px) {
+
+    .aj-v3-category-nav.aj-category-sticky {
+        position: sticky;
+
+        /* Adjust according to sticky search header */
+        top: 60px;
+
+        z-index: 1000;
+
+        border-bottom: 1px solid #eeeeee;
+
+        box-shadow: 0 3px 8px rgba(0,0,0,0.04);
+    }
+
+}
+
+/* =========================================
+   COMPACT CATEGORY NAVIGATION
+========================================= */
+
+.aj-v3-category-nav-inner {
+    transition: padding 0.25s ease;
+}
+
+.aj-v3-category-nav-inner .aj-v3-nav-category {
+    transition: all 0.25s ease;
+}
+
+.aj-v3-category-nav-inner .aj-v3-nav-icon {
+    transition: all 0.2s ease;
+}
+
+/* When page scrolls */
+
+.aj-v3-category-nav-inner.compact {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    gap: 8px;
+}
+
+.aj-v3-category-nav-inner.compact .aj-v3-nav-category {
+    flex-direction: row;
+    min-width: auto;
+    padding: 7px 13px;
+    border-radius: 25px;
+    background: #f5f5f5;
+}
+
+.aj-v3-category-nav-inner.compact .aj-v3-nav-icon {
+    display: none;
+}
+
+.aj-v3-category-nav-inner.compact .aj-v3-nav-text {
+    display: inline-block;
+}
+
+/* Active category */
+
+.aj-v3-category-nav-inner.compact
+.aj-v3-nav-category.active {
+    background: #222222;
+    color: #ffffff;
+}
+
+
+
+/* =========================================
+   COLORFUL CATEGORY ICONS
+========================================= */
+
+.aj-v3-nav-icon {
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    transition: all 0.25s ease;
+}
+
+.aj-v3-nav-icon i {
+    font-size: 21px;
+}
+
+/* Individual category colors */
+
+.aj-v3-nav-category:nth-child(1) .aj-v3-nav-icon {
+    background: #e8f1ff;
+    color: #2878e8;
+}
+
+.aj-v3-nav-category:nth-child(2) .aj-v3-nav-icon {
+    background: #e8f7ed;
+    color: #159447;
+}
+
+.aj-v3-nav-category:nth-child(3) .aj-v3-nav-icon {
+    background: #fff0f5;
+    color: #e83e8c;
+}
+
+.aj-v3-nav-category:nth-child(4) .aj-v3-nav-icon {
+    background: #fff0ef;
+    color: #e54848;
+}
+
+.aj-v3-nav-category:nth-child(5) .aj-v3-nav-icon {
+    background: #fff4e5;
+    color: #e58a16;
+}
+
+.aj-v3-nav-category:nth-child(6) .aj-v3-nav-icon {
+    background: #f0eaff;
+    color: #7952d8;
+}
+
+.aj-v3-nav-category:nth-child(7) .aj-v3-nav-icon {
+    background: #e5f8fc;
+    color: #0796b5;
+}
+
+.aj-v3-nav-category:nth-child(8) .aj-v3-nav-icon {
+    background: #f0f0f0;
+    color: #555555;
+}
+
+/* Hover effect */
+
+.aj-v3-nav-category:hover .aj-v3-nav-icon {
+    transform: translateY(-2px);
+}
+
+/* Compact mode: hide icons */
+
+.aj-v3-category-nav-inner.compact .aj-v3-nav-icon {
+    display: none;
+}
+
+
+
+/* Active text color in normal mode */
+
+.aj-v3-nav-category.active .aj-v3-nav-text {
+    color: #222;
+    font-weight: 700;
+}
+
+/* Compact active category */
+
+.aj-v3-category-nav-inner.compact
+.aj-v3-nav-category.active {
+    background: #222;
+    color: #fff;
+}
+
+.aj-v3-category-nav-inner.compact
+.aj-v3-nav-category.active .aj-v3-nav-text {
+    color: #fff;
+}
+
+
+
+/* ==========================================
+   AJOBMART MODERN PRODUCT CARD
+========================================== */
+
+.aj-product-card {
+    position: relative;
+    min-width: 0;
+
+    background: #ffffff;
+
+    border: 1px solid #eeeeee;
+    border-radius: 13px;
+
+    overflow: hidden;
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
+}
+
+/* CARD HOVER */
+
+@media (hover: hover) {
+
+    .aj-product-card:hover {
+        transform: translateY(-5px);
+
+        border-color: #e5e5e5;
+
+        box-shadow:
+            0 8px 24px rgba(0,0,0,0.075);
+    }
+
+}
+
+/* ==========================================
+   PRODUCT IMAGE
+========================================== */
+
+.aj-product-image {
+    position: relative;
+
+    width: 100%;
+    height: 190px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #ffffff;
+
+    overflow: hidden;
+}
+
+/* IMAGE LINK */
+
+.aj-product-details-link {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 13px;
+
+    position: relative;
+    z-index: 1;
+}
+
+/* PRODUCT IMAGE ANIMATION */
+
+.aj-popular-product-img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    display: block;
+
+    transition:
+        transform 0.45s cubic-bezier(.2,.7,.3,1),
+        opacity 0.3s ease;
+}
+
+@media (hover: hover) {
+
+    .aj-product-card:hover
+    .aj-popular-product-img {
+        transform: scale(1.07);
+    }
+
+}
+
+/* IMAGE PLACEHOLDER */
+
+.aj-product-image-placeholder {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #c7c7c7;
+    background: #f8f8f8;
+
+    font-size: 38px;
+}
+
+/* ==========================================
+   DISCOUNT RIBBON
+========================================== */
+
+.aj-discount-ribbon {
+    position: absolute;
+
+    top: 11px;
+    left: 0;
+
+    z-index: 3;
+
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    padding: 6px 11px 6px 8px;
+
+    background: linear-gradient(
+        120deg,
+        #19b96e,
+        #19b96e
+    );
+
+    color: #ffffff;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: 0.3px;
+
+    border-radius: 0 4px 4px 0;
+
+    box-shadow:
+        0 3px 9px rgba(217,31,73,0.20);
+
+    animation: ajDiscountEntry 0.6s ease both;
+}
+
+.aj-discount-ribbon i {
+    font-size: 10px;
+}
+
+.aj-discount-ribbon::after {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    right: -8px;
+
+    border-top: 11px solid #19b96e;
+    border-bottom: 11px solid #19b96e;
+    border-right: 8px solid transparent;
+}
+
+@keyframes ajDiscountEntry {
+    from {
+        opacity: 0;
+        transform: translateX(-12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ==========================================
+   WISHLIST BUTTON
+========================================== */
+
+.aj-wishlist {
+    position: absolute;
+
+    top: 10px;
+    right: 10px;
+
+    z-index: 4;
+
+    width: 33px;
+    height: 33px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #eeeeee;
+    border-radius: 50%;
+
+    background: rgba(255,255,255,0.95);
+
+    color: #555555;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.25s ease,
+        background 0.25s ease,
+        color 0.25s ease;
+}
+
+.aj-wishlist i {
+    font-size: 16px;
+}
+
+.aj-wishlist:hover {
+    transform: scale(1.12);
+    color: #e63950;
+    background: #fff0f2;
+}
+
+.aj-wishlist:active {
+    transform: scale(0.9);
+}
+
+/* ==========================================
+   PRODUCT INFORMATION
+========================================== */
+
+.aj-product-info {
+    padding: 10px 12px 13px;
+    background: #ffffff;
+}
+
+/* CATEGORY */
+
+.aj-product-category {
+    display: inline-block;
+
+    margin-bottom: 5px;
+
+    color: #999999;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* PRODUCT NAME */
+
+.aj-product-info h3 {
+    margin: 0 0 9px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    line-height: 1.5;
+
+    min-height: 39px;
+
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+
+    overflow: hidden;
+}
+
+.aj-product-title-link {
+    color: #252525;
+    text-decoration: none;
+
+    transition: color 0.2s ease;
+}
+
+.aj-product-title-link:hover {
+    color: #444444;
+}
+
+/* ==========================================
+   PRODUCT PRICE
+========================================== */
+
+.aj-product-price {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    gap: 7px;
+}
+
+.aj-product-price strong {
+    color: #171717;
+
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.aj-product-price del {
+    color: #aaaaaa;
+
+    font-size: 11px;
+    font-weight: 500;
+}
+
+/* ==========================================
+   MOBILE RESPONSIVE
+========================================== */
+
+@media (max-width: 767px) {
+
+    .aj-product-card {
+        border-radius: 10px;
+    }
+
+    .aj-product-image {
+        height: 145px;
+    }
+
+    .aj-product-details-link {
+        padding: 9px;
+    }
+
+    .aj-product-info {
+        padding: 8px 9px 11px;
+    }
+
+    .aj-product-info h3 {
+        font-size: 12px;
+        min-height: 36px;
+        margin-bottom: 7px;
+    }
+
+    .aj-product-price strong {
+        font-size: 14px;
+    }
+
+    .aj-product-price del {
+        font-size: 10px;
+    }
+
+    .aj-discount-ribbon {
+        top: 8px;
+        font-size: 9px;
+        padding: 5px 9px 5px 7px;
+    }
+
+    .aj-wishlist {
+        width: 29px;
+        height: 29px;
+        top: 8px;
+        right: 8px;
+    }
+
+    .aj-wishlist i {
+        font-size: 14px;
+    }
+
+}
+
+/* ==========================================
+   REDUCE ANIMATION FOR ACCESSIBILITY
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .aj-product-card,
+    .aj-popular-product-img,
+    .aj-wishlist,
+    .aj-discount-ribbon {
+        animation: none !important;
+        transition: none !important;
+    }
+
+}
+
+
+
+/* =========================================
+   AJOBMART PRODUCT GRID
+========================================= */
+
+.aj-v3-product-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 16px;
+    align-items: stretch;
+}
+
+/* Consistent card height */
+
+.aj-product-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.aj-product-image {
+    flex-shrink: 0;
+}
+
+.aj-product-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+/* Tablet */
+
+@media (max-width: 991px) {
+    .aj-v3-product-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+    }
+}
+
+
+/* =========================================
+   AJOBMART MOBILE PRODUCT GRID
+========================================= */
+
+/* Small mobile: 2 premium columns */
+
+@media (max-width: 480px) {
+
+    .aj-v3-product-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .aj-product-card {
+        border-radius: 12px;
+        border: 1px solid #ededed;
+        box-shadow: 0 2px 7px rgba(0,0,0,0.035);
+    }
+
+    /* Larger product image */
+
+    .aj-product-image {
+        height: 165px;
+        background: #ffffff;
+    }
+
+    .aj-product-details-link {
+        padding: 12px;
+    }
+
+    .aj-popular-product-img {
+        object-fit: contain;
+    }
+
+    /* Product details */
+
+    .aj-product-info {
+        padding: 9px 10px 12px;
+    }
+
+    .aj-product-category {
+        font-size: 10px;
+        margin-bottom: 5px;
+        letter-spacing: 0.4px;
+    }
+
+    .aj-product-info h3 {
+        font-size: 13px;
+        line-height: 1.4;
+        min-height: 36px;
+        margin-bottom: 8px;
+
+        -webkit-line-clamp: 2;
+    }
+
+    /* Price */
+
+    .aj-product-price {
+        gap: 5px;
+        align-items: baseline;
+        bottom: 20px;
+    }
+
+    .aj-product-price strong {
+        font-size: 16px;
+        font-weight: 750;
+    }
+
+    .aj-product-price del {
+        font-size: 11px;
+    }
+
+    /* Discount ribbon */
+
+    .aj-discount-ribbon {
+        top: 9px;
+        left: 0;
+
+        padding: 5px 9px 5px 7px;
+
+        font-size: 9px;
+        letter-spacing: 0;
+    }
+
+    .aj-discount-ribbon::after {
+        right: -7px;
+
+        border-top-width: 10px;
+        border-bottom-width: 10px;
+        border-right-width: 7px;
+    }
+
+    /* Wishlist */
+
+    .aj-wishlist {
+        width: 30px;
+        height: 30px;
+
+        top: 8px;
+        right: 8px;
+    }
+
+    .aj-wishlist i {
+        font-size: 14px;
+    }
+
+}
+
+/* Wider mobile and small tablets: 3 columns */
+
+@media (min-width: 481px) and (max-width: 767px) {
+
+    .aj-v3-product-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 11px;
+    }
+
+    .aj-product-image {
+        height: 145px;
+    }
+
+    .aj-product-info {
+        padding: 3px;
+    }
+
+    .aj-product-info h3 {
+        font-size: 12px;
+    }
+
+}
+
+/* Very small screens */
+
+@media (max-width: 350px) {
+
+    .aj-v3-product-grid {
+        gap: 8px;
+    }
+
+    .aj-product-image {
+        height: 145px;
+    }
+
+    .aj-product-info {
+        padding: 8px;
+    }
+
+}
+
+
+/* =========================================
+   MOBILE PRODUCT IMAGE + DISCOUNT FIX
+========================================= */
+
+@media (max-width: 480px) {
+
+    /* Product image area */
+    .aj-product-image {
+        height: 165px;
+        position: relative;
+        overflow: hidden;
+        background: #ffffff;
+    }
+
+    /* Reserve space for discount badge */
+    .aj-product-details-link {
+        width: 100%;
+        height: 100%;
+        padding: 34px 9px 8px !important;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Product image */
+    .aj-popular-product-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Compact discount badge */
+    .aj-discount-ribbon {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+
+        z-index: 3;
+
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+
+        width: auto;
+        max-width: calc(100% - 48px);
+
+        padding: 5px 8px;
+
+        background: #20ad72;
+        color: #ffffff;
+
+        font-size: 9px;
+        font-weight: 800;
+        line-height: 1.2;
+
+        border-radius: 4px;
+
+        white-space: nowrap;
+
+        box-shadow: 0 2px 5px rgba(0,0,0,0.12);
+    }
+
+    /* Remove large ribbon pointer */
+    .aj-discount-ribbon::after {
+        display: none;
+    }
+
+    /* Wishlist */
+    .aj-wishlist {
+        position: absolute;
+        top: 7px;
+        right: 7px;
+
+        z-index: 4;
+
+        width: 29px;
+        height: 29px;
+    }
+
+}
+
+
+/* =========================================
+   FIX PRODUCT NAME & PRICE SPACING
+========================================= */
+
+.aj-product-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0;
+    padding: 8px 10px 11px;
+}
+
+/* Product category */
+.aj-product-category {
+    margin-bottom: 4px;
+}
+
+/* Product name */
+.aj-product-info h3 {
+    min-height: 0 !important;
+    height: auto !important;
+
+    margin: 0 0 5px !important;
+    padding: 0;
+
+    line-height: 1.4;
+
+    font-size: 13px;
+
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+
+    overflow: hidden;
+}
+
+/* Product price */
+.aj-product-price {
+    margin-top: 0 !important;
+    padding: 0;
+
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+
+    .aj-product-info {
+        padding: 7px 9px 10px;
+    }
+
+    .aj-product-info h3 {
+        font-size: 12px;
+        line-height: 1.35;
+        margin-bottom: 4px !important;
+    }
+
+    .aj-product-price strong {
+        font-size: 15px;
+    }
+
+    .aj-product-price del {
+        font-size: 10px;
     }
 }

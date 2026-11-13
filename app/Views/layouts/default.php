@@ -264,6 +264,7 @@ if ($isCustomerLoggedIn) {
 
 <?= view('layouts/searchheader') ?>
 
+
 <div>
 <?= $content ?>
 </div>
@@ -1095,26 +1096,7 @@ window.AJ_CART_CONFIG = {
 <script src="<?= base_url('public/assets/js/ajobmart.js') ?>"></script>
 <script src="<?= base_url('public/assets/js/aj-shipping.js') ?>"></script>
 
-<script>
-// $(document).on('click', '#ajMobileCartButton, #ajCartButton', function (e) {
-//     e.preventDefault();
 
-//     console.log('Mobile cart clicked');
-
-//     const shippingModal = document.getElementById('ajShippingModal');
-//     const cartModal = document.getElementById('cartModal');
-
-//     if (shippingModal && window.bootstrap) {
-//         bootstrap.Modal.getOrCreateInstance(shippingModal).show();
-//         console.log('Shipping modal opened');
-//     } else if (cartModal && window.bootstrap) {
-//         bootstrap.Modal.getOrCreateInstance(cartModal).show();
-//         console.error('Shipping modal missing; opened cart as fallback');
-//     } else {
-//         console.error('Neither modal nor Bootstrap was found');
-//     }
-// });
-</script>
 <script>
 
 $(document).on('click', '#ajLoginRegisterBtn', function (e) {

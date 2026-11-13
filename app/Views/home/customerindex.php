@@ -1,4 +1,6 @@
 
+<!-- CATEGORY NAVIGATION -->
+<?= view('layouts/category_navigation') ?>
 <!-- =========================================
      AJOBMART - CLEAN MARKETPLACE HOMEPAGE
 ========================================= -->

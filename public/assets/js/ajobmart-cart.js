@@ -478,14 +478,14 @@ function renderCart() {
                                         data-product-id="${id}">+</button>
 
                             </div>
-
+                            <!--
                             <button type="button"
                                     class="aj-cart-remove"
                                     data-product-id="${id}"
                                     aria-label="Remove product">
                                 <i class="bi bi-trash"></i>
                             </button>
-
+                            -->
                         </div>
 
                         <strong class="aj-cart-line-total">
