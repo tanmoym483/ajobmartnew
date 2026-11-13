@@ -359,32 +359,47 @@ document.addEventListener('DOMContentLoaded', function () {
 //To Fetch Populer product
 
 
-function loadHomeProductSection(url, containerId, sectionType) {
+function fetchHomeSection(url, containerId, sectionType, silent = false) {
 
     const container = $('#' + containerId);
+
+    if (!container.length) {
+        return;
+    }
+
+    // Show loading only on the initial page load
+    if (!silent) {
+        container.html(`
+            <div class="text-center w-100 py-4">
+                <span class="spinner-border spinner-border-sm"></span>
+                Loading ${sectionType} products...
+            </div>
+        `);
+    }
 
     $.ajax({
         url: site_url + url,
         method: 'GET',
         dataType: 'json',
-
-        beforeSend: function () {
-            container.html(`
-                <div class="text-center w-100 py-4">
-                    <span class="spinner-border spinner-border-sm"></span>
-                    Loading...
-                </div>
-            `);
-        },
+        cache: false,
 
         success: function (response) {
 
-            if (!response.status ||
+            if (
+                !response.status ||
                 !Array.isArray(response.products) ||
-                response.products.length === 0) {
+                response.products.length === 0
+            ) {
+                // Don't erase existing products during background refresh
+                if (!silent) {
+                    container.empty();
+                }
 
-                container.html('');
-                container.closest('.aj-home-section').hide();
+                container.closest('.aj-home-section').toggle(
+                    Array.isArray(response.products) &&
+                    response.products.length > 0
+                );
+
                 return;
             }
 
@@ -408,11 +423,20 @@ function loadHomeProductSection(url, containerId, sectionType) {
         },
 
         error: function (xhr) {
-            console.error(sectionType + ' loading error:', xhr.responseText);
-            container.html('');
+
+            console.error(
+                sectionType + ' loading error:',
+                xhr.responseText
+            );
+
+            // Keep previously loaded products during background refresh
+            if (!silent) {
+                container.empty();
+            }
         }
     });
 }
+
 
 function renderHomeProductCard(product, sectionType) {
 
@@ -456,90 +480,82 @@ function renderHomeProductCard(product, sectionType) {
     }
 
     return `
-            <div class="aj-product-card"
-                data-product-id="${productId}">
+        
 
-                <!-- PRODUCT IMAGE AREA -->
-                <div class="aj-product-image">
+<div class="aj-product-card"
+     data-product-id="${productId}">
 
-                    ${discount > 0 && price > 0 && mrp > price ? `
-                        <span class="aj-discount-ribbon">
-                            <!--<i class="bi bi-lightning-fill"></i>-->
-                            ${discount}% OFF
-                        </span>
-                    ` : ''}
+    <!-- IMAGE CARD ONLY -->
+    <div class="aj-product-image">
 
-                    <!-- WISHLIST -->
-                    <button class="aj-wishlist"
-                            type="button"
-                            data-product-id="${productId}"
-                            aria-label="Add to wishlist">
+        <button class="aj-wishlist"
+                type="button"
+                data-product-id="${productId}"
+                aria-label="Add to wishlist">
+            <i class="bi bi-heart"></i>
+        </button>
 
-                        <i class="bi bi-heart"></i>
+        <a href="${productUrl}"
+           class="aj-product-details-link"
+           aria-label="View ${safeName} details">
 
-                    </button>
-
-                    <!-- PRODUCT LINK -->
-                    <a href="${productUrl}"
-                    class="aj-product-details-link"
-                    aria-label="View ${safeName} details">
-
-                        ${imageUrl !== '' ? `
-                            <img
-                                src="${safeImageUrl}"
-                                alt="${safeName}"
-                                class="aj-popular-product-img"
-                                loading="lazy"
-                                onerror="this.style.display='none';">
-                        ` : `
-                            <div class="aj-product-image-placeholder">
-                                <i class="bi bi-box-seam"></i>
-                            </div>
-                        `}
-
-                    </a>
-
+            ${imageUrl !== '' ? `
+                <img
+                    src="${safeImageUrl}"
+                    alt="${safeName}"
+                    class="aj-popular-product-img"
+                    loading="lazy"
+                    onerror="this.style.display='none';">
+            ` : `
+                <div class="aj-product-image-placeholder">
+                    <i class="bi bi-box-seam"></i>
                 </div>
+            `}
 
-                <!-- PRODUCT INFORMATION -->
-                <div class="aj-product-info">
+        </a>
 
-                    <span class="aj-product-category">
-                        ${safeCategory}
-                    </span>
+    </div>
 
-                    <h3>
-                        <a href="${productUrl}"
-                        class="aj-product-title-link">
-                            ${safeName}
-                        </a>
-                    </h3>
+    <!-- DETAILS OUTSIDE IMAGE CARD -->
+    <div class="aj-product-info">
 
-                    <!-- PRICE -->
-                    <div class="aj-product-price">
+        <h3>
+            <a href="${productUrl}"
+               class="aj-product-title-link">
+                ${safeName}
+            </a>
+        </h3>
 
-                        <strong>
-                            ₹${price.toLocaleString('en-IN', {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2
-                            })}
-                        </strong>
+        <div class="aj-product-price">
 
-                        ${mrp > price ? `
-                            <del>
-                                ₹${mrp.toLocaleString('en-IN', {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2
-                                })}
-                            </del>
-                        ` : ''}
+            <strong>
+                ₹${price.toLocaleString('en-IN', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                })}
+            </strong>
 
-                    </div>
+            ${mrp > price ? `
+                <del>
+                    ₹${mrp.toLocaleString('en-IN', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    })}
+                </del>
 
-                </div>
+                <span class="aj-price-discount">
+                    ${discount}% off
+                </span>
+            ` : ''}
 
-            </div>
-            `;
+        </div>
+
+    </div>
+
+</div>
+
+
+        `;
 }
 
 function escapeHomeHtml(value) {
@@ -557,37 +573,193 @@ function escapeHomeHtml(value) {
     });
 }
 
-$(document).ready(function () {
+/* =========================================
+   1. POPULAR PRODUCTS
+========================================= */
 
-    // Existing popular products endpoint
-    loadHomeProductSection(
+function loadPopularProducts(silent = false) {
+
+    fetchHomeSection(
         'fetchpopularproduct',
         'popularProductsContainer',
-        'popular'
+        'popular',
+        silent
     );
+}
 
-    // New arrivals
-    loadHomeProductSection(
+
+/* =========================================
+   2. NEW ARRIVALS
+========================================= */
+
+function loadNewArrivals(silent = false) {
+
+    fetchHomeSection(
         'home-products/new-arrivals',
         'ajNewArrivals',
-        'new'
+        'new',
+        silent
     );
+}
 
-    // Best deals
-    loadHomeProductSection(
+
+/* =========================================
+   3. BEST DEALS
+========================================= */
+
+function loadBestDeals(silent = false) {
+
+    fetchHomeSection(
         'home-products/best-deals',
         'ajBestDeals',
-        'deals'
+        'deals',
+        silent
     );
+}
 
-    // Trending
-    loadHomeProductSection(
+
+/* =========================================
+   4. TRENDING PRODUCTS
+========================================= */
+
+function loadTrendingProducts(silent = false) {
+
+    fetchHomeSection(
         'home-products/trending',
         'ajTrendingProducts',
-        'trending'
+        'trending',
+        silent
+    );
+}
+
+
+
+/* BUDGET SECTIONS */
+
+function loadUnder99(silent = false) {
+    fetchHomeSection(
+        'home-products/under-99',
+        'ajUnder99',
+        'under99',
+        silent
+    );
+}
+
+function loadUnder199(silent = false) {
+    fetchHomeSection(
+        'home-products/under-199',
+        'ajUnder199',
+        'under199',
+        silent
+    );
+}
+
+function loadDiscount30(silent = false) {
+    fetchHomeSection(
+        'home-products/discount-30',
+        'ajDiscount30',
+        'discount30',
+        silent
+    );
+}
+
+function loadDiscount50(silent = false) {
+    fetchHomeSection(
+        'home-products/discount-50',
+        'ajDiscount50',
+        'discount50',
+        silent
+    );
+}
+
+
+
+
+/* =========================================
+   AJOBMART HOMEPAGE AUTO REFRESH
+========================================= */
+
+function refreshAllHomeSections(silent = true) {
+
+    console.log(
+        '[Ajobmart] Refreshing homepage products:',
+        new Date().toLocaleTimeString()
     );
 
-});
+    loadPopularProducts(silent);
+    loadNewArrivals(silent);
+    loadBestDeals(silent);
+    loadTrendingProducts(silent);
+
+    loadUnder99(silent);
+    loadUnder199(silent);
+
+    loadDiscount30(silent);
+    loadDiscount50(silent);
+}
+
+
+/* =========================================
+   AUTO REFRESH TIMER
+========================================= */
+
+(function () {
+
+    // Prevent multiple timers
+    if (window.ajHomeRefreshTimer) {
+        clearTimeout(window.ajHomeRefreshTimer);
+    }
+
+    function scheduleNextRefresh() {
+
+        window.ajHomeRefreshTimer = setTimeout(function () {
+
+            if (document.visibilityState === 'visible') {
+
+                refreshAllHomeSections(true);
+
+            } else {
+
+                console.log(
+                    '[Ajobmart] Tab is hidden. Refresh skipped.'
+                );
+
+            }
+
+            scheduleNextRefresh();
+
+        }, 60000);
+    }
+
+
+    $(document).ready(function () {
+
+        // Initial product loading
+        refreshAllHomeSections(false);
+
+        // Start automatic refresh
+        scheduleNextRefresh();
+
+    });
+
+
+    // Refresh immediately when user returns to the tab
+    document.addEventListener('visibilitychange', function () {
+
+        if (document.visibilityState === 'visible') {
+
+            console.log(
+                '[Ajobmart] Tab active. Refreshing products.'
+            );
+
+            refreshAllHomeSections(true);
+
+        }
+
+    });
+
+})();
+
 
 
 /* =========================================
@@ -679,3 +851,188 @@ $(document).ready(function () {
 
 })();
 
+
+
+/* =========================================
+   AJOBMART - MORE PRODUCTS INFINITE SCROLL
+========================================= */
+
+(function () {
+
+    let currentPage = 1;
+    let isLoading = false;
+    let hasMoreProducts = true;
+
+    const firstPageLimit = 12;
+    const nextPageLimit = 6;
+
+    const container = $('#moreProductsContainer');
+    const loader = $('#ajMoreProductsLoader');
+    const endMessage = $('#ajMoreProductsEnd');
+    const sentinel = document.getElementById(
+        'ajMoreProductsSentinel'
+    );
+
+    if (!container.length || !sentinel) {
+        return;
+    }
+
+    function loadMoreProducts() {
+
+        if (isLoading || !hasMoreProducts) {
+            return;
+        }
+
+        isLoading = true;
+        loader.show();
+
+        $.ajax({
+            url: site_url + 'home-products/more-products',
+            method: 'GET',
+            data: {
+                page: currentPage
+            },
+            dataType: 'json',
+            cache: false,
+
+            success: function (response) {
+
+                if (
+                    !response.status ||
+                    !Array.isArray(response.products)
+                ) {
+                    hasMoreProducts = false;
+                    endMessage.show();
+                    return;
+                }
+
+                if (response.products.length === 0) {
+                    hasMoreProducts = false;
+
+                    if (currentPage === 1) {
+                        container.html(`
+                            <div class="text-center w-100 py-4">
+                                No products available.
+                            </div>
+                        `);
+                    }
+
+                    endMessage.show();
+                    return;
+                }
+
+                // Register products for cart functionality.
+                if (
+                    typeof window.ajCartRegisterProducts === 'function'
+                ) {
+                    window.ajCartRegisterProducts(
+                        response.products
+                    );
+                }
+
+                let html = '';
+
+                response.products.forEach(function (product) {
+
+                    html += renderHomeProductCard(
+                        product,
+                        'more'
+                    );
+
+                });
+
+                // Append instead of replacing existing products.
+                container.append(html);
+
+                // Refresh cart state.
+                if (
+                    typeof window.ajCartRefresh === 'function'
+                ) {
+                    window.ajCartRefresh();
+                }
+
+                currentPage++;
+
+                hasMoreProducts = response.has_more === true;
+
+                if (!hasMoreProducts) {
+                    endMessage.show();
+                }
+            },
+
+            error: function (xhr) {
+
+                console.error(
+                    'More products loading error:',
+                    xhr.responseText
+                );
+
+                // Show retry option.
+                loader.html(`
+                    <button type="button"
+                            class="btn btn-outline-secondary btn-sm"
+                            id="ajRetryMoreProducts">
+                        Retry loading products
+                    </button>
+                `).show();
+
+            },
+
+            complete: function () {
+
+                isLoading = false;
+
+                if (hasMoreProducts) {
+                    loader.hide();
+                }
+
+            }
+        });
+    }
+
+    // First load: 12 products.
+    loadMoreProducts();
+
+    // Load the next batch when the customer scrolls near the bottom.
+    const observer = new IntersectionObserver(
+        function (entries) {
+
+            entries.forEach(function (entry) {
+
+                if (
+                    entry.isIntersecting &&
+                    hasMoreProducts &&
+                    !isLoading
+                ) {
+                    loadMoreProducts();
+                }
+
+            });
+
+        },
+        {
+            root: null,
+            rootMargin: '300px',
+            threshold: 0
+        }
+    );
+
+    observer.observe(sentinel);
+
+    // Retry failed requests.
+    $(document).on(
+        'click',
+        '#ajRetryMoreProducts',
+        function () {
+
+            loader.html(`
+                <span class="spinner-border spinner-border-sm"></span>
+                <span class="ms-2">Loading more products...</span>
+            `);
+
+            loadMoreProducts();
+
+        }
+    );
+
+})();

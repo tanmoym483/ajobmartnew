@@ -38,6 +38,32 @@ class ProductModel extends Model
     ];
 
 
+    /**
+     * Homepage product limits.
+     * Change each value independently whenever required.
+     */
+    private array $homeProductLimits = [
+        'popular'    => 6,
+        'new'        => 6,
+        'deals'      => 6,
+        'trending'   => 6,
+
+        'under99'    => 6,
+        'under199'   => 6,
+
+        'discount30' => 6,
+        'discount50' => 6,
+    ];
+
+    /**
+     * Get configured homepage product limit.
+     */
+    private function getHomeProductLimit(string $section): int
+    {
+        return max(1, (int) ($this->homeProductLimits[$section] ?? 12));
+    }
+
+
     private function getHomeProducts()
     {
         return $this->db->table('ajobmart_products p')
@@ -49,8 +75,9 @@ class ProductModel extends Model
                 ORDER BY pi.is_primary DESC, pi.sort_order ASC, pi.id ASC
                 LIMIT 1) AS image_path
             ", false)
-            ->where('p.status', 'active')
-            ->where('p.approval_status', 'approved');
+            ->where('status', 'active')
+            ->where('approval_status', 'approved');
+
     }
 
     public function getSellerInventory(): array
@@ -69,7 +96,10 @@ class ProductModel extends Model
                   LIMIT 1) AS image_path',
                 false
             )
+            ->where('status', 'active')
+            ->where('approval_status', 'approved')
             ->orderBy('p.id', 'DESC')
+            ->limit($this->getHomeProductLimit('popular'))
             ->get()
             ->getResultArray();
     }
@@ -149,7 +179,7 @@ class ProductModel extends Model
             ->where('p.approval_status', 'approved')
             ->orderBy('popularity_score', 'DESC')
             ->orderBy('p.id', 'DESC')
-            ->limit(12)
+            ->limit($this->getHomeProductLimit('trending'))
             ->get()
             ->getResultArray();
     }
@@ -158,7 +188,7 @@ class ProductModel extends Model
     {
         return $this->getHomeProducts()
             ->orderBy('p.created_at', 'DESC')
-            ->limit(12)
+            ->limit($this->getHomeProductLimit('new'))
             ->get()
             ->getResultArray();
     }
@@ -172,7 +202,7 @@ class ProductModel extends Model
                 'DESC',
                 false
             )
-            ->limit(12)
+            ->limit($this->getHomeProductLimit('deals'))
             ->get()
             ->getResultArray();
     }
@@ -187,8 +217,104 @@ class ProductModel extends Model
         return $this->getHomeProducts()
             ->where('p.category_id', $categoryId)
             ->orderBy('p.id', 'DESC')
-            ->limit(12)
+            // ->limit($this->getHomeProductLimit('under99'))
             ->get()
             ->getResultArray();
     }
+
+
+    /**
+     * Products priced at ₹99 or below.
+     */
+    public function getProductsUnder99(): array
+    {
+        return $this->getHomeProducts()
+            ->where('p.listing_price <=', 99)
+            ->where('p.stock_quantity >', 0)
+            ->orderBy('p.listing_price', 'ASC')
+            ->orderBy('p.id', 'DESC')
+            ->limit($this->getHomeProductLimit('under99'))
+            ->get()
+            ->getResultArray();
+    }
+
+    /**
+     * Products priced at ₹199 or below.
+     */
+    public function getProductsUnder199(): array
+    {
+        return $this->getHomeProducts()
+            ->where('p.listing_price <=', 199)
+            ->where('p.stock_quantity >', 0)
+            ->orderBy('p.listing_price', 'ASC')
+            ->orderBy('p.id', 'DESC')
+            ->limit($this->getHomeProductLimit('under199'))
+            ->get()
+            ->getResultArray();
+    }
+
+    /**
+     * Products with 30% or more discount.
+     */
+    public function getProductsDiscount30(): array
+    {
+        return $this->getHomeProducts()
+            ->where('p.mrp >', 0)
+            ->where('p.mrp > p.listing_price', null, false)
+            ->where(
+                '((p.mrp - p.listing_price) / p.mrp) * 100 >= 30',
+                null,
+                false
+            )
+            ->where('p.stock_quantity >', 0)
+            ->orderBy(
+                '((p.mrp - p.listing_price) / p.mrp)',
+                'DESC',
+                false
+            )
+            ->orderBy('p.id', 'DESC')
+            ->limit($this->getHomeProductLimit('discount30'))
+            ->get()
+            ->getResultArray();
+    }
+
+    /**
+     * Products with 50% or more discount.
+     */
+    public function getProductsDiscount50(): array
+    {
+        return $this->getHomeProducts()
+            ->where('p.mrp >', 0)
+            ->where('p.mrp > p.listing_price', null, false)
+            ->where(
+                '((p.mrp - p.listing_price) / p.mrp) * 100 >= 50',
+                null,
+                false
+            )
+            ->where('p.stock_quantity >', 0)
+            ->orderBy(
+                '((p.mrp - p.listing_price) / p.mrp)',
+                'DESC',
+                false
+            )
+            ->orderBy('p.id', 'DESC')
+            ->limit($this->getHomeProductLimit('discount50'))
+            ->get()
+            ->getResultArray();
+    }
+
+
+    /**
+     * Get products for homepage infinite scrolling.
+     */
+    public function getMoreProducts(int $limit = 12, int $offset = 0): array
+    {
+        return $this->getHomeProducts()
+            ->orderBy('p.id', 'DESC')
+            ->limit($limit, $offset)
+            ->get()
+            ->getResultArray();
+    }
+
+
 }

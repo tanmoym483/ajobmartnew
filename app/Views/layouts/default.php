@@ -54,6 +54,10 @@ if ($isCustomerLoggedIn) {
         rel="stylesheet"
         href="<?= base_url('public/assets/css/ajobmart.css') ?>"
     >
+    <link
+        rel="stylesheet"
+        href="<?= base_url('public/assets/css/ajobmarthome.css') ?>"
+    >
 
     <style>
 

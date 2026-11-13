@@ -103,7 +103,15 @@ $routes->get(
 $routes->get('my-orders', 'Orders::index');
 
 
-$routes->get('home-products/new-arrivals', 'HomeProducts::newArrivals');
-$routes->get('home-products/best-deals', 'HomeProducts::bestDeals');
-$routes->get('home-products/trending', 'HomeProducts::trending');
+$routes->group('home-products', static function ($routes) {
+    $routes->get('new-arrivals', 'HomeProducts::newArrivals');
+    $routes->get('best-deals', 'HomeProducts::bestDeals');
+    $routes->get('trending', 'HomeProducts::trending');
+
+    $routes->get('under-99', 'HomeProducts::under99');
+    $routes->get('under-199', 'HomeProducts::under199');
+    $routes->get('discount-30', 'HomeProducts::discount30');
+    $routes->get('discount-50', 'HomeProducts::discount50');
+    $routes->get('more-products', 'HomeProducts::moreProducts');
+});
 $routes->get('home-products/category/(:num)', 'HomeProducts::byCategory/$1');

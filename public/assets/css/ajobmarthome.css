@@ -1,0 +1,441 @@
+
+/* =========================================
+   EXTRA HOMEPAGE SECTIONS
+========================================= */
+
+.aj-extra-section {
+    margin: 30px 0;
+    padding: 24px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 3px 16px rgba(0,0,0,.045);
+}
+
+.aj-extra-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 22px;
+}
+
+.aj-extra-heading span {
+    color: #777;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.aj-extra-heading h2 {
+    margin: 5px 0;
+    font-size: 23px;
+    font-weight: 750;
+    color: #222;
+}
+
+.aj-extra-heading p {
+    margin: 0;
+    font-size: 13px;
+    color: #777;
+}
+
+.aj-extra-heading a {
+    color: #333;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 650;
+    white-space: nowrap;
+}
+
+/* CATEGORY GRID */
+
+.aj-category-showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.aj-category-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 18px 8px;
+    border: 1px solid #eee;
+    border-radius: 13px;
+    text-decoration: none;
+    color: #222;
+    transition: .2s ease;
+}
+
+.aj-category-tile:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 16px rgba(0,0,0,.07);
+}
+
+.aj-category-tile-icon {
+    width: 58px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    background: #f1f5f9;
+    color: #333;
+    font-size: 25px;
+    margin-bottom: 11px;
+}
+
+.cat-green { background:#e8f8ed; color:#159447; }
+.cat-blue { background:#eaf2ff; color:#3675d9; }
+.cat-pink { background:#fff0f5; color:#d94b83; }
+.cat-orange { background:#fff2e5; color:#e58a20; }
+.cat-purple { background:#f3edff; color:#8054d6; }
+.cat-cyan { background:#e7f9fb; color:#1496a8; }
+
+.aj-category-tile strong {
+    font-size: 13px;
+}
+
+.aj-category-tile small {
+    color: #888;
+    font-size: 11px;
+    margin-top: 4px;
+}
+
+/* BRAND GRID */
+
+.aj-brand-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.aj-brand-grid a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 75px;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    color: #333;
+    font-weight: 700;
+    text-decoration: none;
+    background: #fff;
+}
+
+/* COLLECTION GRID */
+
+.aj-collection-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.aj-collection-card {
+    min-height: 175px;
+    padding: 22px;
+    border-radius: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    color: #222;
+    overflow: hidden;
+}
+
+.aj-collection-card small {
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 1px;
+}
+
+.aj-collection-card h3 {
+    font-size: 19px;
+    font-weight: 750;
+    margin: 8px 0;
+}
+
+.aj-collection-card span {
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.aj-collection-card > i {
+    font-size: 48px;
+    opacity: .35;
+}
+
+.collection-green { background:#eaf7ed; }
+.collection-orange { background:#fff2e5; }
+.collection-purple { background:#f2edff; }
+
+/* MOBILE */
+
+@media(max-width:767px) {
+
+    .aj-extra-section {
+        margin: 20px 0;
+        padding: 16px 12px;
+        border-radius: 12px;
+    }
+
+    .aj-extra-heading h2 {
+        font-size: 19px;
+    }
+
+    .aj-category-showcase-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 9px;
+    }
+
+    .aj-category-tile {
+        padding: 13px 4px;
+    }
+
+    .aj-category-tile-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 21px;
+    }
+
+    .aj-category-tile strong {
+        font-size: 11px;
+    }
+
+    .aj-category-tile small {
+        font-size: 10px;
+    }
+
+    .aj-brand-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .aj-brand-grid a {
+        min-height: 60px;
+        font-size: 12px;
+    }
+
+    .aj-collection-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .aj-collection-card {
+        min-height: 135px;
+        padding: 17px;
+    }
+}
+
+
+
+/* Budget shopping sections */
+.aj-budget-section {
+    background: #fffaf0;
+    border: 1px solid #f4ead4;
+    border-radius: 16px;
+    padding: 22px;
+}
+
+/* Discount sections */
+.aj-discount-section {
+    background: #fff;
+    border: 1px solid #f1e5e5;
+    border-radius: 16px;
+    padding: 22px;
+}
+
+.aj-budget-section .aj-v3-heading h2 {
+    color: #8a5a13;
+}
+
+.aj-discount-section .aj-v3-heading h2 {
+    color: #c73535;
+}
+
+@media(max-width:767px) {
+    .aj-budget-section,
+    .aj-discount-section {
+        padding: 13px 10px;
+        border-radius: 12px;
+    }
+}
+
+
+
+
+/* =========================================
+   MORE PRODUCTS GRID
+========================================= */
+
+#moreProductsContainer {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+}
+
+/* Tablet */
+@media (max-width: 991px) {
+    #moreProductsContainer {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+    }
+}
+
+/* Mobile: exactly 2 columns */
+@media (max-width: 480px) {
+    #moreProductsContainer {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+}
+
+/* =========================================
+   MORE PRODUCTS - MOBILE 2 COLUMN GRID
+========================================= */
+
+#moreProductsContainer {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    align-items: start;
+}
+
+/* Tablet */
+@media (max-width: 991px) {
+    #moreProductsContainer {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+    #moreProductsContainer {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        align-items: start;
+    }
+
+    #moreProductsContainer .aj-product-card {
+        width: 100%;
+        min-width: 0;
+        margin: 0;
+    }
+
+    #moreProductsContainer .aj-product-image {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+    }
+
+    #moreProductsContainer .aj-popular-product-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    #moreProductsContainer .aj-product-info {
+        padding: 8px;
+        min-width: 0;
+    }
+
+    #moreProductsContainer .aj-product-title-link {
+        font-size: 13px;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    #moreProductsContainer .aj-product-price {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px;
+    }
+}
+
+
+
+/* =========================================
+   AJOBMART - DEEPER PASTEL SECTION COLORS
+========================================= */
+
+.aj-home-section {
+    border: 1px solid;
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 26px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.045);
+}
+
+/* Popular Products */
+#products {
+    background: #E5EDFF;
+    border-color: #C8D8F5;
+}
+
+/* Best Deals */
+#aj-deals {
+    background: #FFECD5;
+    border-color: #F2D4AB;
+}
+
+/* Under ₹99 */
+#aj-under-99-section {
+    background: #DDF3E5;
+    border-color: #BCE2CA;
+}
+
+/* Under ₹199 */
+#aj-under-199-section {
+    background: #DCEFF4;
+    border-color: #BBDDE6;
+}
+
+/* 30% OFF */
+#aj-discount-30-section {
+    background: #F9DFE9;
+    border-color: #EDC3D4;
+}
+
+/* 50% OFF */
+#aj-discount-50-section {
+    background: #FCE8D8;
+    border-color: #F0CEB5;
+}
+
+/* New Arrivals */
+#aj-new-arrivals {
+    background: #EAE1FA;
+    border-color: #D3C4EF;
+}
+
+/* Trending Products */
+#aj-trending {
+    background: #FCE9D9;
+    border-color: #F0D0B5;
+}
+
+/* More Products */
+#moreproducts {
+    background: #E5E9EF;
+    border-color: #CDD4DF;
+}
+
+/* Recently Viewed */
+#ajRecentlyViewedSection {
+    background: #EDE5FA;
+    border-color: #D8CBED;
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+    .aj-home-section {
+        padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 18px;
+    }
+}
