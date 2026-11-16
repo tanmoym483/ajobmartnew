@@ -1,0 +1,426 @@
+   #ajobmart-splash {
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+#ajobmart-splash.hide {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.splash-content {
+    text-align: center;
+    animation: splashAppear 0.7s ease;
+}
+
+.splash-logo {
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+    border-radius: 20px;
+}
+
+.splash-content h1 {
+    margin: 15px 0 5px;
+    font-size: 32px;
+    font-weight: 800;
+    color: #ed6b23;
+}
+
+.splash-content p {
+    color: #666;
+    font-size: 14px;
+}
+
+.splash-loader {
+    width: 35px;
+    height: 35px;
+    margin: 22px auto 0;
+    border: 4px solid #f3d9ca;
+    border-top-color: #ed6b23;
+    border-radius: 50%;
+    animation: splashSpin 0.8s linear infinite;
+}
+
+@keyframes splashSpin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes splashAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.92);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+/* ======================================
+   CART CHARGE BREAKDOWN
+====================================== */
+
+.aj-cart-charge-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    background: transparent;
+    border: 0;
+    border-top: 1px solid #edf0f4;
+    border-bottom: 1px solid #edf0f4;
+    color: #344054;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+}
+
+.aj-cart-charge-toggle-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.aj-cart-charge-toggle-right strong {
+    color: #344054;
+    font-size: 13px;
+}
+
+.aj-cart-charge-toggle-right i {
+    color: #8a94a6;
+    font-size: 12px;
+    transition: transform .25s ease;
+}
+
+.aj-cart-charge-toggle[aria-expanded="true"]
+.aj-cart-charge-toggle-right i {
+    transform: rotate(180deg);
+}
+
+/* Breakdown container */
+
+.aj-cart-charge-details {
+    padding: 12px 12px 10px;
+    background: #f8faff;
+    border-radius: 10px;
+    margin: 8px 0;
+}
+
+.aj-cart-charge-details[hidden] {
+    display: none !important;
+}
+
+.aj-cart-charge-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: 12px;
+}
+
+.aj-cart-charge-row span {
+    color: #697586;
+}
+
+.aj-cart-charge-row strong {
+    color: #344054;
+    font-weight: 600;
+}
+
+.aj-cart-charge-row .aj-charge-discount {
+    color: #15945b;
+}
+
+.aj-cart-charge-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin-top: 8px;
+    padding-top: 9px;
+    border-top: 1px dashed #dce3ee;
+    color: #8994a6;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+/* Final total */
+
+.aj-cart-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 14px;
+    margin-top: 5px;
+    border-top: 1px solid #e8edf4;
+}
+
+.aj-cart-total > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.aj-cart-total span {
+    font-size: 15px;
+    font-weight: 700;
+    color: #172033;
+}
+
+.aj-cart-total small {
+    font-size: 10px;
+    color: #929bad;
+}
+
+.aj-cart-total strong {
+    font-size: 21px;
+    font-weight: 800;
+    color: #1769e0;
+}
+
+
+
+/* =========================================
+   AJOBMART LOGIN POPUP
+   RESPONSIVE + HIGH Z-INDEX
+========================================= */
+
+/* SweetAlert2 overlay */
+.swal2-container.aj-login-swal-container {
+    z-index: 999999 !important;
+}
+
+/* Popup */
+.swal2-popup.aj-login-swal {
+    width: 420px !important;
+    max-width: calc(100vw - 24px) !important;
+    box-sizing: border-box !important;
+
+    padding: 28px 24px 24px !important;
+    border-radius: 18px !important;
+
+    overflow: visible !important;
+}
+
+/* Popup title */
+.aj-login-swal .swal2-title {
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    margin-bottom: 12px !important;
+}
+
+/* Scrollable login content */
+.aj-login-scroll {
+    width: 100%;
+    max-height: 65vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+/* Login form */
+.aj-login-form {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 4px 0;
+}
+
+/* Login icon */
+.aj-login-icon {
+    text-align: center;
+    font-size: 52px;
+    color: #2874f0;
+    margin-bottom: 10px;
+}
+
+/* Subtitle */
+.aj-login-subtitle {
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 24px;
+}
+
+/* Input group */
+.aj-login-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 16px;
+}
+
+/* Input icon */
+.aj-login-input-group > i {
+    position: absolute;
+    left: 14px;
+    color: #777;
+    font-size: 18px;
+    pointer-events: none;
+}
+
+/* Input */
+.aj-login-input {
+    width: 100%;
+    min-width: 0;
+    height: 50px;
+    box-sizing: border-box;
+
+    padding: 0 44px 0 42px;
+
+    border: 1px solid #ddd;
+    border-radius: 10px;
+
+    background: #fff;
+    color: #222;
+    font-size: 16px;
+
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.aj-login-input:focus {
+    border-color: #999;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, .05);
+}
+
+/* Password toggle */
+.aj-password-toggle {
+    position: absolute;
+    right: 10px;
+
+    width: 34px;
+    height: 34px;
+
+    border: 0;
+    background: transparent;
+    color: #666;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+}
+
+/* Forgot password */
+.aj-login-forgot {
+    text-align: right;
+    margin-top: -4px;
+    margin-bottom: 16px;
+}
+
+.aj-login-forgot a {
+    font-size: 13px;
+    color: #555;
+    text-decoration: none;
+}
+
+/* Login button */
+.aj-login-swal .aj-login-confirm {
+    width: 100%;
+    min-height: 46px;
+    border-radius: 10px !important;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+/* Close button */
+.aj-login-swal .aj-login-close {
+    font-size: 20px !important;
+}
+
+/* Create account */
+.aj-create-account-link {
+    display: block;
+    width: 100%;
+    text-align: center;
+
+    margin-top: 12px;
+    padding: 10px;
+
+    color: #555;
+    font-size: 14px;
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+.aj-create-account-link strong {
+    color: #222;
+}
+
+/* =========================================
+   MOBILE RESPONSIVE
+========================================= */
+
+@media (max-width: 576px) {
+
+    .swal2-container.aj-login-swal-container {
+        padding: 10px !important;
+        padding-top: max(10px, env(safe-area-inset-top)) !important;
+        padding-bottom: max(10px, env(safe-area-inset-bottom)) !important;
+    }
+
+    .swal2-popup.aj-login-swal {
+        width: 100% !important;
+        max-width: 100% !important;
+
+        padding: 24px 18px 18px !important;
+        border-radius: 16px !important;
+    }
+
+    .aj-login-swal .swal2-title {
+        font-size: 21px !important;
+    }
+
+    .aj-login-icon {
+        font-size: 46px;
+    }
+
+    .aj-login-subtitle {
+        font-size: 13px;
+        margin-bottom: 20px;
+    }
+
+    .aj-login-input {
+        height: 48px;
+        font-size: 16px;
+    }
+
+    .aj-login-swal .aj-login-confirm {
+        min-height: 48px;
+    }
+
+    .aj-login-scroll {
+        max-height: 60vh;
+    }
+}
+
+/* Small mobile */
+@media (max-width: 360px) {
+
+    .swal2-popup.aj-login-swal {
+        padding: 20px 14px 16px !important;
+    }
+
+    .aj-login-swal .swal2-title {
+        font-size: 19px !important;
+    }
+
+}
+
+

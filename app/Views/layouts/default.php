@@ -58,202 +58,10 @@ if ($isCustomerLoggedIn) {
         rel="stylesheet"
         href="<?= base_url('public/assets/css/ajobmarthome.css') ?>"
     >
-
-    <style>
-
-        #ajobmart-splash {
-    position: fixed;
-    inset: 0;
-    z-index: 999999;
-    background: #ffffff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: opacity 0.4s ease, visibility 0.4s ease;
-}
-
-#ajobmart-splash.hide {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
-
-.splash-content {
-    text-align: center;
-    animation: splashAppear 0.7s ease;
-}
-
-.splash-logo {
-    width: 110px;
-    height: 110px;
-    object-fit: contain;
-    border-radius: 20px;
-}
-
-.splash-content h1 {
-    margin: 15px 0 5px;
-    font-size: 32px;
-    font-weight: 800;
-    color: #ed6b23;
-}
-
-.splash-content p {
-    color: #666;
-    font-size: 14px;
-}
-
-.splash-loader {
-    width: 35px;
-    height: 35px;
-    margin: 22px auto 0;
-    border: 4px solid #f3d9ca;
-    border-top-color: #ed6b23;
-    border-radius: 50%;
-    animation: splashSpin 0.8s linear infinite;
-}
-
-@keyframes splashSpin {
-    to { transform: rotate(360deg); }
-}
-
-@keyframes splashAppear {
-    from {
-        opacity: 0;
-        transform: scale(0.92);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-
-/* ======================================
-   CART CHARGE BREAKDOWN
-====================================== */
-
-.aj-cart-charge-toggle {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 0;
-    background: transparent;
-    border: 0;
-    border-top: 1px solid #edf0f4;
-    border-bottom: 1px solid #edf0f4;
-    color: #344054;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    text-align: left;
-}
-
-.aj-cart-charge-toggle-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.aj-cart-charge-toggle-right strong {
-    color: #344054;
-    font-size: 13px;
-}
-
-.aj-cart-charge-toggle-right i {
-    color: #8a94a6;
-    font-size: 12px;
-    transition: transform .25s ease;
-}
-
-.aj-cart-charge-toggle[aria-expanded="true"]
-.aj-cart-charge-toggle-right i {
-    transform: rotate(180deg);
-}
-
-/* Breakdown container */
-
-.aj-cart-charge-details {
-    padding: 12px 12px 10px;
-    background: #f8faff;
-    border-radius: 10px;
-    margin: 8px 0;
-}
-
-.aj-cart-charge-details[hidden] {
-    display: none !important;
-}
-
-.aj-cart-charge-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 8px 0;
-    font-size: 12px;
-}
-
-.aj-cart-charge-row span {
-    color: #697586;
-}
-
-.aj-cart-charge-row strong {
-    color: #344054;
-    font-weight: 600;
-}
-
-.aj-cart-charge-row .aj-charge-discount {
-    color: #15945b;
-}
-
-.aj-cart-charge-note {
-    display: flex;
-    align-items: flex-start;
-    gap: 6px;
-    margin-top: 8px;
-    padding-top: 9px;
-    border-top: 1px dashed #dce3ee;
-    color: #8994a6;
-    font-size: 10px;
-    line-height: 1.5;
-}
-
-/* Final total */
-
-.aj-cart-total {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding-top: 14px;
-    margin-top: 5px;
-    border-top: 1px solid #e8edf4;
-}
-
-.aj-cart-total > div {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.aj-cart-total span {
-    font-size: 15px;
-    font-weight: 700;
-    color: #172033;
-}
-
-.aj-cart-total small {
-    font-size: 10px;
-    color: #929bad;
-}
-
-.aj-cart-total strong {
-    font-size: 21px;
-    font-weight: 800;
-    color: #1769e0;
-}
-
-    </style>
+    <link
+        rel="stylesheet"
+        href="<?= base_url('public/assets/css/style.css') ?>"
+    >
 </head>
 
 <body>
@@ -439,26 +247,26 @@ if ($isCustomerLoggedIn) {
                 </a>
 
                 
-<?php if ($isCustomerLoggedIn): ?>
+                <?php if ($isCustomerLoggedIn): ?>
 
-    <a
-        href="<?= site_url('auth/customerLogout') ?>"
-        class="aj-profile-option aj-logout-option"
-        id="ajCustomerLogoutBtn"
-    >
-        <div class="aj-profile-option-icon">
-            <i class="bi bi-box-arrow-right"></i>
-        </div>
+                    <a
+                        href="<?= site_url('auth/customerLogout') ?>"
+                        class="aj-profile-option aj-logout-option"
+                        id="ajCustomerLogoutBtn"
+                    >
+                        <div class="aj-profile-option-icon">
+                            <i class="bi bi-box-arrow-right"></i>
+                        </div>
 
-        <div class="aj-profile-option-content">
-            <strong>Logout</strong>
-            <span>Sign out of your Ajobmart account</span>
-        </div>
+                        <div class="aj-profile-option-content">
+                            <strong>Logout</strong>
+                            <span>Sign out of your Ajobmart account</span>
+                        </div>
 
-        <i class="bi bi-chevron-right"></i>
-    </a>
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
 
-<?php endif; ?>
+                <?php endif; ?>
 
             </div>
 
@@ -593,198 +401,6 @@ if ($isCustomerLoggedIn) {
         </div>
     </div>
 </div>
-
-
-
-<!-- =========================================
-     CART MODAL
-========================================= -->
-<!-- 
-<div
-    class="modal fade aj-cart-modal"
-    id="cartModal"
-    tabindex="-1"
-    aria-labelledby="cartModalLabel"
-    aria-hidden="true"
->
-
-    <div class="modal-dialog">
-
-        <div class="modal-content">
-
-
-            
-
-            
-        <div class="aj-cart-modal-header">
-            <h5 id="cartModalLabel">My Cart</h5>
-                &nbsp;
-                <div class="aj-cart-modal-items">0 Items</div>
-            <div class="flex-grow-1">
-                
-
-                
-                <div class="aj-cart-delivery-selector" id="ajCartDeliverySelector">
-                    <div class="aj-cart-delivery-icon">
-                        <i class="bi bi-geo-alt"></i>
-                    </div>
-
-                    <div class="aj-cart-delivery-info">
-                        <div class="aj-cart-delivery-label">
-                            Deliver to
-                        </div>
-
-                        <div id="ajCartDeliveryAddress">
-                            <div class="small text-muted">
-                                Delivery address not selected
-                            </div>
-                        </div>
-                    </div>
-
-                    <button
-                        type="button"
-                        class="aj-cart-address-toggle"
-                        id="ajCartAddressToggle"
-                        aria-label="Change delivery address"
-                        title="Change delivery address">
-                        <i class="bi bi-chevron-down"></i>
-                    </button>
-                </div>
-
-            </div>
-
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close">
-            </button>
-        </div>
-
-
-
-            
-
-            <div class="aj-cart-modal-body">
-
-
-
-                <div class="aj-cart-empty" id="ajCartEmpty">
-                    <div class="aj-cart-empty-icon">
-                        <i class="bi bi-cart-x"></i>
-                    </div>
-                    <h4>Your cart is empty</h4>
-                    <p>Looks like you haven't added anything to your cart yet.</p>
-                    <a href="#" class="aj-cart-shop-btn" data-bs-dismiss="modal">
-                        Start Shopping
-                    </a>
-                </div>
-
-
-
-                <div
-                    class="aj-cart-products"
-                    id="ajCartProducts"
-                >
-
-
-                    
-
-                </div>
-
-            </div>
-
-
-           
-
-            
-            <div class="aj-cart-modal-footer">
-
-                <div class="aj-cart-summary">
-
-                    <div class="aj-cart-summary-row">
-                        <span>Subtotal</span>
-                        <strong id="ajCartSubtotal">₹0.00</strong>
-                    </div>
-
-                    <button
-                        type="button"
-                        class="aj-cart-charge-toggle"
-                        id="ajCartChargeToggle"
-                        aria-expanded="false"
-                        aria-controls="ajCartChargeDetails">
-
-                        <span>
-                            <i class="bi bi-receipt me-2"></i>
-                            Delivery & Charges
-                        </span>
-
-                        <span class="aj-cart-charge-toggle-right">
-                            <i class="bi bi-chevron-down" id="ajCartChargeArrow"></i>
-                        </span>
-
-                    </button>
-
-                    <div
-                        class="aj-cart-charge-details"
-                        id="ajCartChargeDetails"
-                        hidden>
-
-
-                        <div class="aj-cart-charge-row">
-                            <span>Platform Fee</span>
-                            <strong id="ajCartPlatformFee">₹0.00</strong>
-                        </div>
-
-                        <div class="aj-cart-charge-row">
-                            <span>Delivery Fee</span>
-                            <strong id="ajCartDeliveryFee">FREE</strong>
-                        </div>
-
-                        <div class="aj-cart-charge-row">
-                            <span>My Cashback</span>
-                            <strong class="aj-charge-discount" id="ajCartCouponDiscount">
-                                −₹0.00
-                            </strong>
-                        </div>
-
-                        <div class="aj-cart-charge-note">
-                            <i class="bi bi-info-circle"></i>
-                            Delivery charges are calculated based on your delivery
-                            location and applicable shipping allowance.
-                        </div>
-
-                    </div>
-
-                    <div class="aj-cart-total">
-                        <div>
-                            <span>Total Payable</span>
-                            <small>Inclusive of displayed charges</small>
-                        </div>
-
-                        <strong id="ajCartTotal">₹0.00</strong>
-                    </div>
-
-                </div>
-
-                <button
-                    type="button"
-                    class="aj-cart-checkout-btn"
-                    id="ajCartCheckout">
-
-                    Proceed to Checkout
-                    <i class="bi bi-arrow-right"></i>
-
-                </button>
-
-            </div>
-
-
-        </div>
-
-    </div>
-
-</div> -->
 
 
 
