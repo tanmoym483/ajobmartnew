@@ -101,6 +101,11 @@ $routes->get(
 
 
 $routes->get('my-orders', 'Orders::index');
+$routes->get('my-orders/(:num)', 'Orders::details/$1');
+$routes->post(
+    'my-orders/(:num)/cancel-request',
+    'Orders::requestCancellation/$1'
+);
 
 
 $routes->group('home-products', static function ($routes) {
@@ -115,3 +120,4 @@ $routes->group('home-products', static function ($routes) {
     $routes->get('more-products', 'HomeProducts::moreProducts');
 });
 $routes->get('home-products/category/(:num)', 'HomeProducts::byCategory/$1');
+
