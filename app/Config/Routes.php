@@ -121,3 +121,7 @@ $routes->group('home-products', static function ($routes) {
 });
 $routes->get('home-products/category/(:num)', 'HomeProducts::byCategory/$1');
 
+
+$routes->get('products/search', 'Product::searchResults');
+$routes->get('products/search-data', 'Product::searchData');
+$routes->get('products/search-suggestions', 'Product::searchSuggestions');

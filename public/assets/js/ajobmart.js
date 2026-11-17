@@ -446,6 +446,9 @@ function renderHomeProductCard(product, sectionType) {
     const price = parseFloat(product.listing_price) || 0;
     const mrp = parseFloat(product.mrp) || 0;
 
+    const wowDiscount = 20;
+    const wowPrice = price - (price * wowDiscount / 100);
+
     const imagePath = product.image_path || '';
 
     const cleanImagePath = imagePath.replace(/^[/\\]+/, '');
@@ -528,27 +531,30 @@ function renderHomeProductCard(product, sectionType) {
 
         <div class="aj-product-price">
 
-            <strong>
-                ₹${price.toLocaleString('en-IN', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                })}
-            </strong>
+    <strong>
+        ₹${price.toLocaleString('en-IN', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        })}
+    </strong>
 
-            ${mrp > price ? `
-                <del>
-                    ₹${mrp.toLocaleString('en-IN', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    })}
-                </del>
+    ${mrp > price ? `
+        <del>
+            ₹${mrp.toLocaleString('en-IN', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            })}
+        </del>
+    ` : ''}
 
-                <span class="aj-price-discount">
-                    ${discount}% off
-                </span>
-            ` : ''}
+    <span class="aj-price-discount">
+        <span class="text-white">WOW</span> ₹${wowPrice.toLocaleString('en-IN', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        })}
+    </span>
 
-        </div>
+</div>
 
     </div>
 

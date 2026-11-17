@@ -317,4 +317,172 @@ class ProductModel extends Model
     }
 
 
+/**
+ * Search approved customer-visible products.
+ *
+ * Every search word must match at least one searchable field.
+ * Words can match different fields of the same product.
+ */
+public function searchCustomerProducts(
+    string $search,
+    int $limit = 12,
+    int $offset = 0
+): array {
+    $terms = preg_split('/\s+/', trim($search), -1, PREG_SPLIT_NO_EMPTY);
+
+    $terms = array_values(array_unique(array_filter(
+        $terms,
+        static fn($term) => mb_strlen($term) >= 1
+    )));
+
+    if (empty($terms)) {
+        return [
+            'products' => [],
+            'total'    => 0,
+        ];
+    }
+
+    // Prevent excessively long search requests.
+    $terms = array_slice($terms, 0, 8);
+
+    $from = "
+        FROM ajobmart_products p
+        LEFT JOIN ajobmart_categories c
+            ON c.id = p.category_id
+        LEFT JOIN ajobmart_subcategories sc
+            ON sc.id = p.subcategory_id
+        LEFT JOIN ajobmart_product_types pt
+            ON pt.id = p.product_type_id
+        WHERE p.status = 'active'
+          AND p.approval_status = 'approved'
+    ";
+
+    $searchableFields = [
+        'p.product_name',
+        'p.brand',
+        'p.sub_brand',
+        'p.category',
+        'p.sku',
+        'p.description',
+        'p.key_features',
+        'p.category_attributes',
+        'p.hsn_code',
+        'p.manufacturer_name',
+        'p.packer_name',
+        'p.model_number_general',
+        'c.name',
+        'c.slug',
+        'sc.name',
+        'sc.slug',
+        'sc.description',
+        'pt.name',
+        'pt.slug',
+        'pt.description',
+    ];
+
+    $conditions = [];
+    $bindings   = [];
+
+    foreach ($terms as $term) {
+        $like = '%' . $term . '%';
+
+        $orConditions = [];
+
+        foreach ($searchableFields as $field) {
+            $orConditions[] = "$field LIKE ?";
+            $bindings[] = $like;
+        }
+
+        // Search saved product attribute values and their labels.
+        $orConditions[] = "
+            EXISTS (
+                SELECT 1
+                FROM ajobmart_product_attribute_values pav
+                INNER JOIN ajobmart_category_attributes ca
+                    ON ca.id = pav.attribute_id
+                WHERE pav.product_id = p.id
+                  AND (
+                      pav.attribute_value LIKE ?
+                      OR ca.attribute_name LIKE ?
+                      OR ca.label LIKE ?
+                  )
+            )
+        ";
+
+        $bindings[] = $like;
+        $bindings[] = $like;
+        $bindings[] = $like;
+
+        $conditions[] = '(' . implode(' OR ', $orConditions) . ')';
+    }
+
+    $from .= ' AND ' . implode(' AND ', $conditions);
+
+    // Count matching products.
+    $countRow = $this->db->query(
+        "SELECT COUNT(DISTINCT p.id) AS total " . $from,
+        $bindings
+    )->getRowArray();
+
+    $total = (int) ($countRow['total'] ?? 0);
+
+    if ($total === 0) {
+        return [
+            'products' => [],
+            'total'    => 0,
+        ];
+    }
+
+    $limit  = max(1, min(48, $limit));
+    $offset = max(0, $offset);
+
+    $sql = "
+        SELECT
+            p.*,
+            (
+                SELECT pi.image_path
+                FROM ajobmart_product_images pi
+                WHERE pi.product_id = p.id
+                ORDER BY
+                    pi.is_primary DESC,
+                    pi.sort_order ASC,
+                    pi.id ASC
+                LIMIT 1
+            ) AS image_path
+        " . $from . "
+        GROUP BY p.id
+        ORDER BY
+            CASE
+                WHEN p.product_name = ? THEN 0
+                WHEN p.product_name LIKE ? THEN 1
+                WHEN p.brand LIKE ? THEN 2
+                ELSE 3
+            END ASC,
+            p.id DESC
+        LIMIT ? OFFSET ?
+    ";
+
+    $queryBindings = array_merge(
+        $bindings,
+        [
+            trim($search),
+            '%' . trim($search) . '%',
+            '%' . trim($search) . '%',
+            $limit,
+            $offset,
+        ]
+    );
+
+    $products = $this->db->query(
+        $sql,
+        $queryBindings
+    )->getResultArray();
+
+    return [
+        'products' => $products,
+        'total'    => $total,
+    ];
+}
+
+
 }
