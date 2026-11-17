@@ -306,3 +306,173 @@
 }
 
 
+.aj-price-discount {
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    line-height: 1.3;
+}
+
+.aj-price-discount:hover {
+    filter: brightness(1.1);
+}
+
+
+/* FLOATING CART MESSAGE */
+
+.aj-cart-floating-toast {
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 20px;
+    border-radius: 10px;
+    background: #198754;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 8px 25px rgba(0,0,0,.20);
+    opacity: 0;
+    transform: translateX(120%);
+    transition: all .4s ease;
+}
+
+.aj-cart-floating-toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.aj-cart-floating-toast.warning {
+    background: #343a40;
+}
+
+.aj-toast-icon {
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,.2);
+    border-radius: 50%;
+    font-size: 16px;
+}
+
+
+/* WOW CELEBRATION */
+
+#ajWowCelebration {
+    position: fixed;
+    inset: 0;
+    z-index: 999998;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: rgba(0,0,0,.45);
+    backdrop-filter: blur(3px);
+}
+
+#ajWowCelebration:not(.d-none) {
+    display: flex;
+}
+
+.aj-wow-blast {
+    position: relative;
+    width: min(90%, 370px);
+    padding: 35px 20px;
+    text-align: center;
+    color: white;
+    border-radius: 20px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #087cff, #0044bd);
+    box-shadow: 0 15px 60px rgba(0,0,0,.35);
+    transform: scale(.3);
+    opacity: 0;
+}
+
+#ajWowCelebration.active .aj-wow-blast {
+    animation: ajWowBlast .65s cubic-bezier(.17,.89,.32,1.49) forwards;
+}
+
+@keyframes ajWowBlast {
+    0% {
+        transform: scale(.3);
+        opacity: 0;
+    }
+    70% {
+        transform: scale(1.12);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.aj-wow-burst-icon {
+    font-size: 45px;
+    animation: ajWowBounce .7s infinite alternate;
+}
+
+@keyframes ajWowBounce {
+    to { transform: translateY(-9px) rotate(10deg); }
+}
+
+.aj-wow-title {
+    margin-top: 8px;
+    font-size: 23px;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+.aj-wow-saving {
+    margin: 12px 0;
+    font-size: 38px;
+    font-weight: 900;
+    color: #ffeb3b;
+    text-shadow: 0 3px 12px rgba(0,0,0,.3);
+}
+
+.aj-wow-subtitle {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.aj-wow-particle {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    font-size: 23px;
+    pointer-events: none;
+    animation: ajWowParticle 1.4s ease-out forwards;
+    animation-delay: calc(var(--i) * 0.012s);
+}
+
+@keyframes ajWowParticle {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(.3);
+    }
+    100% {
+        opacity: 0;
+        transform:
+            translate(
+                calc(-50% + (var(--i) - 14) * 19px),
+                calc(-50% + (var(--i) - 14) * 15px)
+            )
+            scale(1.5) rotate(240deg);
+    }
+}
+
+@media (max-width: 576px) {
+    .aj-cart-floating-toast {
+        left: 12px;
+        right: 12px;
+        top: 75px;
+        justify-content: center;
+        font-size: 13px;
+    }
+}

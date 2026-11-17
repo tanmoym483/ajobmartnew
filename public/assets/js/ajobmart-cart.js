@@ -926,8 +926,94 @@ $(document).on('click', '.aj-wow-toggle', function (e) {
         }
     }
 
+
+
+function showCartFloatingMessage(message, type = 'success') {
+    let toast = document.getElementById('ajCartFloatingToast');
+
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'ajCartFloatingToast';
+        document.body.appendChild(toast);
+    }
+
+    toast.className = 'aj-cart-floating-toast ' + type;
+    toast.innerHTML = `
+        <span class="aj-toast-icon">
+            ${type === 'success' ? '✓' : 'ℹ'}
+        </span>
+        <span>${escapeHtml(message)}</span>
+    `;
+
+    requestAnimationFrame(() => toast.classList.add('show'));
+
+    clearTimeout(window.ajCartToastTimer);
+
+    window.ajCartToastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+
+// function showWowCelebration(savedAmount) {
+//     let overlay = document.getElementById('ajWowCelebration');
+
+//     if (!overlay) {
+//         overlay = document.createElement('div');
+//         overlay.id = 'ajWowCelebration';
+//         document.body.appendChild(overlay);
+//     }
+
+//     const particles = Array.from({ length: 28 }, (_, i) => `
+//         <span class="aj-wow-particle"
+//               style="--i:${i};">
+//             ${i % 3 === 0 ? '₹' : i % 3 === 1 ? '✦' : '💰'}
+//         </span>
+//     `).join('');
+
+//     overlay.innerHTML = `
+//         <div class="aj-wow-blast">
+//             <div class="aj-wow-burst-icon">🎉</div>
+
+//             <div class="aj-wow-title">WOW! YOU SAVED!</div>
+
+//             <div class="aj-wow-saving">
+//                 ₹${Number(savedAmount).toLocaleString('en-IN', {
+//                     minimumFractionDigits: 2,
+//                     maximumFractionDigits: 2
+//                 })}
+//             </div>
+
+//             <div class="aj-wow-subtitle">
+//                 You're getting an amazing deal!
+//             </div>
+
+//             ${particles}
+//         </div>
+//     `;
+
+//     overlay.classList.remove('d-none');
+
+//     requestAnimationFrame(() => overlay.classList.add('active'));
+
+//     setTimeout(() => {
+//         overlay.classList.remove('active');
+
+//         setTimeout(() => {
+//             overlay.classList.add('d-none');
+
+//             showCartFloatingMessage(
+//                 'Added to cart successfully!',
+//                 'success'
+//             );
+//         }, 350);
+
+//     }, 1800);
+// }
+
+
     
-    function addGuestProduct(productId) {
+    function addGuestProduct(productId, wowApplied = 0) {
         const product = productCatalog[productId];
 
         console.log('Clicked Product ID:', productId);
@@ -937,6 +1023,14 @@ $(document).on('click', '.aj-wow-toggle', function (e) {
 
     if (!product) {
         showError('Please wait for products to finish loading.');
+        return;
+    }
+
+    if (findItem(productId)) {
+        showCartFloatingMessage(
+            'This product is already in your cart!',
+            'warning'
+        );
         return;
     }
 
@@ -957,11 +1051,29 @@ $(document).on('click', '.aj-wow-toggle', function (e) {
             return;
         }
 
-        // Read WOW offer status from product details page.
-        const wowElement = document.getElementById('ajWowOffer');
+        const listingPrice = Number(product.listing_price) || 0;
+    const mrp = Number(product.mrp) || 0;
 
-        const wowApplied =
-            wowElement?.dataset.offerApplied === 'true' ? 1 : 0;
+    const wowPrice = wowApplied === 1
+        ? listingPrice * 0.80
+        : listingPrice;
+
+    // Compare the WOW price with the original MRP.
+    const savingPerItem = mrp > 0
+        ? Math.max(0, mrp - wowPrice)
+        : listingPrice * (wowPercent / 100);
+
+    const totalSaving = savingPerItem * minimum;
+
+        // Read WOW offer status from product details page.
+        // Use the WOW status supplied by the clicked product card.
+        // Otherwise, retain the existing product-details-page behaviour.
+        if (wowApplied !== 1) {
+            const wowElement = document.getElementById('ajWowOffer');
+
+            wowApplied =
+                wowElement?.dataset.offerApplied === 'true' ? 1 : 0;
+        }
 
         const wowPercent = wowApplied === 1 ? 20 : 0;
 
@@ -994,37 +1106,108 @@ $(document).on('click', '.aj-wow-toggle', function (e) {
 
         saveGuestCart();
         renderCart();
+
+        if (wowApplied === 1) {
+            showWowCelebration(totalSaving);
+        } else {
+            showCartFloatingMessage(
+                'Added to cart successfully!',
+                'success'
+            );
+        }
     }
 
 
-    function addProduct(productId) {
+    
+    function addProduct(productId, wowApplied = null) {
+
         if (cartRequestRunning) return;
 
-        if (!config.loggedIn) {
-            addGuestProduct(productId);
+        const product = productCatalog[productId];
+
+        if (!product) {
+            showError('Please wait for products to finish loading.');
             return;
         }
 
+        // Already exists: don't add again.
+        if (findItem(productId)) {
+            showCartFloatingMessage(
+                'This product is already in your cart!',
+                'warning'
+            );
+            return;
+        }
+
+        // Read the WOW status from the clicked button,
+        // or from the product details page.
+        if (wowApplied === null) {
+            const wowElement = document.getElementById('ajWowOffer');
+
+            wowApplied =
+                wowElement?.dataset.offerApplied === 'true' ? 1 : 0;
+        }
+
+        wowApplied = Number(wowApplied) === 1 ? 1 : 0;
+
+        const minimum = Math.max(
+            1,
+            Number(product.min_order_quantity) || 1
+        );
+
+        const mrp = Number(product.mrp) || 0;
+        const listingPrice = Number(product.listing_price) || 0;
+
+        const wowPrice = wowApplied === 1
+            ? listingPrice * 0.80
+            : listingPrice;
+
+        const savingPerItem = mrp > 0
+            ? Math.max(0, mrp - wowPrice)
+            : listingPrice * (wowApplied === 1 ? 0.20 : 0);
+
+        const totalSaving = savingPerItem * minimum;
+
+        // Guest cart
+        if (!config.loggedIn) {
+            addGuestProduct(productId, wowApplied);
+            return;
+        }
+
+        // Logged-in cart
         cartRequestRunning = true;
 
-        request(config.addUrl, { product_id: productId, wow_offer_applied: (
-        document.getElementById('ajWowOffer')?.dataset.offerApplied === 'true'
-            ? 1
-            : 0
-    ) })
-            .done(function (response) {
-                applyServerCart(response);
-            })
-            .fail(function (xhr) {
-                showError(
-                    xhr.responseJSON?.message ||
-                    'Unable to add this product.'
+        request(config.addUrl, {
+            product_id: productId,
+            wow_offer_applied: wowApplied
+        })
+        .done(function (response) {
+
+            applyServerCart(response);
+
+            if (wowApplied === 1) {
+                showWowCelebration(totalSaving);
+            } else {
+                showCartFloatingMessage(
+                    'Added to cart successfully!',
+                    'success'
                 );
-            })
-            .always(function () {
-                cartRequestRunning = false;
-            });
+            }
+
+        })
+        .fail(function (xhr) {
+
+            showError(
+                xhr.responseJSON?.message ||
+                'Unable to add this product.'
+            );
+
+        })
+        .always(function () {
+            cartRequestRunning = false;
+        });
     }
+
 
     function changeQuantity(productId, direction) {
         const item = findItem(productId);
@@ -1106,7 +1289,15 @@ $(document).on('click', '.aj-wow-toggle', function (e) {
 
     // Popular products are dynamically replaced, so use delegated events.
     $(document).on('click', '.aj-add-cart', function () {
-        addProduct(Number($(this).data('product-id')));
+
+        const productId = Number($(this).data('product-id'));
+
+        const wowApplied =
+            Number($(this).attr('data-wow-offer-applied')) === 1
+                ? 1
+                : null;
+
+        addProduct(productId, wowApplied);
     });
 
     $(document).on('click', '.aj-cart-qty-btn', function () {

@@ -491,13 +491,6 @@ function renderHomeProductCard(product, sectionType) {
     <!-- IMAGE CARD ONLY -->
     <div class="aj-product-image">
 
-        <button class="aj-wishlist"
-                type="button"
-                data-product-id="${productId}"
-                aria-label="Add to wishlist">
-            <i class="bi bi-heart"></i>
-        </button>
-
         <a href="${productUrl}"
            class="aj-product-details-link"
            aria-label="View ${safeName} details">
@@ -547,12 +540,19 @@ function renderHomeProductCard(product, sectionType) {
         </del>
     ` : ''}
 
-    <span class="aj-price-discount">
-        <span class="text-white" style='font-size:6px;'>WOW</span> ₹${wowPrice.toLocaleString('en-IN', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        })}
-    </span>
+    <button
+    type="button"
+    class="aj-price-discount aj-add-cart"
+    data-product-id="${productId}"
+    data-wow-offer-applied="1"
+    aria-label="Add ${safeName} to cart with 20 percent WOW discount"
+>
+    <span class="text-white" style="font-size:6px;">WOW</span>
+    ₹${wowPrice.toLocaleString('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    })}
+</button>
 
 </div>
 
