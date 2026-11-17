@@ -548,7 +548,7 @@ function renderHomeProductCard(product, sectionType) {
     ` : ''}
 
     <span class="aj-price-discount">
-        <span class="text-white" style='font-size:9px;'>WOW</span> ₹${wowPrice.toLocaleString('en-IN', {
+        <span class="text-white" style='font-size:6px;'>WOW</span> ₹${wowPrice.toLocaleString('en-IN', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         })}
