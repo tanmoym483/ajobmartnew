@@ -542,7 +542,7 @@ function renderHomeProductCard(product, sectionType) {
 
     <button
     type="button"
-    class="aj-price-discount aj-add-cart"
+    class="aj-price-discount aj-add-cart wowofferbtn"
     data-product-id="${productId}"
     data-wow-offer-applied="1"
     aria-label="Add ${safeName} to cart with 20 percent WOW discount"

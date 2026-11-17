@@ -1170,7 +1170,121 @@
 
 }
 
+/* Product details cart buttons */
+.aj-product-details-page .aj-product-cart-action {
+    margin-top: 18px;
+}
 
+.aj-product-action-buttons {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+}
+
+.aj-product-action-buttons .aj-add-cart,
+.aj-product-action-buttons .aj-go-to-cart,
+.aj-product-action-buttons .aj-buy-now {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 8px;
+    border: none;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+/* Add to Cart */
+.aj-product-action-buttons .aj-add-cart {
+    background: #f5a623;
+    color: #222;
+}
+
+/* Go to Cart */
+.aj-product-action-buttons .aj-go-to-cart {
+    background: #198754;
+    color: #fff;
+}
+
+/* Buy Now */
+.aj-product-action-buttons .aj-buy-now {
+    background: #198754;
+    color: #fff;
+}
+
+/* Disabled buttons */
+.aj-product-action-buttons button:disabled {
+    background: #999;
+    color: #fff;
+    cursor: not-allowed;
+}
+
+/* Hidden button must remain hidden */
+.aj-product-action-buttons [hidden] {
+    display: none !important;
+}
+
+@media (max-width: 767.98px) {
+    #ajProductCartAction.aj-mobile-floating {
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 40px !important;
+        width: 100% !important;
+        z-index: 999999 !important;
+        background: #fff !important;
+        padding: 12px 15px !important;
+        box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.15);
+    }
+}
+
+/* Perfectly align Add to Cart and Buy Now */
+.aj-product-action-buttons {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+    width: 100% !important;
+}
+
+.aj-product-action-buttons > #ajProductAddCart,
+.aj-product-action-buttons > #ajProductGoToCart,
+.aj-product-action-buttons > #ajProductBuyNow {
+    display: flex;
+    flex: 1 1 0 !important;
+    width: 0 !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    height: 50px !important;
+    min-height: 50px !important;
+    margin: 0 !important;
+    padding: 0 8px !important;
+    box-sizing: border-box !important;
+    align-items: center !important;
+    justify-content: center !important;
+    vertical-align: top;
+}
+
+.aj-product-action-buttons > #ajProductGoToCart[hidden] {
+    display: none !important;
+}
+
+#ajProductAddCart[hidden],
+#ajProductGoToCart[hidden] {
+    display: none !important;
+}
 </style>
 <?php
 $productId = (int) ($product['id'] ?? 0);
@@ -1408,92 +1522,92 @@ foreach ($images ?? [] as $cartImage) {
 
             <!-- WOW Online Payment Offer -->
             <?php
-$onlineDiscountPercent = 20;
-$onlineDiscountAmount = floor($price * $onlineDiscountPercent / 100);
-$onlineOfferPrice = max(0, floor($price - $onlineDiscountAmount));
+            $onlineDiscountPercent = 20;
+            $onlineDiscountAmount = floor($price * $onlineDiscountPercent / 100);
+            $onlineOfferPrice = max(0, floor($price - $onlineDiscountAmount));
 
-$wowOfferApplied = (bool) ($wowOfferApplied ?? false);
+            $wowOfferApplied = (bool) ($wowOfferApplied ?? false);
 
-$formatPrice = static function ($value) {
-    return number_format((float) $value, 0);
-};
-?>
+            $formatPrice = static function ($value) {
+                return number_format((float) $value, 0);
+            };
+            ?>
 
-<div class="aj-wow-offer"
-     id="ajWowOffer"
-     data-product-id="<?= (int) $productId ?>"
-     data-original-price="<?= esc($price) ?>"
-     data-offer-price="<?= esc($onlineOfferPrice) ?>"
-     data-applied="<?= $wowOfferApplied ? '1' : '0' ?>">
+            <div class="aj-wow-offer"
+                id="ajWowOffer"
+                data-product-id="<?= (int) $productId ?>"
+                data-original-price="<?= esc($price) ?>"
+                data-offer-price="<?= esc($onlineOfferPrice) ?>"
+                data-applied="<?= $wowOfferApplied ? '1' : '0' ?>">
 
-    <div class="aj-wow-offer-header"
-         id="ajWowOfferToggle"
-         role="button"
-         tabindex="0"
-         aria-expanded="false"
-         aria-controls="ajWowOfferContent">
+                <div class="aj-wow-offer-header"
+                    id="ajWowOfferToggle"
+                    role="button"
+                    tabindex="0"
+                    aria-expanded="false"
+                    aria-controls="ajWowOfferContent">
 
-        <div class="aj-wow-offer-heading">
-            <span class="aj-wow-icon">
-                <i class="bi bi-stars"></i>
-            </span>
+                    <div class="aj-wow-offer-heading">
+                        <span class="aj-wow-icon">
+                            <i class="bi bi-stars"></i>
+                        </span>
 
-            <div>
-                <strong>WOW OFFER!</strong>
-                <small>20% OFF on online payment</small>
+                        <div>
+                            <strong>WOW OFFER!</strong>
+                            <small>20% OFF on online payment</small>
+                        </div>
+                    </div>
+
+                    <div class="aj-wow-header-right">
+                        <div class="aj-wow-header-price">
+                            <strong id="ajWowOfferPrice">
+                                ₹<?= $formatPrice($onlineOfferPrice) ?>
+                            </strong>
+                            <del>₹<?= $formatPrice($price) ?></del>
+                        </div>
+
+                        <i class="bi bi-chevron-down aj-wow-arrow"></i>
+                    </div>
+                </div>
+
+                <div class="aj-wow-offer-content"
+                    id="ajWowOfferContent"
+                    hidden>
+
+                    <div class="aj-wow-offer-details">
+                        <div class="aj-wow-discount">
+                            <strong>20% OFF</strong>
+                            <span>Online Payment</span>
+                        </div>
+
+                        <p>
+                            Get an additional 20% discount when you pay online
+                            using an eligible payment method.
+                        </p>
+                    </div>
+
+                    <button type="button"
+                            class="aj-wow-apply-btn"
+                            id="ajWowApplyBtn"
+                            <?= $wowOfferApplied ? 'hidden' : '' ?>>
+                        Apply Offer
+                    </button>
+
+                    <button type="button"
+                            class="aj-wow-apply-btn"
+                            id="ajWowRemoveBtn"
+                            <?= $wowOfferApplied ? '' : 'hidden' ?>>
+                        Remove Offer
+                    </button>
+
+                    <div class="aj-wow-applied-message"
+                        id="ajWowAppliedMessage"
+                        <?= $wowOfferApplied ? '' : 'hidden' ?>>
+                        <i class="bi bi-check-circle-fill"></i>
+                        Offer selected! Choose online payment at checkout.
+                    </div>
+                </div>
             </div>
-        </div>
-
-        <div class="aj-wow-header-right">
-            <div class="aj-wow-header-price">
-                <strong id="ajWowOfferPrice">
-                    ₹<?= $formatPrice($onlineOfferPrice) ?>
-                </strong>
-                <del>₹<?= $formatPrice($price) ?></del>
-            </div>
-
-            <i class="bi bi-chevron-down aj-wow-arrow"></i>
-        </div>
-    </div>
-
-    <div class="aj-wow-offer-content"
-         id="ajWowOfferContent"
-         hidden>
-
-        <div class="aj-wow-offer-details">
-            <div class="aj-wow-discount">
-                <strong>20% OFF</strong>
-                <span>Online Payment</span>
-            </div>
-
-            <p>
-                Get an additional 20% discount when you pay online
-                using an eligible payment method.
-            </p>
-        </div>
-
-        <button type="button"
-                class="aj-wow-apply-btn"
-                id="ajWowApplyBtn"
-                <?= $wowOfferApplied ? 'hidden' : '' ?>>
-            Apply Offer
-        </button>
-
-        <button type="button"
-                class="aj-wow-apply-btn"
-                id="ajWowRemoveBtn"
-                <?= $wowOfferApplied ? '' : 'hidden' ?>>
-            Remove Offer
-        </button>
-
-        <div class="aj-wow-applied-message"
-             id="ajWowAppliedMessage"
-             <?= $wowOfferApplied ? '' : 'hidden' ?>>
-            <i class="bi bi-check-circle-fill"></i>
-            Offer selected! Choose online payment at checkout.
-        </div>
-    </div>
-</div>
 
             <div class="aj-details-availability">
                 <div>
@@ -1524,35 +1638,49 @@ $formatPrice = static function ($value) {
             </div>
 
             <!-- Keep the existing Ajobmart cart classes. -->
-            <div
-            class="aj-product-cart-action"
-            id="ajProductCartAction"
-            data-product-id="<?= $productId ?>">
+            <div class="aj-product-cart-action"
+                id="ajProductCartAction"
+                data-product-id="<?= $productId ?>">
 
-            <button
-                type="button"
-                class="aj-add-cart"
-                id="ajProductAddCart"
-                data-product-id="<?= $productId ?>"
-                <?= $stock <= 0 ? 'disabled' : '' ?>>
+                <div class="aj-product-action-buttons">
 
-                <i class="bi bi-cart-plus"></i>
-                <?= $stock > 0 ? 'Add to Cart-' : 'Out of Stock' ?>
-                <span id="ajAddCartAmount">
-                    ₹<?= $formatPrice($price) ?>
-                </span>
-            </button>
+                    <!-- Add to Cart -->
+                    <button type="button"
+                            class="aj-add-cart addtocart"
+                            id="ajProductAddCart"
+                            data-product-id="<?= $productId ?>"
+                            <?= $stock <= 0 ? 'disabled' : '' ?>>
 
-            <a href="<?= site_url('cart') ?>"
-            class="aj-go-to-cart"
-            id="ajProductGoToCart"
-            style="display:none;">
+                        <i class="bi bi-cart-plus"></i>
+                        <span>Add to Cart</span>
 
-                <i class="bi bi-cart-check"></i>
-                Go to Cart
-            </a>
+                        <strong id="ajAddCartAmount">
+                            ₹<?= $formatPrice($price) ?>
+                        </strong>
+                    </button>
 
-        </div>
+                    <!-- Go to Cart: hidden initially -->
+                    <a href="<?= site_url('cart') ?>"
+                    class="aj-go-to-cart"
+                    id="ajProductGoToCart"
+                    hidden>
+
+                        <i class="bi bi-cart-check"></i>
+                        Go to Cart
+                    </a>
+
+                    <!-- Buy Now -->
+                    <button type="button"
+                            class="aj-buy-now"
+                            id="ajProductBuyNow"
+                            <?= $stock <= 0 ? 'disabled' : '' ?>>
+
+                        <i class="bi bi-lightning-fill"></i>
+                        <span id = "ajBuyAmount">Buy Now</span>
+                    </button>
+
+                </div>
+            </div>
 
             
 <!-- Product details accordion -->
@@ -2115,13 +2243,28 @@ $formatPrice = static function ($value) {
         resetZoom();
         modal.classList.add('open');
         document.body.style.overflow = 'hidden';
+
+        // Disable floating Add to Cart while image zoom is open.
+        document.body.classList.add('aj-image-zoom-active');
+
+        document.dispatchEvent(new CustomEvent('aj:image-zoom-state', {
+            detail: { open: true }
+        }));
     }
 
     function closeZoom() {
         if (!modal) return;
+
         modal.classList.remove('open');
         document.body.style.overflow = '';
         dragging = false;
+
+        // Restore normal floating-cart behaviour.
+        document.body.classList.remove('aj-image-zoom-active');
+
+        document.dispatchEvent(new CustomEvent('aj:image-zoom-state', {
+            detail: { open: false }
+        }));
     }
 
     function changeZoom(amount) {
@@ -2349,14 +2492,33 @@ $formatPrice = static function ($value) {
 
         let observer;
 
+        let cartPlaceholderVisible = true;
+
         function updateFloatingState(isVisible) {
-            const shouldFloat = mobileQuery.matches && !isVisible;
+
+            cartPlaceholderVisible = isVisible;
+
+            const zoomOpen = document.body.classList.contains(
+                'aj-image-zoom-active'
+            );
+
+            const shouldFloat =
+                mobileQuery.matches &&
+                !isVisible &&
+                !zoomOpen;
 
             cartAction.classList.toggle(
                 'aj-mobile-floating',
                 shouldFloat
             );
         }
+
+        // Listen for product image zoom open/close.
+        document.addEventListener('aj:image-zoom-state', function () {
+
+            updateFloatingState(cartPlaceholderVisible);
+
+        });
 
         function startObserver() {
 

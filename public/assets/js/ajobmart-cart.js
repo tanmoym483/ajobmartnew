@@ -49,6 +49,19 @@
         );
     }
 
+    function syncProductDetailsCartButton() {
+
+    const action = document.getElementById('ajProductCartAction');
+
+    if (!action) return;
+
+    const productId = Number(action.dataset.productId);
+
+    if (!productId) return;
+
+    updateProductCartButton(!!findItem(productId));
+}
+
     function cartCount() {
         return cartItems.reduce((sum, item) =>
             sum + Math.max(0, Number(item.quantity) || 0), 0
@@ -169,7 +182,9 @@
     };
 
     
+
 function syncCardControls() {
+
     $('.aj-product-cart-action').each(function () {
 
         const wrapper = $(this);
@@ -182,24 +197,12 @@ function syncCardControls() {
             const addButton = wrapper.find('#ajProductAddCart');
             const goToCart = wrapper.find('#ajProductGoToCart');
 
-            if (!item) {
-                if (addButton.length) {
-                    addButton.show();
-                }
-
-                if (goToCart.length) {
-                    goToCart.hide();
-                }
-
-                return;
-            }
-
-            if (addButton.length) {
-                addButton.hide();
-            }
-
-            if (goToCart.length) {
-                goToCart.show();
+            if (item) {
+                addButton.prop('hidden', true);
+                goToCart.prop('hidden', false);
+            } else {
+                addButton.prop('hidden', false);
+                goToCart.prop('hidden', true);
             }
 
             return;
@@ -207,6 +210,7 @@ function syncCardControls() {
 
         // PRODUCT LISTING CARDS
         if (!item) {
+
             wrapper.html(`
                 <button type="button"
                         class="aj-add-cart"
@@ -246,11 +250,15 @@ function syncCardControls() {
     });
 }
 
+
 // Update product detail Add to Cart button amount
 window.ajUpdateProductAddCartAmount = function (amount) {
     const amountElement = document.getElementById('ajAddCartAmount');
+    const amountBuyElement = document.getElementById('ajBuyAmount');
 
-    if (!amountElement) {
+    
+
+    if (!amountElement && !amountBuyElement) {
         return;
     }
 
@@ -261,7 +269,10 @@ window.ajUpdateProductAddCartAmount = function (amount) {
     }
 
     amountElement.textContent = '₹' + price.toFixed(2);
+    amountBuyElement.textContent = '₹' + price.toFixed(2);
+
 };
+
 // function syncCardControls() {
 //         $('.aj-product-cart-action').each(function () {
 //             const wrapper = $(this);
@@ -865,6 +876,28 @@ $(document).on('click', '.aj-wow-toggle', function (e) {
         renderCart();
     }
 
+//     function updateProductCartButton(isAdded) {
+
+//     const addButton = document.getElementById('ajProductAddCart');
+//     const goToCart = document.getElementById('ajProductGoToCart');
+
+//     if (!addButton || !goToCart) return;
+
+//     addButton.hidden = !!isAdded;
+//     goToCart.hidden = !isAdded;
+// }
+
+
+window.updateProductCartButton = function (isAdded) {
+
+    const addButton = document.getElementById('ajProductAddCart');
+    const goToCart = document.getElementById('ajProductGoToCart');
+
+    if (!addButton || !goToCart) return;
+
+    addButton.hidden = !!isAdded;
+    goToCart.hidden = !isAdded;
+};
 
 
     function request(url, data) {
@@ -1122,6 +1155,8 @@ function showCartFloatingMessage(message, type = 'success') {
 
         saveGuestCart();
         renderCart();
+        // Show Go to Cart button
+        updateProductCartButton(true);
 
         if (wowApplied === 1) {
             showWowCelebration(totalsaving);
@@ -1200,6 +1235,9 @@ function showCartFloatingMessage(message, type = 'success') {
         .done(function (response) {
 
             applyServerCart(response);
+
+            // Show Go to Cart button
+            updateProductCartButton(true);
 
             if (wowApplied === 1) {
                 showWowCelebration(totalSaving);
@@ -1304,7 +1342,7 @@ function showCartFloatingMessage(message, type = 'success') {
     }
 
     // Popular products are dynamically replaced, so use delegated events.
-    $(document).on('click', '.aj-add-cart', function () {
+    $(document).on('click', '.wowofferbtn, .addtocart', function () {
 
         const productId = Number($(this).data('product-id'));
 
