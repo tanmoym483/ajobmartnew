@@ -7,7 +7,7 @@
 
 .aj-search-wrapper {
     position: relative;
-    z-index: 10000;
+    z-index: auto;
     /* overflow: visible; */
 }
 

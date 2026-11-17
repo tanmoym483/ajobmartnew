@@ -755,7 +755,9 @@ function showWowCelebration(discountAmount) {
 
     discountAmount = Number(discountAmount) || 0;
 
+    // 🎊 Confetti animation
     if (typeof confetti === 'function') {
+
         confetti({
             particleCount: 160,
             spread: 100,
@@ -773,36 +775,61 @@ function showWowCelebration(discountAmount) {
         }, 250);
     }
 
-    Swal.fire({
-        icon: 'success',
-        title: '🎊 WOW! YOU WON! 🏆',
-        html: `
-            <div class="aj-wow-swal-content">
+    // 🎉 WOW celebration
+    if (window.Swal) {
 
-                <div class="aj-wow-swal-emojis">
-                    🎉 ✨ 🥳 💰 🎁
+        Swal.fire({
+            icon: 'success',
+            title: '🎊 WOW! YOU WON! 🏆',
+
+            html: `
+                <div class="aj-wow-swal-content">
+
+                    <div class="aj-wow-swal-emojis">
+                        🎉 ✨ 🥳 💰 🎁
+                    </div>
+
+                    <div class="aj-wow-swal-amount">
+                        ₹${discountAmount.toFixed(2)}
+                    </div>
+
+                    <div class="aj-wow-swal-message">
+                        🥳 Congratulations! You saved money!
+                    </div>
+
+                    <div class="aj-wow-swal-emojis">
+                        💃 🎊 ⭐ 🎉
+                    </div>
+
                 </div>
+            `,
 
-                <div class="aj-wow-swal-amount">
-                    ₹${discountAmount.toFixed(2)}
-                </div>
+            position: 'bottom',
+            toast: true,
+            showConfirmButton: false,
+            timer: 3500,
+            timerProgressBar: true,
 
-                <div class="aj-wow-swal-message">
-                    🥳 Congratulations! You saved money!
-                </div>
+            // Show success message after WOW celebration closes
+            didClose: function () {
 
-                <div class="aj-wow-swal-emojis">
-                    💃 🎊 ⭐ 🎉
-                </div>
+                showCartFloatingMessage(
+                    'Added to cart successfully!',
+                    'success'
+                );
 
-            </div>
-        `,
-        position: 'bottom',
-        toast: true,
-        showConfirmButton: false,
-        timer: 3500,
-        timerProgressBar: true
-    });
+            }
+        });
+
+    } else {
+
+        // Fallback if SweetAlert2 is unavailable
+        showCartFloatingMessage(
+            'Added to cart successfully!',
+            'success'
+        );
+
+    }
 }
 
 $(document).on('click', '.aj-wow-toggle', function (e) {
@@ -1050,20 +1077,7 @@ function showCartFloatingMessage(message, type = 'success') {
             showError('Maximum available stock reached.');
             return;
         }
-
-        const listingPrice = Number(product.listing_price) || 0;
-    const mrp = Number(product.mrp) || 0;
-
-    const wowPrice = wowApplied === 1
-        ? listingPrice * 0.80
-        : listingPrice;
-
-    // Compare the WOW price with the original MRP.
-    const savingPerItem = mrp > 0
-        ? Math.max(0, mrp - wowPrice)
-        : listingPrice * (wowPercent / 100);
-
-    const totalSaving = savingPerItem * minimum;
+        
 
         // Read WOW offer status from product details page.
         // Use the WOW status supplied by the clicked product card.
@@ -1082,6 +1096,8 @@ function showCartFloatingMessage(message, type = 'success') {
                 Number(product.listing_price) * wowPercent / 100
             )
             : 0;
+
+            const totalsaving = wowDiscount * newQuantity;
 
         if (!item) {
             item = normalizeGuestItem({
@@ -1108,7 +1124,7 @@ function showCartFloatingMessage(message, type = 'success') {
         renderCart();
 
         if (wowApplied === 1) {
-            showWowCelebration(totalSaving);
+            showWowCelebration(totalsaving);
         } else {
             showCartFloatingMessage(
                 'Added to cart successfully!',

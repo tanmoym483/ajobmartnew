@@ -447,7 +447,7 @@ function renderHomeProductCard(product, sectionType) {
     const mrp = parseFloat(product.mrp) || 0;
 
     const wowDiscount = 20;
-    const wowPrice = price - (price * wowDiscount / 100);
+    const wowPrice = Math.floor(price - (price * wowDiscount / 100));
 
     const imagePath = product.image_path || '';
 
