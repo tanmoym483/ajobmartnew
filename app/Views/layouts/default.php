@@ -62,10 +62,124 @@ if ($isCustomerLoggedIn) {
         rel="stylesheet"
         href="<?= base_url('public/assets/css/style.css') ?>"
     >
+
+    <style>
+        .aj-global-delivery-bar {
+    width: 100%;
+    background: transparent;
+}
+
+.aj-global-delivery-bar .aj-delivery-card {
+    max-width: 1400px;
+    margin: 0 auto !important;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: transparent;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+} 
+    
+    .aj-delivery-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 17px 20px;
+    background: linear-gradient(110deg, #ffffff, #f5f7ff);
+}
+
+.aj-delivery-icon {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef2ff;
+    color: #4f46e5;
+    font-size: 20px;
+}
+
+    .aj-address-changes {
+        cursor: pointer;
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        width: 100%;
+    }
+
+.aj-address-changes:hover {
+    color: inherit;
+    text-decoration: none;
+}
+.aj-global-delivery-bar .aj-delivery-card {
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.aj-address-changes:hover .aj-delivery-card {
+    background: #f9fafb;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+
+
+.aj-google-shipping-modal .modal-body {
+    overflow-x: hidden;
+}
+
+.aj-google-map-wrapper {
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #f8f9fa;
+}
+
+#ajGoogleMap {
+    width: 100%;
+    height: 280px;
+}
+
+.aj-google-map-suggestions {
+    position: relative;
+    z-index: 1085;
+    max-height: 230px;
+    overflow-y: auto;
+    margin-top: 4px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 5px 18px rgba(0,0,0,.10);
+}
+
+.aj-google-map-suggestions button {
+    display: block;
+    width: 100%;
+    padding: 11px 13px;
+    text-align: left;
+    border: 0;
+    border-bottom: 1px solid #f0f0f0;
+    background: #fff;
+    color: #202a35;
+}
+
+.aj-google-map-suggestions button:hover {
+    background: #f7f7f7;
+}
+
+.aj-google-map-suggestions button:last-child {
+    border-bottom: 0;
+}
+
+#ajGoogleMapSearch {
+    min-width: 0;
+}
+
+#ajShippingMessage {
+    overflow-wrap: anywhere;
+}
+
+    </style>
 </head>
 
 <body>
-
 
 <?= view('layouts/header', [
     'isCustomerLoggedIn' => $isCustomerLoggedIn,
@@ -74,21 +188,47 @@ if ($isCustomerLoggedIn) {
     'couponAmount'       => $couponAmount,
 ]) ?>
 
+<!-- DELIVERY ADDRESS SECTION -->
+<div class="aj-global-delivery-bar">
+
+    <a id="ajCartDeliverySelector"
+      class="aj-address-changes">
+
+        <div class="aj-cart-card aj-delivery-card mb-3">
+
+            <div class="aj-delivery-icon">
+                <i class="bi bi-geo-alt-fill"></i>
+            </div>
+
+            <div class="flex-grow-1">
+                <span class="aj-section-label">DELIVER TO</span>
+
+                <div id="ajCartDeliveryAddress">
+                    Select delivery address
+                </div>
+            </div>
+
+            <i class="bi bi-chevron-right"></i>
+
+        </div>
+    </a>
+</div>
+
+<!-- SEARCH HEADER -->
 <?= view('layouts/searchheader') ?>
 
-
 <div>
-<?= $content ?>
+    <?= $content ?>
 </div>
 
 <?= view('layouts/footer') ?>
+
 <?= view('layouts/mobile_bottom_nav', [
     'isCustomerLoggedIn' => $isCustomerLoggedIn,
     'customerName'       => $customerName,
     'customerImage'      => $customerImage,
     'couponAmount'       => $couponAmount,
 ]) ?>
-
 
 
 <div id="ajobmart-splash">
@@ -277,65 +417,147 @@ if ($isCustomerLoggedIn) {
 
 
 
+
 <div class="modal fade" id="ajShippingModal" tabindex="-1"
      aria-labelledby="ajShippingModalTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content aj-google-shipping-modal">
+
             <div class="modal-header">
                 <div>
                     <h5 class="modal-title" id="ajShippingModalTitle">
-                        Check delivery availability
+                        Choose your delivery location
                     </h5>
                     <small class="text-muted">
-                        Enter your PIN code to estimate shipping.
+                        Find your location to check delivery availability.
                     </small>
                 </div>
+
                 <button type="button" class="btn-close"
                         data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
             <div class="modal-body">
+
                 <div id="ajShippingMessage"
                      class="alert alert-info d-none" role="alert"></div>
 
+                <!-- Search location -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        Search your location
+                    </label>
+
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-search"></i>
+                        </span>
+
+                        <input type="text"
+                               id="ajGoogleMapSearch"
+                               class="form-control"
+                               placeholder="Search area, street, landmark..."
+                               autocomplete="off">
+                    </div>
+                    <div id="ajGoogleMapSuggestions"
+                        class="aj-google-map-suggestions d-none"></div>
+                </div>
+
+                <!-- Current location button -->
+                <button type="button"
+                        id="ajDetectCurrentLocation"
+                        class="btn btn-outline-primary w-100 mb-3">
+
+                    <i class="bi bi-crosshair me-2"></i>
+                    Use my current location
+                </button>
+
+                <!-- Google Map -->
+                <div class="aj-google-map-wrapper mb-3">
+                    <div id="ajGoogleMap"
+                         style="width:100%;height:280px;">
+                    </div>
+                </div>
+
+                <!-- Selected location -->
+                <div class="aj-selected-location mb-3">
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-geo-alt-fill text-danger mt-1"></i>
+
+                        <div class="flex-grow-1">
+                            <div class="fw-semibold">
+                                Selected location
+                            </div>
+
+                            <div id="ajSelectedMapAddress"
+                                 class="small text-muted">
+                                Search or select your location on the map.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <!-- Address form -->
                 <form id="ajShippingForm">
+
                     <div class="mb-3">
                         <label for="ajShippingPin" class="form-label">
                             PIN code
                         </label>
-                        <input type="text" id="ajShippingPin"
-                               name="pincode" class="form-control"
-                               inputmode="numeric" maxlength="6"
-                               pattern="[0-9]{6}" required
+
+                        <input type="hidden" id="ajShippingLatitude" name="latitude">
+                        <input type="hidden" id="ajShippingLongitude" name="longitude">
+                        <input type="text"
+                               id="ajShippingPin"
+                               name="pincode"
+                               class="form-control"
+                               inputmode="numeric"
+                               maxlength="6"
+                               pattern="[0-9]{6}"
+                               required
                                placeholder="Enter 6-digit PIN code">
                     </div>
 
-                    <div id="ajShippingAddressFields" class="d-none">
-                        <hr>
-                        <p class="fw-semibold mb-3">Delivery address</p>
+                    <div id="ajShippingAddressFields">
+
+                        <p class="fw-semibold mb-3">
+                            Delivery address details
+                        </p>
 
                         <div class="mb-3">
                             <label class="form-label" for="ajShippingName">
                                 Recipient name
                             </label>
-                            <input class="form-control" id="ajShippingName"
-                                   name="recipient_name" autocomplete="name">
+
+                            <input class="form-control"
+                                   id="ajShippingName"
+                                   name="recipient_name"
+                                   autocomplete="name">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label" for="ajShippingMobile">
                                 Mobile number
                             </label>
-                            <input class="form-control" id="ajShippingMobile"
-                                   name="mobile" inputmode="numeric"
-                                   maxlength="10" autocomplete="tel">
+
+                            <input class="form-control"
+                                   id="ajShippingMobile"
+                                   name="mobile"
+                                   inputmode="numeric"
+                                   maxlength="10"
+                                   autocomplete="tel">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label" for="ajShippingAddress1">
                                 Address line 1
                             </label>
-                            <input class="form-control" id="ajShippingAddress1"
+
+                            <input class="form-control"
+                                   id="ajShippingAddress1"
                                    name="address_line1"
                                    autocomplete="address-line1">
                         </div>
@@ -344,7 +566,9 @@ if ($isCustomerLoggedIn) {
                             <label class="form-label" for="ajShippingAddress2">
                                 Address line 2 (optional)
                             </label>
-                            <input class="form-control" id="ajShippingAddress2"
+
+                            <input class="form-control"
+                                   id="ajShippingAddress2"
                                    name="address_line2"
                                    autocomplete="address-line2">
                         </div>
@@ -353,7 +577,9 @@ if ($isCustomerLoggedIn) {
                             <label class="form-label" for="ajShippingLandmark">
                                 Landmark (optional)
                             </label>
-                            <input class="form-control" id="ajShippingLandmark"
+
+                            <input class="form-control"
+                                   id="ajShippingLandmark"
                                    name="landmark">
                         </div>
 
@@ -362,45 +588,60 @@ if ($isCustomerLoggedIn) {
                                 <label class="form-label" for="ajShippingCity">
                                     City
                                 </label>
-                                <input class="form-control" id="ajShippingCity"
-                                       name="city" autocomplete="address-level2">
+
+                                <input class="form-control"
+                                       id="ajShippingCity"
+                                       name="city"
+                                       autocomplete="address-level2">
                             </div>
+
                             <div class="col-6 mb-3">
                                 <label class="form-label" for="ajShippingState">
                                     State
                                 </label>
-                                <input class="form-control" id="ajShippingState"
-                                       name="state" autocomplete="address-level1">
+
+                                <input class="form-control"
+                                       id="ajShippingState"
+                                       name="state"
+                                       autocomplete="address-level1">
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label" for="ajShippingAddressType">
+                            <label class="form-label"
+                                   for="ajShippingAddressType">
                                 Address type
                             </label>
-                            <select class="form-select" id="ajShippingAddressType"
+
+                            <select class="form-select"
+                                    id="ajShippingAddressType"
                                     name="address_type">
                                 <option value="home">Home</option>
                                 <option value="work">Work</option>
                                 <option value="other">Other</option>
                             </select>
                         </div>
+
                     </div>
 
-                    <button type="submit" id="ajShippingSubmit"
+                    <button type="submit"
+                            id="ajShippingSubmit"
                             class="btn btn-primary w-100">
-                        Check shipping
+
+                        Confirm delivery location
                     </button>
+
                 </form>
 
                 <p class="small text-muted mt-3 mb-0">
-                    Guests can estimate shipping with a PIN code. You can
-                    provide the full delivery address during checkout.
+                    Please verify your PIN code and address before confirming.
                 </p>
+
             </div>
         </div>
     </div>
 </div>
+
 
 
 
@@ -699,7 +940,14 @@ window.AJ_CART_CONFIG = {
 
     shippingSaveAddressUrl:
         <?= json_encode(site_url('shipping/save-address')) ?>,
+
+    shippingSaveDetectedAddressUrl : <?= json_encode(site_url('customer/shipping/save-detected-address')) ?>,
+    
     wowOfferUrl: <?= json_encode(site_url('cart/update-wow-offer')) ?>,
+    // cartUrl: '<?= site_url("cart") ?>',
+
+    googleMapsApiKey:
+    <?= json_encode(env('GOOGLE_MAPS_BROWSER_KEY') ?: '') ?>,
 
     csrfName: <?= json_encode(csrf_token()) ?>,
     csrfHash: <?= json_encode(csrf_hash()) ?>,
@@ -716,6 +964,7 @@ window.AJ_CART_CONFIG = {
 <script src="<?= base_url('public/assets/js/ajobmart.js') ?>"></script>
 <script src="<?= base_url('public/assets/js/aj-shipping.js') ?>"></script>
 <script src="<?= base_url('public/assets/js/mobilenav.js') ?>"></script>
+<script src="<?= base_url('public/assets/js/aj-google-maps.js') ?>"></script>
 
 
 

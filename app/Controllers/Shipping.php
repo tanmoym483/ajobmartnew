@@ -507,6 +507,153 @@ class Shipping extends BaseController
         ]);
     }
 
+
+
+public function saveDetectedAddress()
+{
+    $customerId = (int) session()->get('ajobmart_customer_db_id');
+
+    if ($customerId <= 0) {
+        return $this->jsonResponse([
+            'success' => false,
+            'message' => 'Please log in to save your address.',
+        ], 401);
+    }
+
+    $payload = $this->getPayload();
+
+    $pin = trim((string) ($payload['pincode'] ?? ''));
+    $line1 = trim((string) ($payload['address_line1'] ?? ''));
+    $city = trim((string) ($payload['city'] ?? ''));
+    $state = trim((string) ($payload['state'] ?? ''));
+
+    if (
+        !$this->validPin($pin) ||
+        $line1 === '' ||
+        $city === '' ||
+        $state === ''
+    ) {
+        return $this->jsonResponse([
+            'success' => false,
+            'message' => 'The detected location does not contain a complete delivery address.',
+        ], 422);
+    }
+
+    // Check whether this PIN is enabled for delivery.
+    $pinRow = $this->db->table('ajobmart_pincode_directory')
+        ->where('pincode', $pin)
+        ->where('is_active', 1)
+        ->get()
+        ->getRowArray();
+
+    if (!$pinRow) {
+        return $this->jsonResponse([
+            'success' => false,
+            'message' => 'This PIN code is not available for delivery estimates yet.',
+        ], 422);
+    }
+
+    // Get the customer's registered name and mobile.
+    $customer = $this->db->table('ajobmart_users')
+        ->select('name, mobile')
+        ->where('id', $customerId)
+        ->get()
+        ->getRowArray();
+
+    if (!$customer) {
+        return $this->jsonResponse([
+            'success' => false,
+            'message' => 'Customer account not found.',
+        ], 404);
+    }
+
+    $name = trim((string) ($customer['name'] ?? ''));
+    $mobile = preg_replace('/\D+/', '', (string) ($customer['mobile'] ?? ''));
+
+    if ($name === '' || !preg_match('/^\d{10}$/', $mobile)) {
+        return $this->jsonResponse([
+            'success' => false,
+            'message' => 'Please update your name and mobile number before saving your delivery address.',
+        ], 422);
+    }
+
+    $this->db->transBegin();
+
+    try {
+
+        // Do not replace an address if the customer already has one.
+        $existing = $this->db->table('ajobmart_customer_addresses')
+            ->where('customer_id', $customerId)
+            ->orderBy('is_default', 'DESC')
+            ->orderBy('id', 'ASC')
+            ->get()
+            ->getRowArray();
+
+        if ($existing) {
+
+            $this->db->transCommit();
+
+            return $this->jsonResponse([
+                'success' => true,
+                'existing' => true,
+                'address' => $existing,
+                'message' => 'Your saved delivery address has been loaded.',
+            ]);
+        }
+
+        $now = date('Y-m-d H:i:s');
+
+        $this->db->table('ajobmart_customer_addresses')->insert([
+            'customer_id' => $customerId,
+            'recipient_name' => $name,
+            'mobile' => $mobile,
+            'pincode' => $pin,
+            'state' => $state,
+            'city' => $city,
+            'address_line1' => $line1,
+            'address_line2' => '',
+            'landmark' => '',
+            'address_type' => 'home',
+            'is_default' => 1,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
+
+        $addressId = $this->db->insertID();
+
+        $address = $this->db->table('ajobmart_customer_addresses')
+            ->where('id', $addressId)
+            ->where('customer_id', $customerId)
+            ->get()
+            ->getRowArray();
+
+        if (!$address) {
+            throw new \RuntimeException('Unable to retrieve the saved address.');
+        }
+
+        $this->db->transCommit();
+
+        return $this->jsonResponse([
+            'success' => true,
+            'existing' => false,
+            'address' => $address,
+            'message' => 'Your detected delivery address has been saved.',
+        ]);
+
+    } catch (\Throwable $e) {
+
+        $this->db->transRollback();
+
+        log_message('error', 'GPS address save failed: ' . $e->getMessage());
+
+        return $this->jsonResponse([
+            'success' => false,
+            'message' => 'Unable to save your detected address. Please add your address manually.',
+        ], 500);
+    }
+}
+
+
     public function testShadowfax()
 {
     $courier = new ShadowfaxCourier();

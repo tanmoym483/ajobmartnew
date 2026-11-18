@@ -360,6 +360,12 @@ window.AJ_CART_CONFIG = {
     shippingSaveAddressUrl:
         <?= json_encode(site_url('shipping/save-address')) ?>,
 
+    shippingSaveDetectedAddressUrl : 
+        <?= json_encode(site_url('customer/shipping/save-detected-address')) ?>,
+    
+
+    googleMapsApiKey: env('GOOGLE_MAPS_BROWSER_KEY'),
+    
     csrfName: <?= json_encode(csrf_token()) ?>,
     csrfHash: <?= json_encode(csrf_hash()) ?>,
     csrfHeader: 'X-CSRF-TOKEN'

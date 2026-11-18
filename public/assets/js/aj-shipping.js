@@ -7,7 +7,8 @@
         customerAddress: config.shippingCustomerAddressUrl,
         customerAddresses: config.shippingCustomerAddressesUrl,
         estimate: config.shippingEstimateUrl,
-        saveAddress: config.shippingSaveAddressUrl
+        saveAddress: config.shippingSaveAddressUrl,
+        saveDetectedAddress: config.shippingSaveDetectedAddressUrl
     };
 
     const shippingElement = document.getElementById('ajShippingModal');
@@ -39,7 +40,28 @@
     let savedAddress = null;
     let savedAddresses = [];
     let selectedAddress = null;
-    let guestShippingPin = '';
+    const GUEST_PIN_KEY = 'ajobmart_guest_shipping_pin';
+
+    let guestShippingPin =
+        localStorage.getItem(GUEST_PIN_KEY) || '';
+    
+    const GUEST_LOCATION_KEY = 'ajobmart_guest_shipping_location';
+
+    let guestShippingLocation =
+        localStorage.getItem(GUEST_LOCATION_KEY) || '';
+
+    const GUEST_ADDRESS_KEY = 'ajobmart_guest_shipping_address';
+
+    let guestShippingAddress = {};
+
+        try {
+            guestShippingAddress = JSON.parse(
+                localStorage.getItem(GUEST_ADDRESS_KEY) || '{}'
+            );
+        } catch (error) {
+            guestShippingAddress = {};
+        }
+
     let addingNewAddress = false;
     let shippingRequestInProgress = false;
     let addressSelectionInProgress = false;
@@ -71,6 +93,316 @@
 
         return headers;
     }
+
+
+    /**
+     * Get customer's current GPS location.
+     */
+    function getGuestCoordinates() {
+
+        return new Promise(function (resolve, reject) {
+
+            if (!navigator.geolocation) {
+                reject(new Error('Location is not supported by this browser.'));
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    resolve({
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
+                    });
+                },
+                function (error) {
+                    reject(error);
+                },
+                {
+                    enableHighAccuracy: false,
+                    timeout: 12000,
+                    maximumAge: 600000
+                }
+            );
+        });
+    }
+
+
+    /**
+     * Convert GPS coordinates into an address using OpenStreetMap.
+     */
+    
+
+async function getGuestAddressFromCoordinates(latitude, longitude) {
+
+    const url = new URL(
+        'https://nominatim.openstreetmap.org/reverse'
+    );
+
+    url.searchParams.set('format', 'jsonv2');
+    url.searchParams.set('lat', latitude);
+    url.searchParams.set('lon', longitude);
+    url.searchParams.set('addressdetails', '1');
+    url.searchParams.set('zoom', '18');
+    url.searchParams.set('accept-language', 'en');
+
+    const response = await fetch(url.toString(), {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json'
+        },
+        credentials: 'omit'
+    });
+
+    if (!response.ok) {
+        throw new Error('Unable to find your delivery location.');
+    }
+
+    const data = await response.json();
+
+    if (!data || !data.address) {
+        throw new Error('No address found for your location.');
+    }
+
+    const address = data.address;
+
+    // Only accept Indian addresses.
+    const countryCode = String(
+        address.country_code || ''
+    ).toLowerCase();
+
+    if (countryCode !== 'in') {
+        throw new Error(
+            'Automatic PIN detection is currently available for India only.'
+        );
+    }
+
+    // Validate Indian PIN.
+    const pin = String(
+        address.postcode || ''
+    ).replace(/\D/g, '');
+
+    if (!/^\d{6}$/.test(pin)) {
+        throw new Error(
+            'Could not detect a valid six-digit PIN code.'
+        );
+    }
+
+    // Detect city / town / village.
+    const city =
+        address.city ||
+        address.town ||
+        address.village ||
+        address.municipality ||
+        address.city_district ||
+        address.county ||
+        address.state_district ||
+        '';
+
+    const state = address.state || '';
+
+    // Detect street / locality.
+    const line1 =
+        address.road ||
+        address.residential ||
+        address.neighbourhood ||
+        address.suburb ||
+        address.hamlet ||
+        address.village ||
+        address.town ||
+        address.city_district ||
+        address.county ||
+        city;
+
+    // Additional locality information.
+    const line2 = [
+        address.suburb,
+        address.neighbourhood,
+        address.city_district,
+        address.state_district
+    ]
+        .filter(Boolean)
+        .filter((value, index, array) =>
+            array.indexOf(value) === index
+        )
+        .filter(value =>
+            value !== line1 && value !== city
+        )
+        .join(', ');
+
+    const location = [
+        line1,
+        city !== line1 ? city : '',
+        state
+    ]
+        .filter(Boolean)
+        .filter((value, index, array) =>
+            array.indexOf(value) === index
+        )
+        .join(', ');
+
+    if (!city || !state || !line1) {
+        console.warn('Incomplete OSM address:', address);
+
+        throw new Error(
+            'The detected address is incomplete. Please enter it manually.'
+        );
+    }
+
+    return {
+        pincode: pin,
+        city: city,
+        state: state,
+        address_line1: line1,
+        address_line2: line2,
+        landmark: '',
+        location: location
+    };
+}
+
+
+
+
+    /**
+     * Automatically detect guest delivery PIN.
+     */
+    async function detectGuestDeliveryLocation() {
+
+        // Never overwrite an existing manually selected PIN.
+        guestShippingPin =
+            localStorage.getItem(GUEST_PIN_KEY) || '';
+
+        if (/^\d{6}$/.test(guestShippingPin)) {
+            renderCartDeliveryAddress(null);
+            return true;
+        }
+
+        try {
+
+            const coordinates = await getGuestCoordinates();
+
+            const result = await getGuestAddressFromCoordinates(
+                coordinates.latitude,
+                coordinates.longitude
+            );
+
+            guestShippingPin = result.pincode;
+            guestShippingLocation = result.location;
+
+            localStorage.setItem(
+                GUEST_PIN_KEY,
+                guestShippingPin
+            );
+
+            localStorage.setItem(
+                GUEST_LOCATION_KEY,
+                guestShippingLocation
+            );
+
+            // Update delivery bar.
+            renderCartDeliveryAddress(null);
+
+            // Calculate shipping only if cart has products.
+            if (getCartItems().length > 0) {
+                await estimateShipping(guestShippingPin);
+            }
+
+            return true;
+
+        } catch (error) {
+
+            console.warn(
+                'Automatic delivery location detection failed:',
+                error.message
+            );
+
+            // Fall back to your existing PIN-entry modal.
+            renderCartDeliveryAddress(null);
+
+            await openShippingGate(false);
+
+            return false;
+        }
+    }
+
+
+async function detectLoggedInDeliveryAddress() {
+
+    try {
+
+        // Get customer's GPS coordinates.
+        const coordinates = await getGuestCoordinates();
+
+        // Reverse geocode coordinates.
+        const detected = await getGuestAddressFromCoordinates(
+            coordinates.latitude,
+            coordinates.longitude
+        );
+
+        // Save address through CI4.
+        const response = await requestJson(
+            endpoints.saveDetectedAddress,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    pincode: detected.pincode,
+                    city: detected.city,
+                    state: detected.state,
+                    address_line1: detected.address_line1,
+                    address_line2: '',
+                    landmark: '',
+                    address_type: 'home'
+                })
+            }
+        );
+
+        if (!response || !response.success || !response.address) {
+            throw new Error(
+                response?.message || 'Unable to save detected address.'
+            );
+        }
+
+        // Use the saved database address.
+        selectedAddress = response.address;
+        savedAddress = response.address;
+
+        sessionStorage.setItem(
+            'ajSelectedDeliveryAddressId',
+            String(response.address.id)
+        );
+
+        // Display the address in the global delivery bar.
+        renderCartDeliveryAddress(response.address);
+
+        // Calculate shipping only if products exist.
+        if (getCartItems().length > 0) {
+            await estimateShipping(response.address.pincode);
+        }
+
+        console.log(
+            'Customer delivery address:',
+            response.message
+        );
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            'Automatic customer address detection failed:',
+            error
+        );
+
+        // Fall back to manual address entry.
+        await openShippingGate(true);
+
+        return false;
+    }
+}
+
 
     async function requestJson(url, options = {}) {
         if (!url) {
@@ -413,59 +745,68 @@ window.ajUpdateCartTotals = updateCartTotals;
         window.AJ_SHIPPING_CHARGE = 0;
     }
 
-    function renderCartDeliveryAddress(address = selectedAddress) {
+    
+function renderCartDeliveryAddress(address = selectedAddress) {
 
-    const container = document.getElementById('ajCartDeliveryAddress');
+    const containers = document.querySelectorAll(
+        '#ajCartDeliveryAddress, #ajCartPageDeliveryAddress'
+    );
 
-    if (!container) return;
+    containers.forEach(function (container) {
 
-    container.replaceChildren();
+        container.replaceChildren();
 
-    if (loggedIn && address) {
+        if (loggedIn && address) {
 
-        const recipient = document.createElement('div');
-        recipient.className = 'aj-delivery-recipient';
+            const recipient = document.createElement('div');
+            recipient.className = 'aj-delivery-recipient';
 
-        recipient.textContent = [
-            address.recipient_name,
-            address.pincode
-        ].filter(Boolean).join(' · ');
+            recipient.textContent = [
+                address.recipient_name,
+                address.pincode
+            ].filter(Boolean).join(' · ');
 
-        const details = document.createElement('div');
-        details.className = 'aj-delivery-address-text';
+            const details = document.createElement('div');
+            details.className = 'aj-delivery-address-text';
 
-        details.textContent = [
-            address.address_line1,
-            address.city,
-            address.state
-        ].filter(Boolean).join(', ');
+            details.textContent = [
+                address.address_line1,
+                address.city,
+                address.state
+            ].filter(Boolean).join(', ');
 
-        container.append(recipient, details);
+            container.append(recipient, details);
 
-        return;
-    }
+            return;
+        }
 
-    if (!loggedIn && guestShippingPin) {
+        if (!loggedIn && guestShippingPin) {
 
-        const pin = document.createElement('div');
-        pin.className = 'aj-delivery-recipient';
-        pin.textContent = 'PIN: ' + guestShippingPin;
+            const pin = document.createElement('div');
+            pin.className = 'aj-delivery-recipient';
 
-        const note = document.createElement('div');
-        note.className = 'aj-delivery-address-text';
-        note.textContent = 'Guest delivery estimate';
+            pin.textContent = 'PIN: ' + guestShippingPin;
 
-        container.append(pin, note);
+            const details = document.createElement('div');
+            details.className = 'aj-delivery-address-text';
 
-        return;
-    }
+            details.textContent =
+                guestShippingLocation ||
+                'Guest delivery location';
 
-    const message = document.createElement('div');
-    message.className = 'small text-muted';
-    message.textContent = 'Delivery address not selected';
+            container.append(pin, details);
 
-    container.appendChild(message);
+            return;
+        }
+
+        const message = document.createElement('div');
+        message.className = 'small text-muted';
+        message.textContent = 'Select delivery address';
+
+        container.appendChild(message);
+    });
 }
+
 
     function fillAddressForm(address) {
         const values = {
@@ -820,7 +1161,8 @@ window.ajRefreshShippingAfterCartChange =
         shippingModal.show();
     }
 
-    async function selectDeliveryAddress(address) {
+    
+async function selectDeliveryAddress(address) {
 
     if (!address || !address.id) {
         throw new Error('Please select a valid delivery address.');
@@ -832,6 +1174,7 @@ window.ajRefreshShippingAfterCartChange =
         throw new Error('The selected address has an invalid PIN code.');
     }
 
+    // Save selected address
     selectedAddress = address;
     savedAddress = address;
 
@@ -845,19 +1188,49 @@ window.ajRefreshShippingAfterCartChange =
     renderSavedAddressList();
     renderCartDeliveryAddress(address);
 
-    // Calculate shipping for the selected address.
-    await estimateShipping(pin);
+    // Check cart products
+    const cartItems = getCartItems();
 
-    // Refresh the cart without opening another modal.
+    if (cartItems.length > 0) {
+
+        // Calculate shipping only when products exist
+        await estimateShipping(pin);
+
+    } else {
+
+        // No products: reset shipping calculation
+        resetShippingOnCartChange();
+
+    }
+
+    // Refresh cart contents, including empty-cart state
     if (typeof window.ajCartRefresh === 'function') {
         await window.ajCartRefresh();
     }
 
-    // Close only the address selection modal.
-    bootstrap.Modal
-        .getOrCreateInstance(addressModalElement)
-        .hide();
+    // Close address selection modal first
+    const addressModal = bootstrap.Modal.getOrCreateInstance(
+        addressModalElement
+    );
+
+    addressModalElement.addEventListener(
+        'hidden.bs.modal',
+        function openCartAfterAddressSelection() {
+
+            // Open cart even when it has no products
+            if (cartElement) {
+                bootstrap.Modal
+                    .getOrCreateInstance(cartElement)
+                    .show();
+            }
+
+        },
+        { once: true }
+    );
+
+    addressModal.hide();
 }
+
 
     async function openCartFlow() {
 
@@ -939,6 +1312,101 @@ window.ajRefreshShippingAfterCartChange =
 
     }
 }
+
+
+async function initializeGlobalDeliveryAddress() {
+
+    // =====================================
+    // GUEST CUSTOMER
+    // =====================================
+
+    if (!loggedIn) {
+
+        guestShippingPin =
+            localStorage.getItem(GUEST_PIN_KEY) || '';
+
+        guestShippingLocation =
+            localStorage.getItem(GUEST_LOCATION_KEY) || '';
+
+        // Returning guest: display previously detected PIN.
+        if (/^\d{6}$/.test(guestShippingPin)) {
+
+            renderCartDeliveryAddress(null);
+
+            if (getCartItems().length > 0) {
+                await estimateShipping(guestShippingPin);
+            }
+
+            return;
+        }
+
+        // First-time guest: automatically detect on homepage.
+        const isHomePage = !!document.querySelector('.aj-home-v3');
+
+        if (isHomePage) {
+
+            await detectGuestDeliveryLocation();
+
+        } else {
+
+            renderCartDeliveryAddress(null);
+
+        }
+
+        return;
+    }
+
+    // =====================================
+    // LOGGED-IN CUSTOMER
+    // =====================================
+
+    try {
+
+        await loadSavedAddresses();
+
+        const address = selectedAddress || savedAddress;
+
+        // First-time logged-in customer without an address.
+        if (!address || !address.id) {
+
+            selectedAddress = null;
+            savedAddress = null;
+
+            renderCartDeliveryAddress(null);
+
+            await detectLoggedInDeliveryAddress();
+
+            return;
+        }
+
+        selectedAddress = address;
+        savedAddress = address;
+
+        renderCartDeliveryAddress(address);
+
+        // Calculate shipping only if cart has products.
+        if (getCartItems().length > 0) {
+
+            const pin = String(address.pincode || '').trim();
+
+            if (/^\d{6}$/.test(pin)) {
+                await estimateShipping(pin);
+            }
+        }
+
+    } catch (error) {
+
+        console.error(
+            'Global delivery address initialization failed:',
+            error
+        );
+
+    }
+}
+
+
+window.ajInitializeDeliveryAddress =
+    initializeGlobalDeliveryAddress;
 
     /*
      * Cart header address selector:
@@ -1135,21 +1603,77 @@ window.ajRefreshShippingAfterCartChange =
                 renderCartDeliveryAddress(selectedAddress);
 
             } else if (!loggedIn) {
-                guestShippingPin = pin;
+
+            guestShippingPin = pin;
+
+            const selectedAddressElement = document.getElementById(
+                'ajSelectedMapAddress'
+            );
+
+            guestShippingLocation =
+                selectedAddressElement?.textContent.trim() || '';
+
+            // Save guest PIN
+            localStorage.setItem(
+                GUEST_PIN_KEY,
+                guestShippingPin
+            );
+
+            // Save detected Google Maps address
+            localStorage.setItem(
+                GUEST_LOCATION_KEY,
+                guestShippingLocation
+            );
+
+            // Save complete guest address
+            localStorage.setItem(
+                GUEST_ADDRESS_KEY,
+                JSON.stringify({
+                    pincode: pin,
+                    city: document.getElementById('ajShippingCity')?.value.trim() || '',
+                    state: document.getElementById('ajShippingState')?.value.trim() || '',
+                    address_line1: document.getElementById('ajShippingAddress1')?.value.trim() || '',
+                    address_line2: document.getElementById('ajShippingAddress2')?.value.trim() || '',
+                    landmark: document.getElementById('ajShippingLandmark')?.value.trim() || ''
+                })
+            );
+
+            renderCartDeliveryAddress(null);
+        }
+
+            // Check whether cart contains products
+            const cartItems = getCartItems();
+
+            if (cartItems.length > 0) {
+
+                // Calculate shipping only when products exist
+                await estimateShipping(pin);
+
+            } else {
+
+                console.log(
+                    'Delivery location saved. Shipping will be calculated when products are added.'
+                );
+
+                resetShippingOnCartChange();
             }
 
-            // Use the existing shipping estimate endpoint.
-            await estimateShipping(pin);
-
             if (loggedIn && selectedAddress) {
+
                 renderCartDeliveryAddress(selectedAddress);
+
             } else {
+
                 renderCartDeliveryAddress(null);
+
             }
 
             shippingModal.hide();
 
-            await showExistingCart();
+            // Refresh existing cart only if there are products
+            if (cartItems.length > 0) {
+                await showExistingCart();
+            }
 
         } catch (error) {
             showMessage(error.message || 'Unable to calculate shipping.', 'danger');
@@ -1246,32 +1770,65 @@ if (chargeToggle && chargeDetails) {
 }
 
 
-function initializeCartPage() {
+async function initializeCartPage() {
 
-    if (!document.querySelector('.aj-cart-page')) {
+    const isCartPage = !!document.querySelector('.aj-cart-page');
+
+    // CART PAGE
+    if (isCartPage) {
+
+        // Load saved address/PIN and display it.
+        // Do not automatically open the shipping modal.
+        try {
+            if (loggedIn) {
+                await loadSavedAddresses();
+
+                const address = selectedAddress || savedAddress;
+
+                if (address) {
+                    selectedAddress = address;
+                    savedAddress = address;
+                    renderCartDeliveryAddress(address);
+
+                    if (getCartItems().length > 0) {
+                        await estimateShipping(address.pincode);
+                    }
+                } else {
+                    renderCartDeliveryAddress(null);
+                }
+
+            } else {
+                guestShippingPin =
+                    localStorage.getItem(GUEST_PIN_KEY) || '';
+
+                renderCartDeliveryAddress(null);
+
+                if (
+                    guestShippingPin &&
+                    getCartItems().length > 0
+                ) {
+                    await estimateShipping(guestShippingPin);
+                }
+            }
+
+        } catch (error) {
+            console.error('Cart delivery initialization error:', error);
+        }
+
         return;
     }
 
-    if (window.AJ_CART_PAGE_INITIALIZED) {
-        return;
-    }
-
-    window.AJ_CART_PAGE_INITIALIZED = true;
-
-    openCartFlow();
+    // OTHER PAGES / HOMEPAGE
+    await initializeGlobalDeliveryAddress();
 }
 
 if (document.readyState === 'loading') {
-
     document.addEventListener(
         'DOMContentLoaded',
         initializeCartPage,
         { once: true }
     );
-
 } else {
-
     initializeCartPage();
-
 }
 })();

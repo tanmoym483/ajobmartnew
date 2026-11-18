@@ -712,7 +712,7 @@ function updateCartWowOffer(productId, applied, celebrate = false) {
         if (celebrate && applied === 1) {
             const updatedItem = findItem(productId);
 
-            showWowCelebration(
+            window.showWowCelebration(
                 updatedItem?.wow_offer_discount || 0
             );
         }
@@ -747,7 +747,7 @@ function updateCartWowOffer(productId, applied, celebrate = false) {
         if (celebrate && applied === 1) {
             const updatedItem = findItem(productId);
 
-            showWowCelebration(
+            window.showWowCelebration(
                 updatedItem?.wow_offer_discount || 0
             );
         }
@@ -762,7 +762,7 @@ function updateCartWowOffer(productId, applied, celebrate = false) {
     });
 }
 
-function showWowCelebration(discountAmount) {
+window.showWowCelebration = function (discountAmount) {
 
     discountAmount = Number(discountAmount) || 0;
 
@@ -791,7 +791,7 @@ function showWowCelebration(discountAmount) {
 
         Swal.fire({
             icon: 'success',
-            title: '🎊 WOW! YOU WON! 🏆',
+            title: '🎊 WOW! YOU SAVE! 🏆',
 
             html: `
                 <div class="aj-wow-swal-content">
@@ -1159,7 +1159,7 @@ function showCartFloatingMessage(message, type = 'success') {
         updateProductCartButton(true);
 
         if (wowApplied === 1) {
-            showWowCelebration(totalsaving);
+            window.showWowCelebration(totalsaving);
         } else {
             showCartFloatingMessage(
                 'Added to cart successfully!',
@@ -1170,7 +1170,7 @@ function showCartFloatingMessage(message, type = 'success') {
 
 
     
-    function addProduct(productId, wowApplied = null) {
+    function addProduct(productId, wowApplied = null, showWow = false, buyNow = false) {
 
         if (cartRequestRunning) return;
 
@@ -1221,7 +1221,17 @@ function showCartFloatingMessage(message, type = 'success') {
 
         // Guest cart
         if (!config.loggedIn) {
+
             addGuestProduct(productId, wowApplied);
+
+            if (buyNow) {
+
+                sessionStorage.setItem('ajBuyNowCheckout', '1');
+
+                window.location.href = config.cartUrl;
+
+            }
+
             return;
         }
 
@@ -1236,16 +1246,34 @@ function showCartFloatingMessage(message, type = 'success') {
 
             applyServerCart(response);
 
-            // Show Go to Cart button
             updateProductCartButton(true);
 
-            if (wowApplied === 1) {
-                showWowCelebration(totalSaving);
+            if (typeof window.ajRefreshShippingAfterCartChange === 'function') {
+                window.ajRefreshShippingAfterCartChange();
+            }
+
+            // BUY NOW FLOW
+            if (buyNow) {
+
+                sessionStorage.setItem('ajBuyNowCheckout', '1');
+
+                window.location.href = config.cartUrl;
+
+                return;
+            }
+
+            // WOW OFFER CELEBRATION
+            if (showWow && wowApplied === 1) {
+
+                window.showWowCelebration(totalSaving);
+
             } else {
+
                 showCartFloatingMessage(
                     'Added to cart successfully!',
                     'success'
                 );
+
             }
 
         })
@@ -1342,7 +1370,7 @@ function showCartFloatingMessage(message, type = 'success') {
     }
 
     // Popular products are dynamically replaced, so use delegated events.
-    $(document).on('click', '.wowofferbtn, .addtocart', function () {
+    $(document).on('click', '.wowofferbtn', function () {
 
         const productId = Number($(this).data('product-id'));
 
@@ -1351,7 +1379,30 @@ function showCartFloatingMessage(message, type = 'success') {
                 ? 1
                 : null;
 
-        addProduct(productId, wowApplied);
+        addProduct(productId, wowApplied, true, false);
+    });
+
+    $(document).on('click', '#ajProductAddCart', function () {
+
+        const productId = Number($(this).data('product-id'));
+
+        addProduct(productId, null, false, false);
+    });
+
+    $(document).on('click', '#ajProductBuyNow', function () {
+
+        const productId = Number(
+            $('#ajProductAddCart').data('product-id')
+        );
+
+        if (!productId) {
+            console.error('Invalid product ID');
+            return;
+        }
+
+        // Add product and activate Buy Now flow
+        addProduct(productId, null, false, true);
+
     });
 
     $(document).on('click', '.aj-cart-qty-btn', function () {

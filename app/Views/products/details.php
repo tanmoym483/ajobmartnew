@@ -1646,7 +1646,7 @@ foreach ($images ?? [] as $cartImage) {
 
                     <!-- Add to Cart -->
                     <button type="button"
-                            class="aj-add-cart addtocart"
+                            class="aj-add-cart"
                             id="ajProductAddCart"
                             data-product-id="<?= $productId ?>"
                             <?= $stock <= 0 ? 'disabled' : '' ?>>
@@ -1676,7 +1676,7 @@ foreach ($images ?? [] as $cartImage) {
                             <?= $stock <= 0 ? 'disabled' : '' ?>>
 
                         <i class="bi bi-lightning-fill"></i>
-                        <span id = "ajBuyAmount">Buy Now</span>
+                        <span id = "ajBuyAmount">Buy At ₹<?= $formatPrice($price) ?></span>
                     </button>
 
                 </div>
@@ -2397,6 +2397,7 @@ foreach ($images ?? [] as $cartImage) {
     const productId = Number(offer.dataset.productId);
     const originalPrice = Number(offer.dataset.originalPrice);
     const offerPrice = Number(offer.dataset.offerPrice);
+    const wowsave = originalPrice - offerPrice;
 
     function updateAddCartAmount(amount) {
         if (typeof window.ajUpdateProductAddCartAmount === 'function') {
@@ -2445,12 +2446,21 @@ foreach ($images ?? [] as $cartImage) {
     });
 
     applyButton.addEventListener('click', function () {
+
         if (!Number.isFinite(offerPrice) || offerPrice < 0) {
             console.error('Invalid Wow Offer price');
             return;
         }
 
+        // Apply WOW offer
         setOfferApplied(true);
+
+        // Calculate discount amount
+        const discountAmount = Number(wowsave) || 0;
+
+        // Show WOW celebration
+        window.showWowCelebration(discountAmount);
+
     });
 
     removeButton.addEventListener('click', function () {

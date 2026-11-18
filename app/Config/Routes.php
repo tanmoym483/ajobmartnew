@@ -81,6 +81,10 @@ $routes->get(
 $routes->get('shipping/customer-address', 'Shipping::customerAddress');
 $routes->post('shipping/estimate', 'Shipping::estimate');
 $routes->post('shipping/save-address', 'Shipping::saveAddress');
+$routes->post(
+    'customer/shipping/save-detected-address',
+    'Shipping::saveDetectedAddress'
+);
 
 
 $routes->get('checkout', 'Checkout::index');
