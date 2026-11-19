@@ -12,85 +12,52 @@
          TOP PROMOTIONAL CAROUSEL
     ====================================== -->
 
-    <section class="aj-v3-hero-carousel" id="ajHomeCarousel">
+    
+<?php if (!empty($banners)): ?>
 
-        <div class="aj-v3-carousel-track">
+<section class="aj-v3-hero-carousel" id="ajHomeCarousel">
 
-            <!-- Banner 1 -->
-            <a href="#aj-deals"
-               class="aj-v3-carousel-slide active">
+    <div class="swiper aj-home-banner-swiper">
 
-                <img src="<?= base_url('public/assets/images/banners/banner-1.webp') ?>"
-                     alt="Ajobmart Special Deals">
+        <div class="swiper-wrapper">
 
-                <!-- <div class="aj-v3-banner-content">
-                    <span>AJOBMART SPECIAL</span>
-                    <h2>Big Deals. Better Savings.</h2>
-                    <p>Discover amazing offers on selected products.</p>
-                    <strong>Explore Deals <i class="bi bi-arrow-right"></i></strong>
-                </div> -->
+            <?php foreach ($banners as $banner): ?>
 
-            </a>
+                <?php
+                    $imageUrl = site_url(
+                        'shared-images/' . ltrim($banner['image'], '/')
+                    );
+                ?>
 
+                <div class="swiper-slide">
 
-            <!-- Banner 2 -->
-            <a href="#ajBestDeals"
-               class="aj-v3-carousel-slide">
+                    <a href="<?= esc($banner['target_url'] ?: '#') ?>"
+                       <?= !empty($banner['open_new_tab'])
+                            ? 'target="_blank" rel="noopener noreferrer"'
+                            : '' ?>>
 
-                <img src="<?= base_url('public/assets/images/banners/banner-2.webp') ?>"
-                     alt="Ajobmart WOW Offers">
+                        <img
+                            src="<?= esc($imageUrl) ?>"
+                            alt="<?= esc($banner['title']) ?>"
+                            loading="lazy"
+                        >
 
-                <!-- <div class="aj-v3-banner-content">
-                    <span>WOW OFFERS</span>
-                    <h2>More Shopping. More Savings.</h2>
-                    <p>Explore exclusive WOW deals at Ajobmart.</p>
-                    <strong>Shop Now <i class="bi bi-arrow-right"></i></strong>
-                </div> -->
+                    </a>
 
-            </a>
+                </div>
 
-
-            <!-- Banner 3 -->
-            <a href="#ajNewArrivals"
-               class="aj-v3-carousel-slide">
-
-                <img src="<?= base_url('public/assets/images/banners/banner-3.webp') ?>"
-                     alt="New Arrivals at Ajobmart">
-
-                <!-- <div class="aj-v3-banner-content">
-                    <span>JUST ARRIVED</span>
-                    <h2>Discover What's New</h2>
-                    <p>Find the latest additions to our collection.</p>
-                    <strong>Explore Now <i class="bi bi-arrow-right"></i></strong>
-                </div> -->
-
-            </a>
+            <?php endforeach; ?>
 
         </div>
 
+        <div class="swiper-pagination"></div>
 
-        <!-- Previous / Next -->
-        <!-- <button type="button"
-                class="aj-v3-carousel-arrow aj-v3-carousel-prev"
-                aria-label="Previous banner">
-            <i class="bi bi-chevron-left"></i>
-        </button>
+    </div>
 
-        <button type="button"
-                class="aj-v3-carousel-arrow aj-v3-carousel-next"
-                aria-label="Next banner">
-            <i class="bi bi-chevron-right"></i>
-        </button> -->
+</section>
 
+<?php endif; ?>
 
-        <!-- Indicators -->
-        <div class="aj-v3-carousel-dots">
-            <button class="active" data-slide="0" aria-label="Slide 1"></button>
-            <button data-slide="1" aria-label="Slide 2"></button>
-            <button data-slide="2" aria-label="Slide 3"></button>
-        </div>
-
-    </section>
 
 
     <section class="aj-v3-section aj-home-section"

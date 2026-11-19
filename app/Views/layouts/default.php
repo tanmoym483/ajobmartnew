@@ -49,6 +49,9 @@ if ($isCustomerLoggedIn) {
         rel="stylesheet"
     >
 
+    <link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
     <!-- Ajobmart CSS -->
     <link
         rel="stylesheet"
@@ -175,6 +178,92 @@ if ($isCustomerLoggedIn) {
 #ajShippingMessage {
     overflow-wrap: anywhere;
 }
+
+
+/* =================================
+   Ajobmart Homepage Banner
+================================= */
+
+.aj-v3-hero-carousel {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    border-radius: 12px;
+}
+
+.aj-home-banner-swiper {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.aj-home-banner-swiper .swiper-slide {
+    height: auto;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.aj-home-banner-swiper .swiper-slide a,
+.aj-home-banner-swiper .swiper-slide picture {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.aj-home-banner-swiper img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 1;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.aj-home-banner-swiper .swiper-pagination {
+    position: relative;
+    margin-top: 10px;
+}
+
+
+/* =================================
+   Mobile Banner
+================================= */
+
+@media (max-width: 575px) {
+
+    .aj-v3-hero-carousel {
+        width: 100%;
+        overflow: hidden;
+        border-radius: 14px;
+    }
+
+    .aj-home-banner-swiper,
+    .aj-home-banner-swiper .swiper-slide,
+    .aj-home-banner-swiper .swiper-slide a,
+    .aj-home-banner-swiper .swiper-slide picture {
+        width: 100%;
+        overflow: hidden;
+        border-radius: 14px;
+    }
+
+    .aj-home-banner-swiper .swiper-slide img {
+        display: block;
+        width: 100%;
+        height: auto;
+        aspect-ratio: auto;
+        max-height: none;
+        object-fit: contain;
+        border-radius: 14px;
+        background: transparent;
+    }
+
+    .aj-home-banner-swiper .swiper-pagination {
+        margin-top: 2px;
+    }
+
+}
+
+
 
     </style>
 </head>
@@ -960,6 +1049,9 @@ window.AJ_CART_CONFIG = {
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
 <script src="<?= base_url('public/assets/js/ajobmart-cart.js') ?>"></script>
 <script src="<?= base_url('public/assets/js/ajobmart.js') ?>"></script>
 <script src="<?= base_url('public/assets/js/aj-shipping.js') ?>"></script>
@@ -969,6 +1061,43 @@ window.AJ_CART_CONFIG = {
 
 
 <script>
+
+    const bannerSwiper = new Swiper('.aj-home-banner-swiper', {
+
+    slidesPerView: 1,
+    slidesPerGroup: 1,
+
+    spaceBetween: 10,
+
+    loop: true,
+
+    autoplay: {
+        delay: 4000,
+        disableOnInteraction: false
+    },
+
+    pagination: {
+        el: '.aj-home-banner-swiper .swiper-pagination',
+        clickable: true
+    },
+
+    breakpoints: {
+
+        576: {
+            slidesPerView: 2,
+            slidesPerGroup: 2,
+            spaceBetween: 12
+        },
+
+        992: {
+            slidesPerView: 3,
+            slidesPerGroup: 3,
+            spaceBetween: 15
+        }
+
+    }
+
+});
 
 $(document).on('click', '#ajLoginRegisterBtn', function (e) {
 
