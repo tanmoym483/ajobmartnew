@@ -1041,4 +1041,184 @@ function refreshAllHomeSections(silent = true) {
         }
     );
 
+    /* =========================================
+   AJOBMART - RECENTLY VIEWED PRODUCTS
+========================================= */
+
+function loadRecentlyViewedProducts() {
+
+    const section = document.getElementById(
+        'ajRecentlyViewedSection'
+    );
+
+    const container = document.getElementById(
+        'ajRecentlyViewed'
+    );
+
+    if (!section || !container) return;
+
+    let recentlyViewed = [];
+
+    try {
+        recentlyViewed = JSON.parse(
+            localStorage.getItem('aj_recently_viewed') || '[]'
+        );
+    } catch (error) {
+        recentlyViewed = [];
+    }
+
+    if (!Array.isArray(recentlyViewed) || recentlyViewed.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+
+    // Remove invalid products
+    recentlyViewed = recentlyViewed.filter(function (product) {
+        return product && product.id;
+    });
+
+    if (recentlyViewed.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+
+    // Register products for existing cart functionality
+    if (typeof window.ajCartRegisterProducts === 'function') {
+        window.ajCartRegisterProducts(recentlyViewed);
+    }
+
+    let html = '';
+
+    recentlyViewed.forEach(function (product) {
+
+        html += renderHomeProductCard(
+            product,
+            'recent'
+        );
+
+    });
+
+    container.innerHTML = html;
+
+    section.style.display = '';
+
+    // Refresh existing cart buttons
+    if (typeof window.ajCartRefresh === 'function') {
+        window.ajCartRefresh();
+    }
+}
+
+
+
+/* Save recently viewed product */
+
+function ajSaveRecentlyViewed(product) {
+
+    if (!product || !product.id) return;
+
+    let recentlyViewed = [];
+
+    try {
+        recentlyViewed = JSON.parse(
+            localStorage.getItem('aj_recently_viewed') || '[]'
+        );
+    } catch (error) {
+        recentlyViewed = [];
+    }
+
+    // Remove duplicate product
+    recentlyViewed = recentlyViewed.filter(function (item) {
+        return String(item.id) !== String(product.id);
+    });
+
+    // Add latest viewed product first
+    recentlyViewed.unshift(product);
+
+    // Maximum 12 products
+    recentlyViewed = recentlyViewed.slice(0, 12);
+
+    localStorage.setItem(
+        'aj_recently_viewed',
+        JSON.stringify(recentlyViewed)
+    );
+
+}
+
+
+// Load on homepage
+loadRecentlyViewedProducts();
+
+})();
+
+/* Save current product to Recently Viewed */
+
+
+/* =========================================
+   AJOBMART - SAVE RECENTLY VIEWED PRODUCT
+========================================= */
+
+(function () {
+
+    function saveCurrentProduct() {
+
+        const product = window.AJ_CURRENT_PRODUCT;
+
+        if (!product || !product.id) {
+            console.warn('Recently Viewed: Product data not found.');
+            return;
+        }
+
+        let recentlyViewed = [];
+
+        try {
+            recentlyViewed = JSON.parse(
+                localStorage.getItem('aj_recently_viewed') || '[]'
+            );
+        } catch (error) {
+            recentlyViewed = [];
+        }
+
+        // Remove duplicate product
+        recentlyViewed = recentlyViewed.filter(function (item) {
+            return String(item.id) !== String(product.id);
+        });
+
+        // Save current product first
+        recentlyViewed.unshift({
+            id: Number(product.id),
+            product_name: product.product_name || 'Product',
+            listing_price: Number(product.listing_price) || 0,
+            mrp: Number(product.mrp) || 0,
+            image_path: product.image_path || ''
+        });
+
+        // Maximum 12 products
+        recentlyViewed = recentlyViewed.slice(0, 12);
+
+        localStorage.setItem(
+            'aj_recently_viewed',
+            JSON.stringify(recentlyViewed)
+        );
+
+        console.log(
+            'Ajobmart Recently Viewed: Product saved',
+            product
+        );
+
+    }
+
+    if (document.readyState === 'loading') {
+
+        document.addEventListener(
+            'DOMContentLoaded',
+            saveCurrentProduct,
+            { once: true }
+        );
+
+    } else {
+
+        saveCurrentProduct();
+
+    }
+
 })();

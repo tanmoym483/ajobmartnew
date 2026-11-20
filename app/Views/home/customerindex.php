@@ -62,7 +62,7 @@
 
     <section class="aj-v3-section aj-home-section"
          id="ajRecentlyViewedSection"
-         style="display:none;">
+         >
 
         <div class="aj-v3-heading">
             <div>
