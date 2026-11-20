@@ -7135,7 +7135,7 @@ input {
 /* PRODUCT NAME */
 
 .aj-product-info h3 {
-    margin: 0 0 7px !important;
+    margin: 0 !important;
     padding: 0;
 
     font-size: 13px;
@@ -7146,8 +7146,9 @@ input {
 
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    /* -webkit-line-clamp: 2; */
     overflow: hidden;
+    width: 100%;
 }
 
 .aj-product-title-link {
@@ -7679,7 +7680,10 @@ input {
 
     .aj-product-info h3 {
         font-size: 12.5px;
+        
     }
+
+    
 
     .aj-product-price strong {
         font-size: 14px;
@@ -7690,6 +7694,13 @@ input {
     }
 }
 
+.aj-product-info h3 .aj-product-title-link {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+    }
 
 
 
