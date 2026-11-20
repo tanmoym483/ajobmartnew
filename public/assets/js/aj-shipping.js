@@ -746,6 +746,7 @@ window.ajUpdateCartTotals = updateCartTotals;
     }
 
     
+
 function renderCartDeliveryAddress(address = selectedAddress) {
 
     const containers = document.querySelectorAll(
@@ -756,56 +757,46 @@ function renderCartDeliveryAddress(address = selectedAddress) {
 
         container.replaceChildren();
 
+        let recipientText = '';
+        let detailsText = '';
+
         if (loggedIn && address) {
 
-            const recipient = document.createElement('div');
-            recipient.className = 'aj-delivery-recipient';
-
-            recipient.textContent = [
+            recipientText = [
                 address.recipient_name,
                 address.pincode
             ].filter(Boolean).join(' · ');
 
-            const details = document.createElement('div');
-            details.className = 'aj-delivery-address-text';
-
-            details.textContent = [
+            detailsText = [
                 address.address_line1,
                 address.city,
                 address.state
             ].filter(Boolean).join(', ');
 
-            container.append(recipient, details);
+        } else if (!loggedIn && guestShippingPin) {
 
-            return;
-        }
+            recipientText = 'PIN: ' + guestShippingPin;
 
-        if (!loggedIn && guestShippingPin) {
-
-            const pin = document.createElement('div');
-            pin.className = 'aj-delivery-recipient';
-
-            pin.textContent = 'PIN: ' + guestShippingPin;
-
-            const details = document.createElement('div');
-            details.className = 'aj-delivery-address-text';
-
-            details.textContent =
+            detailsText =
                 guestShippingLocation ||
                 'Guest delivery location';
 
-            container.append(pin, details);
+        } else {
 
-            return;
+            recipientText = 'Select delivery address';
         }
 
-        const message = document.createElement('div');
-        message.className = 'small text-muted';
-        message.textContent = 'Select delivery address';
+        const content = document.createElement('span');
+        content.className = 'aj-delivery-inline-content';
 
-        container.appendChild(message);
+        content.textContent = [recipientText, detailsText]
+            .filter(Boolean)
+            .join(' | ');
+
+        container.appendChild(content);
     });
 }
+
 
 
     function fillAddressForm(address) {

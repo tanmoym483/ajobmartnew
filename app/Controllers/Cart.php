@@ -10,6 +10,8 @@ use CodeIgniter\HTTP\ResponseInterface;
 class Cart extends BaseController
 {
     protected CartModel $cartModel;
+    protected $layout = 'layouts/defaultcart';
+
 
     public function __construct()
     {

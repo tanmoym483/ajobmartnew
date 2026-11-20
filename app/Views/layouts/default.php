@@ -67,61 +67,104 @@ if ($isCustomerLoggedIn) {
     >
 
     <style>
-        .aj-global-delivery-bar {
+        
+.aj-global-delivery-bar {
     width: 100%;
-    background: transparent;
+    background: transparent !important;
 }
 
 .aj-global-delivery-bar .aj-delivery-card {
     max-width: 1400px;
-    margin: 0 auto !important;
+    margin: 0 auto 10px !important;
+    padding: 8px 12px !important;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    background: transparent !important;
     border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    background: transparent;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.04);
-} 
-    
-    .aj-delivery-card {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 17px 20px;
-    background: linear-gradient(110deg, #ffffff, #f5f7ff);
+    border-radius: 6px;
+    box-shadow: none !important;
+    transition: background 0.2s ease;
 }
 
-.aj-delivery-icon {
-    width: 44px;
-    height: 44px;
-    flex-shrink: 0;
-    border-radius: 13px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #eef2ff;
-    color: #4f46e5;
-    font-size: 20px;
+.aj-address-changes {
+    display: block;
+    width: 100%;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
 }
-
-    .aj-address-changes {
-        cursor: pointer;
-        display: block;
-        text-decoration: none;
-        color: inherit;
-        width: 100%;
-    }
 
 .aj-address-changes:hover {
     color: inherit;
     text-decoration: none;
 }
-.aj-global-delivery-bar .aj-delivery-card {
-    transition: background 0.2s ease, box-shadow 0.2s ease;
+
+.aj-delivery-icon {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: transparent !important;
+    color: #555;
+    border-radius: 0;
+    font-size: 17px;
+}
+
+.aj-global-delivery-bar .aj-section-label {
+    display: inline;
+    font-size: 10px;
+    font-weight: 600;
+    color: #777;
+    margin-right: 5px;
+}
+
+#ajCartDeliveryAddress {
+    display: inline;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.3;
+    color: #333;
+}
+
+.aj-global-delivery-bar .bi-chevron-right {
+    font-size: 12px;
+    color: #888;
+    flex-shrink: 0;
 }
 
 .aj-address-changes:hover .aj-delivery-card {
-    background: #f9fafb;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    background: #f9fafb !important;
+    box-shadow: none !important;
 }
+
+/* Mobile */
+@media (max-width: 576px) {
+    .aj-global-delivery-bar .aj-delivery-card {
+        min-height: 42px;
+        padding: 6px 9px !important;
+        gap: 7px;
+    }
+
+    .aj-delivery-icon {
+        width: 25px;
+        height: 25px;
+        min-width: 25px;
+        font-size: 15px;
+    }
+
+    #ajCartDeliveryAddress {
+        font-size: 12px;
+    }
+}
+
 
 
 .aj-google-shipping-modal .modal-body {
@@ -214,7 +257,7 @@ if ($isCustomerLoggedIn) {
 .aj-home-banner-swiper img {
     display: block;
     width: 100%;
-    aspect-ratio: 3 / 1;
+    aspect-ratio: 2.5 / 1;
     object-fit: cover;
     border-radius: 12px;
 }
@@ -263,7 +306,69 @@ if ($isCustomerLoggedIn) {
 
 }
 
+.aj-delivery-inline-content {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: #333;
 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#ajCartDeliveryAddress,
+#ajCartPageDeliveryAddress {
+    min-width: 0;
+    overflow: hidden;
+}
+
+#ajCartDeliveryAddress,
+#ajCartPageDeliveryAddress {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.aj-delivery-inline-content {
+    display: block;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 13px;
+    line-height: 1.4;
+}
+.aj-delivery-card .flex-grow-1 {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+}
+
+/* Reduce space below homepage banner */
+.aj-v3-hero-carousel {
+    margin-bottom: 8px !important;
+    padding-bottom: 0 !important;
+}
+
+.aj-home-banner-swiper {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.aj-home-banner-swiper .swiper-pagination {
+    position: relative;
+    margin-top: 3px !important;
+    padding: 0 !important;
+}
+
+/* Remove extra spacing from the next section */
+.aj-v3-hero-carousel + section {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
 
     </style>
 </head>
