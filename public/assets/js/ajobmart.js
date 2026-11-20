@@ -515,46 +515,46 @@ function renderHomeProductCard(product, sectionType) {
     <!-- DETAILS OUTSIDE IMAGE CARD -->
     <div class="aj-product-info">
 
-        <h3>
-            <a href="${productUrl}"
-               class="aj-product-title-link">
-                ${safeName}
-            </a>
-        </h3>
+                <h3>
+                    <a href="${productUrl}"
+                    class="aj-product-title-link">
+                        ${safeName}
+                    </a>
+                </h3>
 
-        <div class="aj-product-price">
+                <div class="aj-product-price">
 
-    <strong>
-        ₹${price.toLocaleString('en-IN', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        })}
-    </strong>
+            <strong>
+                ₹${price.toLocaleString('en-IN', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                })}
+            </strong>
 
-    ${mrp > price ? `
-        <del>
-            ₹${mrp.toLocaleString('en-IN', {
+            ${mrp > price ? `
+                <del>
+                    ₹${mrp.toLocaleString('en-IN', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    })}
+                </del>
+            ` : ''}
+
+            <button
+            type="button"
+            class="aj-price-discount aj-add-cart wowofferbtn"
+            data-product-id="${productId}"
+            data-wow-offer-applied="1"
+            aria-label="Add ${safeName} to cart with 20 percent WOW discount"
+        >
+            <span class="text-white" style="font-size:6px;">WOW</span>
+            ₹${wowPrice.toLocaleString('en-IN', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             })}
-        </del>
-    ` : ''}
+        </button>
 
-    <button
-    type="button"
-    class="aj-price-discount aj-add-cart wowofferbtn"
-    data-product-id="${productId}"
-    data-wow-offer-applied="1"
-    aria-label="Add ${safeName} to cart with 20 percent WOW discount"
->
-    <span class="text-white" style="font-size:6px;">WOW</span>
-    ₹${wowPrice.toLocaleString('en-IN', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    })}
-</button>
-
-</div>
+        </div>
 
     </div>
 
