@@ -71,6 +71,11 @@ if ($isCustomerLoggedIn) {
         href="<?= base_url('public/assets/css/deliverystyle.css') ?>"
     >
 
+    <link
+        rel="stylesheet"
+        href="<?= base_url('public/assets/css/productdetails.css') ?>"
+    >
+
 </head>
 
 <body>

@@ -19,6 +19,16 @@ class Home extends BaseController
             ->get()
             ->getResultArray();
 
+        $categories = $this->db->table('ajobmart_categories')
+            ->select('id, name, slug, sort_order')
+            ->where('status', 'active')
+            ->orderBy('sort_order', 'ASC')
+            ->orderBy('id', 'ASC')
+            ->get()
+            ->getResultArray();
+
+        $data['categories'] = $categories;
+
         return $this->view('home/customerindex', $data);
     }
 }
