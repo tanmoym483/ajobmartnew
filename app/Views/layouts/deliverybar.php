@@ -11,7 +11,7 @@
             </div>
 
             <div class="flex-grow-1">
-                <span class="aj-section-label">DELIVER TO</span>
+                <!-- <span class="aj-section-label">DELIVER TO</span> -->
 
                 <div id="ajCartDeliveryAddress">
                     Select delivery address
