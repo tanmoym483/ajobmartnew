@@ -1,4 +1,26 @@
+<style>
+    .aj-v3-nav-category {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+    text-decoration: none;
+}
 
+.aj-v3-nav-icon {
+    flex-shrink: 0;
+    font-size: 17px;
+}
+
+.aj-v3-nav-text {
+    display: inline-block;
+    max-width: 75px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 13px;
+}
+</style>
 <?php
 
 $categoryIcons = [
