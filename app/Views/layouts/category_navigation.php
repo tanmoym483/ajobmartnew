@@ -69,7 +69,7 @@ $categoryIcons = [
         <?php endif; ?>
 
         <!-- All Categories -->
-        <a href="<?= base_url('categories') ?>" class="aj-v3-nav-category">
+        <!-- <a href="<?= base_url('categories') ?>" class="aj-v3-nav-category">
 
             <span class="aj-v3-nav-icon">
                 <i class="bi bi-grid"></i>
@@ -77,7 +77,7 @@ $categoryIcons = [
 
             <span class="aj-v3-nav-text">All Categories</span>
 
-        </a>
+        </a> -->
 
     </div>
 
