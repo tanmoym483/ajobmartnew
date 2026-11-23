@@ -2,7 +2,7 @@
     .aj-v3-nav-category {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 3px;
     flex-shrink: 0;
     text-decoration: none;
 }
