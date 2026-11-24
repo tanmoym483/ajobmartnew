@@ -82,6 +82,7 @@ if ($isCustomerLoggedIn) {
 <link rel="stylesheet" href="<?= base_url('public/assets/css/category_nav.css') ?>">
 
     <link rel="stylesheet" href="<?= base_url('public/assets/css/header-background.css') ?>">
+    
 </head>
 
 <body>
@@ -101,6 +102,11 @@ if ($isCustomerLoggedIn) {
 
             <?= view('layouts/deliverybar') ?>
 
+            <!-- Animated Ajobmart Delivery Biker -->
+            <div class="aj-delivery-animation" aria-hidden="true">
+                <span class="aj-delivery-scooter">🛵</span>
+                <span class="aj-delivery-parcel">📦</span>
+            </div>
         </div>
 
 

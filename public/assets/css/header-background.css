@@ -56,7 +56,7 @@ background-size: 200% 200%, 200% 200%, 200% 200%, 400% 400%;
 /* Floating rupee symbols */
 .aj-header-top::before,
 .aj-sticky-header::before {
-    content: "*        **        **          ₹";
+    content: "*          *        *        ₹         *          *";
 
     position: absolute;
     inset: 0;
@@ -194,3 +194,97 @@ background-size: 200% 200%, 200% 200%, 200% 200%, 400% 400%;
     }
 }
 
+
+/* =========================================
+   AJOBMART ANIMATED DELIVERY BIKER
+========================================= */
+
+.aj-delivery-animation {
+    position: absolute;
+    left: -100px;
+    bottom: 3px;
+    z-index: 0;
+
+    display: flex;
+    align-items: center;
+    gap: 2px;
+
+    pointer-events: none;
+    white-space: nowrap;
+
+    animation: ajDeliveryRide 20s linear infinite;
+}
+
+/* Delivery parcel */
+.aj-delivery-parcel {
+    display: inline-block;
+    font-size: 23px;
+
+    animation: ajParcelBounce .45s ease-in-out infinite alternate;
+}
+
+/* Scooter rider */
+.aj-delivery-scooter {
+    display: inline-block;
+    font-size: 35px;
+
+    animation: ajScooterBounce .35s ease-in-out infinite alternate;
+}
+
+/* Move across the header */
+@keyframes ajDeliveryRide {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(calc(100vw + 200px));
+    }
+}
+
+/* Parcel movement */
+@keyframes ajParcelBounce {
+    from {
+        transform: translateY(0) rotate(-3deg);
+    }
+
+    to {
+        transform: translateY(-4px) rotate(3deg);
+    }
+}
+
+/* Scooter movement */
+@keyframes ajScooterBounce {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-2px);
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .aj-delivery-animation {
+        bottom: 1px;
+        animation-duration: 16s;
+    }
+
+    .aj-delivery-parcel {
+        font-size: 17px;
+    }
+
+    .aj-delivery-scooter {
+        font-size: 27px;
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .aj-delivery-animation,
+    .aj-delivery-parcel,
+    .aj-delivery-scooter {
+        animation: none !important;
+    }
+}
