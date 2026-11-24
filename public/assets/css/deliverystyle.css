@@ -1,5 +1,5 @@
 
-.aj-google-shipping-modal .modal-body {
+/* .aj-google-shipping-modal .modal-body {
     overflow-x: hidden;
 }
 
@@ -52,7 +52,7 @@
 
 #ajShippingMessage {
     overflow-wrap: anywhere;
-}
+} */
 
 
 /* =================================
@@ -167,7 +167,7 @@
 
 
 
-    
+/*     
 .aj-global-delivery-bar {
     width: 100%;
     background: transparent !important;
@@ -183,7 +183,6 @@
     gap: 10px;
 
     background: transparent !important;
-    /* border: 1px solid #e5e7eb; */
     border-radius: 6px;
     box-shadow: none !important;
     transition: background 0.2s ease;
@@ -245,7 +244,6 @@
     box-shadow: none !important;
 }
 
-/* Mobile */
 @media (max-width: 576px) {
     .aj-global-delivery-bar .aj-delivery-card {
         min-height: 42px;
@@ -330,7 +328,6 @@
     align-items: center;
     gap: 10px;
 
-    /* Same background as search header */
     background: var(--aj-search-header-bg) !important;
 
     border: none !important;
@@ -340,7 +337,6 @@
     transition: background 0.2s ease;
 }
 
-/* Cloud animation */
 .aj-global-delivery-bar .aj-delivery-card::before {
     content: "";
     position: absolute;
@@ -383,19 +379,16 @@
     animation: ajCloudDrift 45s linear infinite;
 }
 
-/* Keep delivery content above animation */
 .aj-global-delivery-bar .aj-delivery-card > * {
     position: relative;
     z-index: 2;
 }
 
-/* Remove hover background */
 .aj-address-changes:hover .aj-delivery-card {
     background: var(--aj-search-header-bg) !important;
     box-shadow: none !important;
 }
 
-/* Mobile */
 @media (max-width: 576px) {
     .aj-global-delivery-bar .aj-delivery-card {
         min-height: 42px;
@@ -406,7 +399,7 @@
 
 .aj-global-delivery-bar .aj-delivery-card {
     background: #c9def2 !important;
-}
+} */
 
 /* Reduce space below homepage banner */
 /* .aj-v3-hero-carousel {

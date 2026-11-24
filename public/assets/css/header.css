@@ -6,7 +6,7 @@
 .aj-navbar {
     height: 72px;
     background: transparent;
-    border-bottom: 1px solid rgba(255,255,255,.14);
+    /* border-bottom: 1px solid rgba(255,255,255,.14); */
     position: relative;
     z-index: 1000;
     isolation: isolate;

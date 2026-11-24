@@ -38,8 +38,7 @@
 /* Floating rupee symbols */
 .aj-header-top::before,
 .aj-sticky-header::before {
-    content: "₹       ₹";
-    content: "*  **    **   ₹";
+    content: "*        **        **          ₹";
 
     position: absolute;
     inset: 0;

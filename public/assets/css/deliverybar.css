@@ -18,6 +18,7 @@
     cursor: pointer;
 }
 
+
 .aj-delivery-card {
     display: flex;
     align-items: center;
@@ -26,17 +27,23 @@
     max-width: 1400px;
     margin: 0 auto;
     padding: 8px 12px;
-    border: 1px solid rgba(255,255,255,.20);
-    border-radius: 10px;
-    background: rgba(255,255,255,.09);
+
+    border: none !important;
+    outline: none !important;
+    border-radius: 0;
+    background: transparent !important;
+    box-shadow: none !important;
+
     color: #fff;
-    transition: background .2s ease, border-color .2s ease;
+    transition: background .2s ease;
 }
 
 .aj-address-changes:hover .aj-delivery-card {
-    background: rgba(255,255,255,.15);
-    border-color: rgba(255,255,255,.35);
+    background: rgba(255,255,255,.06) !important;
+    border: none !important;
 }
+
+
 
 .aj-delivery-icon {
     flex: 0 0 32px;
@@ -81,4 +88,31 @@
     .aj-global-delivery-bar { padding: 5px 12px; }
     .aj-delivery-card { padding: 6px 9px; gap: 8px; }
     .aj-delivery-icon { width: 29px; height: 29px; flex-basis: 29px; font-size: 15px; }
+}
+
+
+
+/* =========================================
+   REMOVE DELIVERY BAR BORDER - ALL DEVICES
+========================================= */
+
+@media (max-width: 767px) {
+    .aj-global-delivery-bar,
+    .aj-global-delivery-bar .aj-address-changes,
+    .aj-global-delivery-bar .aj-delivery-card,
+    .aj-global-delivery-bar .aj-delivery-icon {
+        border: 0 !important;
+        outline: 0 !important;
+        box-shadow: none !important;
+    }
+
+    .aj-global-delivery-bar .aj-delivery-card {
+        background: transparent !important;
+        border-radius: 0 !important;
+    }
+
+    .aj-global-delivery-bar .aj-address-changes:hover .aj-delivery-card {
+        border: 0 !important;
+        box-shadow: none !important;
+    }
 }
