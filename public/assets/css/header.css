@@ -1,0 +1,191 @@
+/* =========================================================
+   AJOBMART HEADER / NAVBAR
+   Source: ajobmart.css + supplied header.php markup
+   ========================================================= */
+
+.aj-navbar {
+    height: 72px;
+    background: transparent;
+    border-bottom: 1px solid rgba(255,255,255,.14);
+    position: relative;
+    z-index: 1000;
+    isolation: isolate;
+    overflow: hidden;
+}
+
+.aj-navbar-inner {
+    max-width: 1400px;
+    height: 100%;
+    margin: auto;
+    padding: 0 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.aj-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    font-size: 23px;
+    font-weight: 800;
+    text-decoration: none;
+}
+.aj-logo:hover { color: #dbeafe; }
+
+.aj-logo-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ajobmartlogo {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+}
+
+.aj-desktop-menu {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+.aj-desktop-menu a {
+    color: rgba(255,255,255,.92);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color .2s ease;
+}
+.aj-desktop-menu a:hover { color: #bfdbfe; }
+
+.aj-navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.aj-cart-icon {
+    position: relative;
+    color: #fff;
+    font-size: 23px;
+    text-decoration: none;
+}
+.aj-cart-icon:hover { color: #bfdbfe; }
+.aj-cart-count {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: 20px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.aj-user-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.15);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    text-decoration: none;
+    transition: .2s ease;
+}
+.aj-user-icon:hover {
+    background: rgba(255,255,255,.25);
+    color: #fff;
+}
+.aj-customer-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: inline-block;
+    border: 2px solid rgba(255,255,255,.75);
+    background: #f4f6f9;
+    vertical-align: middle;
+}
+.aj-user-icon .aj-customer-avatar { width: 38px; height: 38px; }
+.aj-mobile-avatar { width: 26px; height: 26px; flex-shrink: 0; }
+
+.aj-coupon-balance {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 13px;
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 12px;
+    background: rgba(255,255,255,.13);
+    color: #fff;
+    text-decoration: none;
+    transition: all .2s ease;
+}
+.aj-coupon-balance:hover {
+    background: rgba(255,255,255,.22);
+    color: #fff;
+    transform: translateY(-1px);
+}
+.aj-coupon-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255,255,255,.2);
+    font-size: 19px;
+}
+.aj-coupon-details { display: flex; flex-direction: column; line-height: 1.25; }
+.aj-coupon-details small { font-size: 11px; color: rgba(255,255,255,.8); }
+.aj-coupon-details strong { font-size: 15px; font-weight: 700; color: #fff; }
+
+/* Subtle moving highlight; does not change element positions. */
+.aj-navbar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(110deg, transparent 15%, rgba(255,255,255,.09) 48%, transparent 78%);
+    background-size: 220% 100%;
+    animation: ajHeaderShimmer 16s ease-in-out infinite;
+}
+@keyframes ajHeaderShimmer {
+    0%, 100% { background-position: 120% 0; }
+    50% { background-position: -120% 0; }
+}
+
+@media (max-width: 768px) {
+    .aj-navbar { height: 60px; }
+    .aj-navbar-inner { padding: 0 14px; }
+    .aj-logo { font-size: 19px; }
+    .aj-logo-icon { width: 35px; height: 35px; border-radius: 10px; }
+    .aj-desktop-menu { display: none; }
+    .aj-navbar-actions { gap: 12px; }
+    .aj-cart-icon { font-size: 21px; }
+    .aj-user-icon { width: 35px; height: 35px; font-size: 18px; }
+    .aj-coupon-balance { gap: 5px; padding: 5px 8px; }
+    .aj-coupon-icon { width: 30px; height: 30px; font-size: 16px; }
+    .aj-coupon-details small { font-size: 10px; }
+    .aj-coupon-details strong { font-size: 13px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .aj-navbar::before { animation: none; }
+}

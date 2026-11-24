@@ -66,265 +66,40 @@ if ($isCustomerLoggedIn) {
         href="<?= base_url('public/assets/css/style.css') ?>"
     >
 
-    <style>
-        
-.aj-global-delivery-bar {
-    width: 100%;
-    background: transparent !important;
-}
+    <link rel="stylesheet" href="<?= base_url('public/assets/css/header.css') ?>">
+<link rel="stylesheet" href="<?= base_url('public/assets/css/deliverybar.css') ?>">
+<link rel="stylesheet" href="<?= base_url('public/assets/css/searchheader.css') ?>">
+<link rel="stylesheet" href="<?= base_url('public/assets/css/category_nav.css') ?>">
 
-.aj-global-delivery-bar .aj-delivery-card {
-    max-width: 1400px;
-    margin: 0 auto 10px !important;
-    padding: 8px 12px !important;
-    min-height: 48px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    background: transparent !important;
-    border: 1px solid #e5e7eb;
-    border-radius: 6px;
-    box-shadow: none !important;
-    transition: background 0.2s ease;
-}
-
-.aj-address-changes {
-    display: block;
-    width: 100%;
-    color: inherit;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.aj-address-changes:hover {
-    color: inherit;
-    text-decoration: none;
-}
-
-.aj-delivery-icon {
-    width: 30px;
-    height: 30px;
-    min-width: 30px;
-    flex-shrink: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: transparent !important;
-    color: #555;
-    border-radius: 0;
-    font-size: 17px;
-}
-
-.aj-global-delivery-bar .aj-section-label {
-    display: inline;
-    font-size: 10px;
-    font-weight: 600;
-    color: #777;
-    margin-right: 5px;
-}
-
-#ajCartDeliveryAddress {
-    display: inline;
-    font-size: 13px;
-    font-weight: 500;
-    line-height: 1.3;
-    color: #333;
-}
-
-.aj-global-delivery-bar .bi-chevron-right {
-    font-size: 12px;
-    color: #888;
-    flex-shrink: 0;
-}
-
-.aj-address-changes:hover .aj-delivery-card {
-    background: #f9fafb !important;
-    box-shadow: none !important;
-}
-
-/* Mobile */
-@media (max-width: 576px) {
-    .aj-global-delivery-bar .aj-delivery-card {
-        min-height: 42px;
-        padding: 6px 9px !important;
-        gap: 7px;
-    }
-
-    .aj-delivery-icon {
-        width: 25px;
-        height: 25px;
-        min-width: 25px;
-        font-size: 15px;
-    }
-
-    #ajCartDeliveryAddress {
-        font-size: 12px;
-    }
-}
-
-
-
-.aj-google-shipping-modal .modal-body {
-    overflow-x: hidden;
-}
-
-.aj-google-map-wrapper {
-    overflow: hidden;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    background: #f8f9fa;
-}
-
-#ajGoogleMap {
-    width: 100%;
-    height: 280px;
-}
-
-.aj-google-map-suggestions {
-    position: relative;
-    z-index: 1085;
-    max-height: 230px;
-    overflow-y: auto;
-    margin-top: 4px;
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    box-shadow: 0 5px 18px rgba(0,0,0,.10);
-}
-
-.aj-google-map-suggestions button {
-    display: block;
-    width: 100%;
-    padding: 11px 13px;
-    text-align: left;
-    border: 0;
-    border-bottom: 1px solid #f0f0f0;
-    background: #fff;
-    color: #202a35;
-}
-
-.aj-google-map-suggestions button:hover {
-    background: #f7f7f7;
-}
-
-.aj-google-map-suggestions button:last-child {
-    border-bottom: 0;
-}
-
-#ajGoogleMapSearch {
-    min-width: 0;
-}
-
-#ajShippingMessage {
-    overflow-wrap: anywhere;
-}
-
-
-/* =================================
-   Ajobmart Homepage Banner
-================================= */
-
-.aj-v3-hero-carousel {
-    width: 100%;
-    overflow: hidden;
-    position: relative;
-    border-radius: 12px;
-}
-
-.aj-home-banner-swiper {
-    width: 100%;
-    overflow: hidden;
-    border-radius: 12px;
-}
-
-.aj-home-banner-swiper .swiper-slide {
-    height: auto;
-    overflow: hidden;
-    border-radius: 12px;
-}
-
-.aj-home-banner-swiper .swiper-slide a,
-.aj-home-banner-swiper .swiper-slide picture {
-    display: block;
-    width: 100%;
-    overflow: hidden;
-    border-radius: 12px;
-}
-
-.aj-home-banner-swiper img {
-    display: block;
-    width: 100%;
-    aspect-ratio: 3 / 1;
-    object-fit: cover;
-    border-radius: 12px;
-}
-
-.aj-home-banner-swiper .swiper-pagination {
-    position: relative;
-    margin-top: 10px;
-}
-
-
-/* =================================
-   Mobile Banner
-================================= */
-
-@media (max-width: 575px) {
-
-    .aj-v3-hero-carousel {
-        width: 100%;
-        overflow: hidden;
-        border-radius: 14px;
-    }
-
-    .aj-home-banner-swiper,
-    .aj-home-banner-swiper .swiper-slide,
-    .aj-home-banner-swiper .swiper-slide a,
-    .aj-home-banner-swiper .swiper-slide picture {
-        width: 100%;
-        overflow: hidden;
-        border-radius: 14px;
-    }
-
-    .aj-home-banner-swiper .swiper-slide img {
-        display: block;
-        width: 100%;
-        height: auto;
-        aspect-ratio: auto;
-        max-height: none;
-        object-fit: contain;
-        border-radius: 14px;
-        background: transparent;
-    }
-
-    .aj-home-banner-swiper .swiper-pagination {
-        margin-top: 2px;
-    }
-
-}
-
-    </style>
+    <link rel="stylesheet" href="<?= base_url('public/assets/css/header-background.css') ?>">
 </head>
 
 <body>
 
-<?= view('layouts/header', [
-    'isCustomerLoggedIn' => $isCustomerLoggedIn,
-    'customerName'       => $customerName,
-    'customerImage'      => $customerImage,
-    'couponAmount'       => $couponAmount,
-]) ?>
+
+    <div class="aj-site-layout">
+
+        <!-- TOP HEADER: Scrolls normally -->
+        
 
 
-<!-- SEARCH HEADER -->
-<?= view('layouts/searchheader') ?>
+        <!-- STICKY HEADER: Remains at top while scrolling -->
+        <div class="aj-sticky-header" id="ajStickyHeader">
 
-<div>
-    <?= $content ?>
-</div>
+            <?= view('layouts/searchheader') ?>
+
+
+        </div>
+
+
+        <!-- PAGE CONTENT: Scrolls underneath the sticky header -->
+        <main class="aj-page-content" id="ajPageContent">
+
+            <?= $content ?>
+
+        </main>
+
+    </div>
 
 <?= view('layouts/footer') ?>
 

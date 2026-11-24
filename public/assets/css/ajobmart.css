@@ -82,341 +82,97 @@ input {
    NAVBAR
 ===================================================== */
 
-.aj-navbar {
-    height: 72px;
-
-    background: #fff;
-
-    border-bottom: 1px solid var(--aj-border);
-
-    position: relative;
-
-    z-index: 1000;
-}
 
 
-.aj-navbar-inner {
-    max-width: 1400px;
 
-    height: 100%;
 
-    margin: auto;
-
-    padding: 0 25px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-}
 
 
 /* LOGO */
 
-.aj-logo {
-    display: flex;
-
-    align-items: center;
-
-    gap: 10px;
-
-    color: var(--aj-dark);
-
-    font-size: 23px;
-
-    font-weight: 800;
-}
 
 
-.aj-logo:hover {
-    color: var(--aj-primary);
-}
 
 
-.aj-logo-icon {
-    width: 42px;
-    height: 42px;
 
-    border-radius: 12px;
 
-    background: #fff;
 
-    color: #fff;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    font-size: 20px;
-
-    flex-shrink: 0;
-}
 
 
 /* DESKTOP MENU */
 
-.aj-desktop-menu {
-    display: flex;
-
-    align-items: center;
-
-    gap: 30px;
-}
 
 
-.aj-desktop-menu a {
-    color: #555;
-
-    font-size: 14px;
-
-    font-weight: 600;
-
-    transition: .2s;
-}
 
 
-.aj-desktop-menu a:hover {
-    color: var(--aj-primary);
-}
+
+
+
 
 
 /* NAVBAR ACTIONS */
 
-.aj-navbar-actions {
-    display: flex;
-
-    align-items: center;
-
-    gap: 18px;
-}
 
 
-.aj-cart-icon {
-    position: relative;
-
-    color: #333;
-
-    font-size: 23px;
-}
 
 
-.aj-cart-icon:hover {
-    color: var(--aj-primary);
-}
 
 
-.aj-cart-count {
-    position: absolute;
-
-    top: -8px;
-    right: -10px;
-
-    min-width: 18px;
-    height: 18px;
-
-    border-radius: 50%;
-
-    background: #ef4444;
-
-    color: #fff;
-
-    font-size: 10px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-}
 
 
-.aj-user-icon {
-    width: 40px;
-    height: 40px;
-
-    border-radius: 50%;
-
-    background: #f0f1f2;
-
-    color: #555;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    font-size: 20px;
-
-    transition: .2s;
-}
 
 
-.aj-user-icon:hover {
-    background: var(--aj-primary-light);
 
-    color: var(--aj-primary);
-}
+
+
+
+
+
 
 
 /* =====================================================
    SEARCH
 ===================================================== */
 
-.aj-search-wrapper {
-    background: #fff;
-
-    border-bottom: 1px solid var(--aj-border);
-
-    padding: 14px 20px;
-
-    position: relative;
-
-    z-index: 900;
-}
 
 
-.aj-search-container {
-    max-width: 900px;
-
-    margin: auto;
-}
 
 
-.aj-search-box {
-    height: 48px;
-
-    background: #f3f5f6;
-
-    border-radius: 12px;
-
-    padding: 0 8px 0 15px;
-
-    display: flex;
-
-    align-items: center;
-
-    border: 1px solid transparent;
-
-    transition: .25s;
-}
 
 
-.aj-search-box:focus-within {
-    background: #fff;
-
-    border-color: #b8e6c8;
-
-    box-shadow:
-        0 0 0 4px rgba(22, 163, 74, .08);
-}
 
 
-.aj-search-icon {
-    color: #777;
-
-    font-size: 19px;
-}
 
 
-.aj-search-box input {
-    flex: 1;
-
-    width: 100%;
-
-    height: 100%;
-
-    border: none;
-
-    outline: none;
-
-    background: transparent;
-
-    padding: 0 12px;
-
-    color: #333;
-
-    font-size: 14px;
-}
 
 
-.aj-search-box input::placeholder {
-    color: #999;
-}
 
 
-.aj-search-button {
-    border: none;
-
-    background: var(--aj-primary);
-
-    color: #fff;
-
-    height: 36px;
-
-    padding: 0 20px;
-
-    border-radius: 8px;
-
-    font-size: 13px;
-
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition: .2s;
-}
 
 
-.aj-search-button:hover {
-    background: var(--aj-primary-dark);
-}
+
+
+
+
+
+
+
+
+
 
 
 /* STICKY SEARCH */
 
-.aj-search-wrapper.aj-search-fixed {
-    position: fixed;
-
-    top: 0;
-
-    left: 0;
-
-    right: 0;
-
-    padding: 8px 15px;
-
-    box-shadow:
-        0 5px 20px rgba(0, 0, 0, .10);
-
-    animation: ajSearchDown .25s ease;
-}
 
 
-.aj-search-placeholder {
-    display: none;
-}
 
 
-.aj-search-placeholder.active {
-    display: block;
-}
 
 
-@keyframes ajSearchDown {
 
-    from {
-        transform: translateY(-100%);
-    }
 
-    to {
-        transform: translateY(0);
-    }
 
-}
+
 
 
 /* =====================================================
@@ -1350,82 +1106,42 @@ input {
 
     /* NAVBAR */
 
-    .aj-navbar {
-        height: 60px;
-    }
+    
 
 
-    .aj-navbar-inner {
-        padding: 0 14px;
-    }
+    
 
 
-    .aj-logo {
-        font-size: 19px;
-    }
+    
 
 
-    .aj-logo-icon {
-        width: 35px;
-        height: 35px;
-
-        border-radius: 10px;
-
-        font-size: 17px;
-    }
+    
 
 
-    .aj-desktop-menu {
-        display: none;
-    }
+    
 
 
-    .aj-navbar-actions {
-        gap: 12px;
-    }
+    
 
 
-    .aj-cart-icon {
-        font-size: 21px;
-    }
+    
 
 
-    .aj-user-icon {
-        width: 35px;
-        height: 35px;
-
-        font-size: 18px;
-    }
+    
 
 
     /* SEARCH */
 
-    .aj-search-wrapper {
-        padding: 9px 12px;
-    }
+    
 
 
-    .aj-search-box {
-        height: 44px;
-
-        border-radius: 10px;
-    }
+    
 
 
-    .aj-search-button {
-        height: 34px;
-
-        padding: 0 12px;
-
-        font-size: 11px;
-    }
+    
 
 
-    .aj-search-box input {
-        font-size: 13px;
-
-        padding: 0 8px;
-    }
+    
 
 
     /* HERO */
@@ -1845,9 +1561,7 @@ input {
 
 @media (max-width: 380px) {
 
-    .aj-logo-text {
-        display: block;
-    }
+    
 
 
     .aj-product-grid {
@@ -4740,22 +4454,10 @@ input {
 
 
 /* Customer profile image */
-.aj-customer-avatar {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    object-fit: cover;
-    display: inline-block;
-    border: 2px solid #e8edf3;
-    background: #f4f6f9;
-    vertical-align: middle;
-}
+
 
 /* Desktop profile link */
-.aj-user-icon .aj-customer-avatar {
-    width: 38px;
-    height: 38px;
-}
+
 
 /* Mobile profile image */
 .aj-mobile-avatar {
@@ -4765,78 +4467,30 @@ input {
 }
 
 /* Optional hover effect */
-.aj-user-icon:hover .aj-customer-avatar {
-    border-color: #0d6efd;
-    transition: border-color 0.2s ease;
-}
+
 
 /* Coupon balance in navbar */
-.aj-coupon-balance {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    padding: 7px 13px;
-    border: 1px solid #f1d8a8;
-    border-radius: 12px;
-    background: #fffaf0;
-    color: #754c00;
-    text-decoration: none;
-    transition: all 0.2s ease;
-}
 
-.aj-coupon-balance:hover {
-    background: #fff0cf;
-    color: #5c3b00;
-    transform: translateY(-1px);
-}
 
-.aj-coupon-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    background: #ffe5a3;
-    font-size: 19px;
-}
 
-.aj-coupon-details {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.25;
-}
 
-.aj-coupon-details small {
-    font-size: 11px;
-    color: #80652f;
-}
 
-.aj-coupon-details strong {
-    font-size: 15px;
-    font-weight: 700;
-}
+
+
+
+
+
+
 
 /* Mobile adjustments */
 @media (max-width: 767px) {
-    .aj-coupon-balance {
-        gap: 5px;
-        padding: 5px 8px;
-    }
+    
 
-    .aj-coupon-icon {
-        width: 30px;
-        height: 30px;
-        font-size: 16px;
-    }
+    
 
-    .aj-coupon-details small {
-        font-size: 10px;
-    }
+    
 
-    .aj-coupon-details strong {
-        font-size: 13px;
-    }
+    
 }
 
 .aj-product-image {
@@ -6736,142 +6390,51 @@ input {
 
 /* CATEGORY NAVIGATION */
 
-.aj-v3-category-nav {
-    background: #fff;
-    border-bottom: 1px solid #eeeeee;
-    position: relative;
-    z-index: 20;
-}
 
-.aj-v3-category-nav-inner {
-    display: flex;
-    align-items: center;
-    gap: 18px;
 
-    padding: 12px 20px;
-    max-width: 1400px;
-    margin: auto;
 
-    overflow-x: auto;
-    overflow-y: hidden;
 
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-}
 
-.aj-v3-category-nav-inner::-webkit-scrollbar {
-    display: none;
-}
 
 /* CATEGORY ITEM */
 
-.aj-v3-nav-category {
-    flex: 0 0 auto;
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    gap: 6px;
-
-    min-width: 75px;
-    padding: 4px 8px;
-
-    color: #444;
-    text-decoration: none;
-    font-size: 12px;
-    font-weight: 500;
-
-    transition: all .25s ease;
-}
 
 /* ICON ABOVE TEXT */
 
-.aj-v3-nav-icon {
-    width: 42px;
-    height: 42px;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
 
-    border-radius: 14px;
-    background: #f5f5f5;
 
-    transition: all .25s ease;
-}
 
-.aj-v3-nav-icon i {
-    font-size: 20px;
-    color: #333;
-}
 
-.aj-v3-nav-text {
-    white-space: nowrap;
-    transition: all .25s ease;
-}
 
 /* ACTIVE CATEGORY */
 
-.aj-v3-nav-category.active {
-    color: #111;
-    font-weight: 700;
-}
 
-.aj-v3-nav-category.active .aj-v3-nav-icon {
-    background: #eeeeee;
-}
+
+
 
 /* COMPACT MODE */
 
-.aj-v3-category-nav-inner.compact {
-    gap: 10px;
-    padding-top: 8px;
-    padding-bottom: 8px;
-}
 
-.aj-v3-category-nav-inner.compact .aj-v3-nav-category {
-    flex-direction: row;
-    min-width: auto;
-    gap: 0;
-    padding: 8px 14px;
-    border-radius: 25px;
-    background: #f5f5f5;
-}
 
-.aj-v3-category-nav-inner.compact .aj-v3-nav-icon {
-    display: none;
-}
 
-.aj-v3-category-nav-inner.compact .aj-v3-nav-category.active {
-    background: #222;
-    color: #fff;
-}
+
+
+
+
 
 /* MOBILE */
 
 @media (max-width: 767px) {
 
-    .aj-v3-category-nav-inner {
-        gap: 12px;
-        padding: 10px 12px;
-    }
+    
 
-    .aj-v3-nav-category {
-        min-width: 65px;
-        font-size: 11px;
-    }
+    
 
-    .aj-v3-nav-icon {
-        width: 38px;
-        height: 38px;
-        border-radius: 12px;
-    }
+    
 
-    .aj-v3-nav-icon i {
-        font-size: 18px;
-    }
+    
 }
 
 
@@ -6880,26 +6443,12 @@ input {
    CATEGORY NAVIGATION STICKY
 ========================================= */
 
-.aj-v3-category-nav {
-    background: #ffffff;
-    z-index: 1000;
-}
+
 
 /* Mobile sticky category bar */
 @media (max-width: 768px) {
 
-    .aj-v3-category-nav.aj-category-sticky {
-        position: sticky;
-
-        /* Adjust according to sticky search header */
-        top: 60px;
-
-        z-index: 1000;
-
-        border-bottom: 1px solid #eeeeee;
-
-        box-shadow: 0 3px 8px rgba(0,0,0,0.04);
-    }
+    
 
 }
 
@@ -6907,49 +6456,25 @@ input {
    COMPACT CATEGORY NAVIGATION
 ========================================= */
 
-.aj-v3-category-nav-inner {
-    transition: padding 0.25s ease;
-}
 
-.aj-v3-category-nav-inner .aj-v3-nav-category {
-    transition: all 0.25s ease;
-}
 
-.aj-v3-category-nav-inner .aj-v3-nav-icon {
-    transition: all 0.2s ease;
-}
+
+
+
 
 /* When page scrolls */
 
-.aj-v3-category-nav-inner.compact {
-    padding-top: 6px;
-    padding-bottom: 6px;
-    gap: 8px;
-}
 
-.aj-v3-category-nav-inner.compact .aj-v3-nav-category {
-    flex-direction: row;
-    min-width: auto;
-    padding: 7px 13px;
-    border-radius: 25px;
-    background: #f5f5f5;
-}
 
-.aj-v3-category-nav-inner.compact .aj-v3-nav-icon {
-    display: none;
-}
 
-.aj-v3-category-nav-inner.compact .aj-v3-nav-text {
-    display: inline-block;
-}
+
+
+
+
 
 /* Active category */
 
-.aj-v3-category-nav-inner.compact
-.aj-v3-nav-category.active {
-    background: #222222;
-    color: #ffffff;
-}
+
 
 
 
@@ -6957,98 +6482,47 @@ input {
    COLORFUL CATEGORY ICONS
 ========================================= */
 
-.aj-v3-nav-icon {
-    width: 44px;
-    height: 44px;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
 
-    border-radius: 14px;
 
-    transition: all 0.25s ease;
-}
-
-.aj-v3-nav-icon i {
-    font-size: 21px;
-}
 
 /* Individual category colors */
 
-.aj-v3-nav-category:nth-child(1) .aj-v3-nav-icon {
-    background: #e8f1ff;
-    color: #2878e8;
-}
 
-.aj-v3-nav-category:nth-child(2) .aj-v3-nav-icon {
-    background: #e8f7ed;
-    color: #159447;
-}
 
-.aj-v3-nav-category:nth-child(3) .aj-v3-nav-icon {
-    background: #fff0f5;
-    color: #e83e8c;
-}
 
-.aj-v3-nav-category:nth-child(4) .aj-v3-nav-icon {
-    background: #fff0ef;
-    color: #e54848;
-}
 
-.aj-v3-nav-category:nth-child(5) .aj-v3-nav-icon {
-    background: #fff4e5;
-    color: #e58a16;
-}
 
-.aj-v3-nav-category:nth-child(6) .aj-v3-nav-icon {
-    background: #f0eaff;
-    color: #7952d8;
-}
 
-.aj-v3-nav-category:nth-child(7) .aj-v3-nav-icon {
-    background: #e5f8fc;
-    color: #0796b5;
-}
 
-.aj-v3-nav-category:nth-child(8) .aj-v3-nav-icon {
-    background: #f0f0f0;
-    color: #555555;
-}
+
+
+
+
+
+
+
+
 
 /* Hover effect */
 
-.aj-v3-nav-category:hover .aj-v3-nav-icon {
-    transform: translateY(-2px);
-}
+
 
 /* Compact mode: hide icons */
 
-.aj-v3-category-nav-inner.compact .aj-v3-nav-icon {
-    display: none;
-}
+
 
 
 
 /* Active text color in normal mode */
 
-.aj-v3-nav-category.active .aj-v3-nav-text {
-    color: #222;
-    font-weight: 700;
-}
+
 
 /* Compact active category */
 
-.aj-v3-category-nav-inner.compact
-.aj-v3-nav-category.active {
-    background: #222;
-    color: #fff;
-}
 
-.aj-v3-category-nav-inner.compact
-.aj-v3-nav-category.active .aj-v3-nav-text {
-    color: #fff;
-}
+
+
 
 
 
@@ -7711,150 +7185,44 @@ input {
 
 /* Common animation layer */
 
-.aj-navbar,
-.aj-search-wrapper,
-.aj-v3-category-nav {
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
-}
+
 
 /* -----------------------------------------
    1. NAVBAR - MOVING LIGHT
 ----------------------------------------- */
 
-.aj-navbar {
-    background: #5ba2d8 !important;
-}
 
-.aj-navbar::before,
-.aj-search-wrapper::before,
-.aj-v3-category-nav::before {
-    content: "";
-    position: absolute;
-    inset: -100%;
 
-    pointer-events: none;
-    z-index: -1;
 
-    background: radial-gradient(
-        ellipse at center,
-        rgba(255,255,255,0.28) 0%,
-        rgba(255,255,255,0.10) 25%,
-        transparent 65%
-    );
 
-    animation: ajMovingLight 12s ease-in-out infinite alternate;
-}
 
-@keyframes ajMovingLight {
-    0% {
-        transform: translate(-25%, -10%) scale(0.9);
-    }
-
-    50% {
-        transform: translate(15%, 15%) scale(1.15);
-    }
-
-    100% {
-        transform: translate(30%, -15%) scale(1);
-    }
-}
 
 /* -----------------------------------------
    2. SEARCH - SOFT LIGHT WAVES
 ----------------------------------------- */
 
-.aj-search-wrapper {
-    background: #DCEEFF;
-}
 
-.aj-search-wrapper::after {
-    content: "";
-    position: absolute;
 
-    top: -100%;
-    left: -60%;
 
-    width: 45%;
-    height: 300%;
 
-    pointer-events: none;
-    z-index: -1;
 
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255,255,255,0.45),
-        transparent
-    );
-
-    transform: rotate(25deg);
-
-    animation: ajSearchLightWave 10s ease-in-out infinite;
-}
-
-@keyframes ajSearchLightWave {
-    0% {
-        left: -60%;
-    }
-
-    100% {
-        left: 130%;
-    }
-}
 
 /* -----------------------------------------
    3. CATEGORY - FLOATING GLOW
 ----------------------------------------- */
 
-.aj-v3-category-nav {
-    background: #D5F0FA;
-}
 
-.aj-v3-category-nav::after {
-    content: "";
-    position: absolute;
 
-    width: 220px;
-    height: 220px;
 
-    top: -130px;
-    right: 10%;
 
-    border-radius: 50%;
 
-    pointer-events: none;
-    z-index: -1;
-
-    background: rgba(255,255,255,0.38);
-    filter: blur(35px);
-
-    animation: ajCategoryGlow 9s ease-in-out infinite alternate;
-}
-
-@keyframes ajCategoryGlow {
-    0% {
-        transform: translateX(-80px) scale(0.8);
-    }
-
-    100% {
-        transform: translateX(160px) scale(1.3);
-    }
-}
 
 /* -----------------------------------------
    4. REDUCED MOTION
 ----------------------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
-    .aj-navbar::before,
-    .aj-search-wrapper::before,
-    .aj-search-wrapper::after,
-    .aj-v3-category-nav::before,
-    .aj-v3-category-nav::after {
-        animation: none !important;
-    }
+    
 }
 
 
@@ -7862,110 +7230,38 @@ input {
    AJOBMART - ANIMATED CLOUDY SKY HEADER
 ========================================= */
 
-.aj-navbar,
-.aj-search-wrapper,
-.aj-v3-category-nav {
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
-}
+
 
 /* Keep content above cloud effects */
 
-.aj-navbar > *,
-.aj-search-wrapper > *,
-.aj-v3-category-nav > * {
-    position: relative;
-    z-index: 2;
-}
+
 
 /* -----------------------------------------
    CLOUD LAYER
 ----------------------------------------- */
 
-.aj-navbar::before,
-.aj-search-wrapper::before,
-.aj-v3-category-nav::before {
-    content: "";
-    position: absolute;
-    z-index: 1;
-    pointer-events: none;
 
-    top: 0;
-    left: -100%;
-
-    width: 200%;
-    height: 100%;
-
-    background-image:
-        radial-gradient(
-            ellipse 95px 27px at 12% 48%,
-            rgba(255,255,255,0.25) 0%,
-            rgba(255,255,255,0.12) 55%,
-            transparent 100%
-        ),
-        radial-gradient(
-            ellipse 125px 35px at 38% 70%,
-            rgba(255,255,255,0.20) 0%,
-            rgba(255,255,255,0.10) 60%,
-            transparent 100%
-        ),
-        radial-gradient(
-            ellipse 110px 30px at 68% 35%,
-            rgba(255,255,255,0.24) 0%,
-            rgba(255,255,255,0.10) 60%,
-            transparent 100%
-        ),
-        radial-gradient(
-            ellipse 140px 40px at 90% 65%,
-            rgba(255,255,255,0.20) 0%,
-            transparent 100%
-        );
-
-    background-repeat: repeat-x;
-    background-size: 900px 100%;
-
-    animation: ajCloudDrift 45s linear infinite;
-}
 
 /* Navbar clouds */
 
-.aj-navbar::before {
-    opacity: 0.85;
-}
+
 
 /* Search clouds */
 
-.aj-search-wrapper::before {
-    opacity: 0.65;
-}
+
 
 /* Category clouds */
 
-.aj-v3-category-nav::before {
-    opacity: 0.5;
-}
 
-@keyframes ajCloudDrift {
-    from {
-        transform: translateX(0);
-    }
 
-    to {
-        transform: translateX(45%);
-    }
-}
+
 
 /* -----------------------------------------
    REDUCED MOTION
 ----------------------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
-    .aj-navbar::before,
-    .aj-search-wrapper::before,
-    .aj-v3-category-nav::before {
-        animation: none !important;
-    }
+    
 }
 
 
@@ -8000,3 +7296,23 @@ input {
         box-shadow: 0 3px 12px rgba(0, 123, 255, 0.55);
     }
 }
+
+/* Remove outer border from category product section */
+#ajCategoryContent .aj-home-section {
+    border: none !important;
+    /* box-shadow: none !important; */
+    /* background: transparent !important; */
+    /* padding: 0 !important; */
+}
+
+/* Remove outer border from category container */
+/* #ajCategoryContent .aj-container {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+#ajCategoryContent .aj-product-card {
+    border: none;
+    box-shadow: none;
+} */

@@ -1,0 +1,135 @@
+/* =========================================================
+   AJOBMART CATEGORY NAVIGATION
+   Source: ajobmart.css + supplied category_navigation.php
+   ========================================================= */
+
+.aj-v3-category-nav {
+    position: relative;
+    z-index: 1000;
+    isolation: isolate;
+    overflow: hidden;
+    /* background: rgba(255,255,255,.20); */
+    /* border-top: 1px solid rgba(255,255,255,.12); */
+    border-bottom: 1px solid rgba(255,255,255,.20);
+}
+
+.aj-v3-category-nav-inner {
+    max-width: 1400px;
+    margin: auto;
+    padding: 9px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    transition: padding .25s ease, gap .25s ease;
+}
+.aj-v3-category-nav-inner::-webkit-scrollbar { display: none; }
+
+/* Horizontal compact category links match the current PHP view. */
+.aj-v3-nav-category {
+    flex: 0 0 auto;
+    /* display: flex; */
+    /* flex-direction: row; */
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-width: 0;
+    padding: 5px 8px;
+    border: 1px solid transparent;
+    border-radius: 20px;
+    color: rgba(255,255,255,.9);
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 600;
+    transition: background .2s ease, border-color .2s ease, color .2s ease;
+}
+
+.aj-v3-nav-icon {
+    flex: 0 0 auto;
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    /* background: rgba(255,255,255,.14); */
+    /* color: #fff; */
+    font-size: 13px;
+    line-height: 1;
+}
+.aj-v3-nav-icon i { font-size: inherit; line-height: 1; }
+
+.aj-v3-nav-text {
+    display: inline-block;
+    max-width: 65px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: inherit;
+    font-size: 10px;
+    line-height: 1.2;
+}
+
+.aj-v3-nav-category:hover {
+    /* color: #fff; */
+    background: rgba(255,255,255,.12);
+    border-color: rgba(255,255,255,.18);
+}
+
+.aj-v3-nav-category.active {
+    color: #fff;
+    background: rgba(255,255,255,.19);
+    border-color: rgba(255,255,255,.28);
+    font-weight: 700;
+}
+.aj-v3-nav-category.active .aj-v3-nav-text { color: #fff; font-weight: 700; }
+.aj-v3-nav-category.active .aj-v3-nav-icon { background: rgba(255,255,255,.22); color: #fff; }
+
+/* Keep category-specific icon accents. */
+.aj-v3-nav-category:nth-child(1) .aj-v3-nav-icon { background: #e8f1ff; color: #2878e8; }
+.aj-v3-nav-category:nth-child(2) .aj-v3-nav-icon { background: #e8f7ed; color: #159447; }
+.aj-v3-nav-category:nth-child(3) .aj-v3-nav-icon { background: #fff0f5; color: #e83e8c; }
+.aj-v3-nav-category:nth-child(4) .aj-v3-nav-icon { background: #fff0ef; color: #e54848; }
+.aj-v3-nav-category:nth-child(5) .aj-v3-nav-icon { background: #fff4e5; color: #e58a16; }
+.aj-v3-nav-category:nth-child(6) .aj-v3-nav-icon { background: #f0eaff; color: #7952d8; }
+.aj-v3-nav-category:nth-child(7) .aj-v3-nav-icon { background: #e5f8fc; color: #0796b5; }
+.aj-v3-nav-category:nth-child(8) .aj-v3-nav-icon { background: #f0f0f0; color: #555; }
+
+.aj-v3-category-nav-inner.compact {
+    gap: 7px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+.aj-v3-category-nav-inner.compact .aj-v3-nav-category {
+    padding: 6px 11px;
+    border-radius: 20px;
+    background: rgba(255,255,255,.12);
+}
+.aj-v3-category-nav-inner.compact .aj-v3-nav-icon { display: none; }
+.aj-v3-category-nav-inner.compact .aj-v3-nav-text { display: inline-block; max-width: 90px; }
+.aj-v3-category-nav-inner.compact .aj-v3-nav-category.active {
+    background: #fff;
+    color: #102d59;
+    border-color: #fff;
+}
+.aj-v3-category-nav-inner.compact .aj-v3-nav-category.active .aj-v3-nav-text { color: #102d59; }
+
+/* Existing JS can add this class on mobile when sticky mode is enabled. */
+@media (max-width: 768px) {
+    .aj-v3-category-nav.aj-category-sticky {
+        position: sticky;
+        top: 60px;
+        z-index: 1000;
+        box-shadow: 0 3px 8px rgba(0,0,0,.12);
+    }
+    .aj-v3-category-nav-inner { padding-left: 12px; padding-right: 12px; }
+    .aj-v3-nav-category { padding: 4px 6px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .aj-v3-nav-category,
+    .aj-v3-category-nav-inner { transition: none; }
+}

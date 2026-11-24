@@ -1,0 +1,179 @@
+
+/* =========================================
+   AJOBMART FESTIVAL BACKGROUND
+   Deep Blue + Golden Rupee Animation
+========================================= */
+
+/* Shared background */
+
+/* =========================================
+   AJOBMART FESTIVAL BACKGROUND
+========================================= */
+
+.aj-header-top,
+.aj-sticky-header {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+
+    background: linear-gradient(
+        120deg,
+        #061329,
+        #102d59,
+        #29205c,
+        #0a3150
+    );
+
+    background-size: 300% 300%;
+    animation: ajFestivalGradient 12s ease infinite;
+}
+
+/* Keep sticky behaviour */
+.aj-sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 1050;
+}
+
+/* Floating rupee symbols */
+.aj-header-top::before,
+.aj-sticky-header::before {
+    content: "₹       ₹";
+    content: "*  **    **   ₹";
+
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+
+    color: rgba(255, 215, 100, 0.30);
+    font-size: 35px;
+    font-weight: 800;
+    letter-spacing: 35px;
+    line-height: 95px;
+    white-space: normal;
+    word-spacing: 25px;
+
+    background-image:
+        radial-gradient(circle, rgba(255, 215, 100, .22) 1px, transparent 2px);
+
+    background-size: 45px 45px;
+
+    animation: ajRupeeFloat 15s linear infinite;
+}
+
+/* Keep content above background */
+.aj-header-top > *,
+.aj-sticky-header > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Gradient movement */
+@keyframes ajFestivalGradient {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Rupee movement */
+@keyframes ajRupeeFloat {
+    0% {
+        transform: translateY(0);
+        background-position: 0 0;
+    }
+
+    50% {
+        transform: translateY(-20px);
+        background-position: 45px 45px;
+    }
+
+    100% {
+        transform: translateY(0);
+        background-position: 90px 90px;
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .aj-header-top,
+    .aj-sticky-header,
+    .aj-header-top::before,
+    .aj-sticky-header::before {
+        animation: none !important;
+    }
+}
+
+
+/* =========================================
+   TRANSPARENT DELIVERY BAR
+========================================= */
+
+.aj-header-top .aj-global-delivery-bar,
+.aj-header-top .aj-delivery-card,
+.aj-header-top .aj-address-changes {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* White delivery text and icons */
+.aj-header-top .aj-global-delivery-bar *,
+.aj-header-top .aj-delivery-card * {
+    color: #ffffff !important;
+}
+
+/* =========================================
+   SEARCH + CATEGORY BACKGROUNDS
+========================================= */
+
+.aj-sticky-header .aj-search-wrapper,
+.aj-sticky-header .aj-search-container,
+.aj-sticky-header .aj-v3-category-nav,
+.aj-sticky-header .aj-v3-category-nav-inner {
+    background: transparent !important;
+    background-image: none !important;
+}
+
+/* White search box */
+.aj-sticky-header .aj-search-box {
+    background: #ffffff !important;
+}
+
+/* Search text */
+.aj-sticky-header .aj-search-box input {
+    color: #222222 !important;
+}
+
+/* White category text and icons */
+.aj-sticky-header .aj-v3-nav-category,
+.aj-sticky-header .aj-v3-nav-text,
+.aj-sticky-header .aj-v3-nav-icon {
+    color: #ffffff !important;
+}
+
+/* =========================================
+   REDUCED MOTION
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .aj-header-top,
+    .aj-sticky-header,
+    .aj-header-top::before,
+    .aj-sticky-header::before {
+        animation: none !important;
+    }
+}
+

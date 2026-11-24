@@ -1,6 +1,5 @@
 
 <!-- CATEGORY NAVIGATION -->
-<?= view('layouts/category_navigation') ?>
 <!-- =========================================
      AJOBMART - CLEAN MARKETPLACE HOMEPAGE
 ========================================= -->
@@ -468,6 +467,52 @@
 <div id="ajCategoryContent" style="display:none;">
 
     <div class="aj-container aj-home-v3">
+
+                        <?php if (!empty($banners)): ?>
+
+        <section class="aj-v3-hero-carousel" id="ajHomeCarousel">
+
+            <div class="swiper aj-home-banner-swiper">
+
+                <div class="swiper-wrapper">
+
+                    <?php foreach ($banners as $banner): ?>
+
+                        <?php
+                            $imageUrl = site_url(
+                                'shared-images/' . ltrim($banner['image'], '/')
+                            );
+                        ?>
+
+                        <div class="swiper-slide">
+
+                            <a href="<?= esc($banner['target_url'] ?: '#') ?>"
+                            <?= !empty($banner['open_new_tab'])
+                                    ? 'target="_blank" rel="noopener noreferrer"'
+                                    : '' ?>>
+
+                                <img
+                                    src="<?= esc($imageUrl) ?>"
+                                    alt="<?= esc($banner['title']) ?>"
+                                    loading="lazy"
+                                >
+
+                            </a>
+
+                        </div>
+
+                    <?php endforeach; ?>
+
+                </div>
+
+                <div class="swiper-pagination"></div>
+
+            </div>
+
+        </section>
+
+        <?php endif; ?>
+
 
         <section class="aj-home-section">
 

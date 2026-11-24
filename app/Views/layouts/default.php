@@ -76,25 +76,52 @@ if ($isCustomerLoggedIn) {
         href="<?= base_url('public/assets/css/productdetails.css') ?>"
     >
 
+    <link rel="stylesheet" href="<?= base_url('public/assets/css/header.css') ?>">
+<link rel="stylesheet" href="<?= base_url('public/assets/css/deliverybar.css') ?>">
+<link rel="stylesheet" href="<?= base_url('public/assets/css/searchheader.css') ?>">
+<link rel="stylesheet" href="<?= base_url('public/assets/css/category_nav.css') ?>">
+
+    <link rel="stylesheet" href="<?= base_url('public/assets/css/header-background.css') ?>">
 </head>
 
 <body>
 
-<?= view('layouts/header', [
-    'isCustomerLoggedIn' => $isCustomerLoggedIn,
-    'customerName'       => $customerName,
-    'customerImage'      => $customerImage,
-    'couponAmount'       => $couponAmount,
-]) ?>
 
-<?= view('layouts/deliverybar') ?>
+    <div class="aj-site-layout">
 
-<!-- SEARCH HEADER -->
-<?= view('layouts/searchheader') ?>
+        <!-- TOP HEADER: Scrolls normally -->
+        <div class="aj-header-top">
 
-<div>
-    <?= $content ?>
-</div>
+            <?= view('layouts/header', [
+                'isCustomerLoggedIn' => $isCustomerLoggedIn,
+                'customerName'       => $customerName,
+                'customerImage'      => $customerImage,
+                'couponAmount'       => $couponAmount,
+            ]) ?>
+
+            <?= view('layouts/deliverybar') ?>
+
+        </div>
+
+
+        <!-- STICKY HEADER: Remains at top while scrolling -->
+        <div class="aj-sticky-header" id="ajStickyHeader">
+
+            <?= view('layouts/searchheader') ?>
+
+            <?= view('layouts/category_navigation') ?>
+
+        </div>
+
+
+        <!-- PAGE CONTENT: Scrolls underneath the sticky header -->
+        <main class="aj-page-content" id="ajPageContent">
+
+            <?= $content ?>
+
+        </main>
+
+    </div>
 
 <?= view('layouts/footer') ?>
 
