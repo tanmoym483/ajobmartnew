@@ -1,135 +1,288 @@
-/* =========================================================
+
+/* =========================================
    AJOBMART CATEGORY NAVIGATION
-   Source: ajobmart.css + supplied category_navigation.php
-   ========================================================= */
+========================================= */
 
 .aj-v3-category-nav {
     position: relative;
     z-index: 1000;
     isolation: isolate;
     overflow: hidden;
-    /* background: rgba(255,255,255,.20); */
-    /* border-top: 1px solid rgba(255,255,255,.12); */
-    border-bottom: 1px solid rgba(255,255,255,.20);
+    background: transparent;
+    border: none;
 }
 
 .aj-v3-category-nav-inner {
     max-width: 1400px;
     margin: auto;
     padding: 9px 20px;
+
     display: flex;
     align-items: center;
     gap: 10px;
+
     overflow-x: auto;
     overflow-y: hidden;
+
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
+
     transition: padding .25s ease, gap .25s ease;
 }
-.aj-v3-category-nav-inner::-webkit-scrollbar { display: none; }
 
-/* Horizontal compact category links match the current PHP view. */
+.aj-v3-category-nav-inner::-webkit-scrollbar {
+    display: none;
+}
+
+/* =========================================
+   CATEGORY LINK
+========================================= */
+
 .aj-v3-nav-category {
     flex: 0 0 auto;
-    /* display: flex; */
-    /* flex-direction: row; */
+
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
+    gap: 7px;
+
     min-width: 0;
-    padding: 5px 8px;
+    padding: 5px 9px;
+
     border: 1px solid transparent;
     border-radius: 20px;
-    color: rgba(255,255,255,.9);
+
+    color: rgba(255,255,255,.95);
     text-decoration: none;
-    font-size: 11px;
+
+    font-size: 12px;
     font-weight: 600;
-    transition: background .2s ease, border-color .2s ease, color .2s ease;
+
+    transition: background .2s ease,
+                border-color .2s ease,
+                color .2s ease;
 }
+
+/* =========================================
+   CATEGORY ICON
+========================================= */
 
 .aj-v3-nav-icon {
     flex: 0 0 auto;
-    width: 22px;
-    height: 22px;
+
+    width: 30px;
+    height: 30px;
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 7px;
-    /* background: rgba(255,255,255,.14); */
-    /* color: #fff; */
-    font-size: 13px;
+
+    border-radius: 9px;
+
+    background: rgba(255,255,255,.13);
+    color: #ffffff;
+
+    font-size: 19px;
     line-height: 1;
 }
-.aj-v3-nav-icon i { font-size: inherit; line-height: 1; }
+
+.aj-v3-nav-icon i {
+    font-size: 19px;
+    line-height: 1;
+}
+
+/* =========================================
+   CATEGORY TEXT
+========================================= */
 
 .aj-v3-nav-text {
     display: inline-block;
-    max-width: 65px;
+
+    max-width: 75px;
+
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+
     color: inherit;
-    font-size: 10px;
+
+    font-size: 11px;
     line-height: 1.2;
 }
 
+/* =========================================
+   HOVER
+========================================= */
+
 .aj-v3-nav-category:hover {
-    /* color: #fff; */
+    color: #ffffff;
     background: rgba(255,255,255,.12);
-    border-color: rgba(255,255,255,.18);
+    border-color: rgba(255,255,255,.20);
 }
+
+/* =========================================
+   ACTIVE CATEGORY - NORMAL VIEW
+========================================= */
 
 .aj-v3-nav-category.active {
-    color: #fff;
-    background: rgba(255,255,255,.19);
-    border-color: rgba(255,255,255,.28);
+    color: #ffffff;
+
+    background: linear-gradient(
+        135deg,
+        rgba(139, 72, 210, .48),
+        rgba(255, 190, 80, .20)
+    );
+
+    border-color: rgba(255,215,140,.55);
+
     font-weight: 700;
 }
-.aj-v3-nav-category.active .aj-v3-nav-text { color: #fff; font-weight: 700; }
-.aj-v3-nav-category.active .aj-v3-nav-icon { background: rgba(255,255,255,.22); color: #fff; }
 
-/* Keep category-specific icon accents. */
-.aj-v3-nav-category:nth-child(1) .aj-v3-nav-icon { background: #e8f1ff; color: #2878e8; }
-.aj-v3-nav-category:nth-child(2) .aj-v3-nav-icon { background: #e8f7ed; color: #159447; }
-.aj-v3-nav-category:nth-child(3) .aj-v3-nav-icon { background: #fff0f5; color: #e83e8c; }
-.aj-v3-nav-category:nth-child(4) .aj-v3-nav-icon { background: #fff0ef; color: #e54848; }
-.aj-v3-nav-category:nth-child(5) .aj-v3-nav-icon { background: #fff4e5; color: #e58a16; }
-.aj-v3-nav-category:nth-child(6) .aj-v3-nav-icon { background: #f0eaff; color: #7952d8; }
-.aj-v3-nav-category:nth-child(7) .aj-v3-nav-icon { background: #e5f8fc; color: #0796b5; }
-.aj-v3-nav-category:nth-child(8) .aj-v3-nav-icon { background: #f0f0f0; color: #555; }
+.aj-v3-nav-category.active .aj-v3-nav-text {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.aj-v3-nav-category.active .aj-v3-nav-icon {
+    background: rgba(255,215,130,.22);
+    color: #ffe2a0;
+}
+
+/* =========================================
+   ICON ACCENT COLOURS
+========================================= */
+
+.aj-v3-nav-category:nth-child(1) .aj-v3-nav-icon {
+    background: rgba(232,241,255,.20);
+    color: #b8d6ff;
+}
+
+.aj-v3-nav-category:nth-child(2) .aj-v3-nav-icon {
+    background: rgba(232,247,237,.18);
+    color: #85e5a5;
+}
+
+.aj-v3-nav-category:nth-child(3) .aj-v3-nav-icon {
+    background: rgba(255,240,245,.18);
+    color: #ffadd0;
+}
+
+.aj-v3-nav-category:nth-child(4) .aj-v3-nav-icon {
+    background: rgba(255,240,239,.18);
+    color: #ffaaa5;
+}
+
+.aj-v3-nav-category:nth-child(5) .aj-v3-nav-icon {
+    background: rgba(255,244,229,.18);
+    color: #ffd08a;
+}
+
+.aj-v3-nav-category:nth-child(6) .aj-v3-nav-icon {
+    background: rgba(240,234,255,.18);
+    color: #c9b0ff;
+}
+
+.aj-v3-nav-category:nth-child(7) .aj-v3-nav-icon {
+    background: rgba(229,248,252,.18);
+    color: #8de5f4;
+}
+
+.aj-v3-nav-category:nth-child(8) .aj-v3-nav-icon {
+    background: rgba(255,255,255,.15);
+    color: #eeeeee;
+}
+
+/* =========================================
+   COMPACT MODE AFTER SCROLL
+========================================= */
 
 .aj-v3-category-nav-inner.compact {
     gap: 7px;
     padding-top: 6px;
     padding-bottom: 6px;
 }
-.aj-v3-category-nav-inner.compact .aj-v3-nav-category {
-    padding: 6px 11px;
-    border-radius: 20px;
-    background: rgba(255,255,255,.12);
-}
-.aj-v3-category-nav-inner.compact .aj-v3-nav-icon { display: none; }
-.aj-v3-category-nav-inner.compact .aj-v3-nav-text { display: inline-block; max-width: 90px; }
-.aj-v3-category-nav-inner.compact .aj-v3-nav-category.active {
-    background: #fff;
-    color: #102d59;
-    border-color: #fff;
-}
-.aj-v3-category-nav-inner.compact .aj-v3-nav-category.active .aj-v3-nav-text { color: #102d59; }
 
-/* Existing JS can add this class on mobile when sticky mode is enabled. */
+.aj-v3-category-nav-inner.compact .aj-v3-nav-category {
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: rgba(255,255,255,.10);
+    border-color: rgba(255,255,255,.12);
+}
+
+.aj-v3-category-nav-inner.compact .aj-v3-nav-icon {
+    display: none;
+}
+
+.aj-v3-category-nav-inner.compact .aj-v3-nav-text {
+    display: inline-block;
+    max-width: 90px;
+}
+
+/* Active category in compact mode */
+.aj-v3-category-nav-inner.compact .aj-v3-nav-category.active {
+    background: linear-gradient(
+        135deg,
+        #7137a8,
+        #a14fc4
+    );
+
+    color: #ffffff;
+    border-color: rgba(255,215,140,.65);
+}
+
+.aj-v3-category-nav-inner.compact .aj-v3-nav-category.active .aj-v3-nav-text {
+    color: #ffffff;
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
 @media (max-width: 768px) {
+
     .aj-v3-category-nav.aj-category-sticky {
         position: sticky;
         top: 60px;
         z-index: 1000;
-        box-shadow: 0 3px 8px rgba(0,0,0,.12);
+
+        background: transparent;
+        box-shadow: none;
     }
-    .aj-v3-category-nav-inner { padding-left: 12px; padding-right: 12px; }
-    .aj-v3-nav-category { padding: 4px 6px; }
+
+    .aj-v3-category-nav-inner {
+        padding-left: 12px;
+        padding-right: 12px;
+        gap: 7px;
+    }
+
+    .aj-v3-nav-category {
+        padding: 4px 7px;
+        gap: 6px;
+    }
+
+    .aj-v3-nav-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 18px;
+    }
+
+    .aj-v3-nav-icon i {
+        font-size: 18px;
+    }
+
+    .aj-v3-nav-text {
+        max-width: 68px;
+        font-size: 10px;
+    }
 }
+
+/* =========================================
+   REDUCED MOTION
+========================================= */
 
 @media (prefers-reduced-motion: reduce) {
     .aj-v3-nav-category,
-    .aj-v3-category-nav-inner { transition: none; }
+    .aj-v3-category-nav-inner {
+        transition: none;
+    }
 }
