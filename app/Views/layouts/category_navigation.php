@@ -53,15 +53,20 @@ $categoryIcons = [
 
 ?>
 
+
 <section class="aj-v3-category-nav">
 
     <div class="aj-v3-category-nav-inner" id="ajCategoryNav">
 
-        <!-- Home -->
-        <a href="<?= base_url() ?>" class="aj-v3-nav-category active">
+        <!-- For You -->
+        <a href="<?= base_url() ?>"
+           class="aj-v3-nav-category active"
+           data-aj-nav="home">
+
             <span class="aj-v3-nav-icon">
                 <i class="bi bi-stars"></i>
             </span>
+
             <span class="aj-v3-nav-text">For You</span>
         </a>
 
@@ -72,12 +77,15 @@ $categoryIcons = [
 
                 <?php
                     $slug = $category['slug'];
-
                     $icon = $categoryIcons[$slug] ?? 'bi-tag';
                 ?>
 
                 <a href="<?= base_url('products?category=' . rawurlencode($slug)) ?>"
-                   class="aj-v3-nav-category">
+                class="aj-v3-nav-category"
+                data-aj-nav="category"
+                data-category-id="<?= (int) $category['id'] ?>"
+                data-category-slug="<?= esc($slug) ?>"
+                data-category-name="<?= esc($category['name']) ?>">
 
                     <span class="aj-v3-nav-icon">
                         <i class="bi <?= esc($icon) ?>"></i>
@@ -93,17 +101,7 @@ $categoryIcons = [
 
         <?php endif; ?>
 
-        <!-- All Categories -->
-        <!-- <a href="<?= base_url('categories') ?>" class="aj-v3-nav-category">
-
-            <span class="aj-v3-nav-icon">
-                <i class="bi bi-grid"></i>
-            </span>
-
-            <span class="aj-v3-nav-text">All Categories</span>
-
-        </a> -->
-
     </div>
 
 </section>
+

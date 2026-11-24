@@ -55,11 +55,47 @@ class HomeProducts extends BaseController
 
     public function byCategory($categoryId)
     {
-        return $this->jsonProducts(
-            $this->productModel->getProductsByCategory(
-                (int) $categoryId
-            )
+        $categoryId = (int) $categoryId;
+
+        if ($categoryId <= 0) {
+            return $this->response
+                ->setStatusCode(400)
+                ->setJSON([
+                    'status'  => false,
+                    'message' => 'Invalid category.'
+                ]);
+        }
+
+        $page = max(1, (int) $this->request->getGet('page'));
+
+        // First page: 12 products.
+        // Next pages: 6 products.
+        $limit = ($page === 1) ? 12 : 6;
+
+        $offset = ($page === 1)
+            ? 0
+            : 12 + (($page - 2) * 6);
+
+        // Fetch one extra product to detect more results.
+        $products = $this->productModel->getProductsByCategory(
+            $categoryId,
+            $limit + 1,
+            $offset
         );
+
+        $hasMore = count($products) > $limit;
+
+        $products = array_slice($products, 0, $limit);
+
+        return $this->response
+            ->setContentType('application/json')
+            ->setJSON([
+                'status'   => true,
+                'products' => $products,
+                'has_more' => $hasMore,
+                'page'     => $page,
+                'category_id' => $categoryId
+            ]);
     }
 
 
@@ -125,6 +161,7 @@ class HomeProducts extends BaseController
                 'page'     => $page
             ]);
     }
+    
 
 
 }

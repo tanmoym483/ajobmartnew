@@ -212,12 +212,18 @@ class ProductModel extends Model
         return $this->getPopularProducts();
     }
 
-    public function getProductsByCategory(int $categoryId): array
-    {
+    /**
+     * Get category products with pagination.
+     */
+    public function getProductsByCategory(
+        int $categoryId,
+        int $limit = 12,
+        int $offset = 0
+    ): array {
         return $this->getHomeProducts()
             ->where('p.category_id', $categoryId)
             ->orderBy('p.id', 'DESC')
-            // ->limit($this->getHomeProductLimit('under99'))
+            ->limit($limit, $offset)
             ->get()
             ->getResultArray();
     }

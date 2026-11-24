@@ -579,6 +579,516 @@ function escapeHomeHtml(value) {
     });
 }
 
+
+/* =========================================
+   AJOBMART - AJAX CATEGORY NAVIGATION
+========================================= */
+
+(function () {
+    'use strict';
+
+    const homeContent = document.getElementById('ajForYouContent');
+    const categoryContent = document.getElementById('ajCategoryContent');
+
+    const categoryTitle = document.getElementById('ajCategoryTitle');
+    const categoryProducts = document.getElementById('ajCategoryProducts');
+    const categoryLoader = document.getElementById('ajCategoryLoader');
+    const categoryEnd = document.getElementById('ajCategoryEnd');
+    const categorySentinel = document.getElementById('ajCategorySentinel');
+
+    const categoryNav = document.getElementById('ajCategoryNav');
+
+    if (
+        !homeContent ||
+        !categoryContent ||
+        !categoryProducts ||
+        !categoryNav
+    ) {
+        return;
+    }
+
+    let currentCategoryId = null;
+    let currentCategoryName = '';
+    let currentPage = 1;
+
+    let isLoading = false;
+    let hasMoreProducts = false;
+
+    let categoryObserver = null;
+    let requestNumber = 0;
+
+    /* -------------------------------------
+       ACTIVE NAVIGATION
+    ------------------------------------- */
+
+    function updateActiveNavigation(type, slug = '') {
+
+        categoryNav.querySelectorAll('.aj-v3-nav-category')
+            .forEach(function (link) {
+
+                link.classList.remove('active');
+
+                if (type === 'home' &&
+                    link.dataset.ajNav === 'home') {
+
+                    link.classList.add('active');
+                }
+
+                if (
+                    type === 'category' &&
+                    link.dataset.ajNav === 'category' &&
+                    link.dataset.categorySlug === slug
+                ) {
+
+                    link.classList.add('active');
+                }
+
+            });
+    }
+
+
+    /* -------------------------------------
+       CATEGORY LOADING INDICATORS
+    ------------------------------------- */
+
+    function showCategoryLoader() {
+
+        categoryLoader.style.display = '';
+
+        categoryEnd.style.display = 'none';
+    }
+
+    function hideCategoryLoader() {
+
+        categoryLoader.style.display = 'none';
+    }
+
+
+    /* -------------------------------------
+       RESET CATEGORY PAGINATION
+    ------------------------------------- */
+
+    function resetCategoryPage() {
+
+        currentPage = 1;
+        isLoading = false;
+        hasMoreProducts = false;
+
+        requestNumber++;
+
+        if (categoryObserver) {
+            categoryObserver.disconnect();
+            categoryObserver = null;
+        }
+
+        categoryProducts.innerHTML = '';
+
+        categoryEnd.style.display = 'none';
+
+        hideCategoryLoader();
+    }
+
+
+    /* -------------------------------------
+       LOAD CATEGORY PRODUCTS
+    ------------------------------------- */
+
+    function loadCategoryProducts(append = false) {
+
+        if (!currentCategoryId || isLoading) {
+            return;
+        }
+
+        if (append && !hasMoreProducts) {
+            return;
+        }
+
+        isLoading = true;
+
+        const thisRequest = ++requestNumber;
+
+        showCategoryLoader();
+
+        $.ajax({
+
+            url: site_url +
+                'home-products/category/' +
+                encodeURIComponent(currentCategoryId),
+
+            method: 'GET',
+
+            data: {
+                page: currentPage
+            },
+
+            dataType: 'json',
+
+            cache: false,
+
+            success: function (response) {
+
+                // Ignore old responses if the customer
+                // has already selected another category.
+                if (thisRequest !== requestNumber) {
+                    return;
+                }
+
+                if (
+                    !response.status ||
+                    !Array.isArray(response.products)
+                ) {
+
+                    if (!append) {
+                        categoryProducts.innerHTML = `
+                            <div class="text-center w-100 py-4">
+                                Unable to load products.
+                            </div>
+                        `;
+                    }
+
+                    hasMoreProducts = false;
+
+                    return;
+                }
+
+                if (response.products.length === 0) {
+
+                    if (!append) {
+
+                        categoryProducts.innerHTML = `
+                            <div class="text-center w-100 py-4">
+                                No products found in this category.
+                            </div>
+                        `;
+                    }
+
+                    hasMoreProducts = false;
+
+                    categoryEnd.style.display = 'none';
+
+                    return;
+                }
+
+                // Register products for cart functionality.
+                if (
+                    typeof window.ajCartRegisterProducts === 'function'
+                ) {
+
+                    window.ajCartRegisterProducts(
+                        response.products
+                    );
+                }
+
+                let html = '';
+
+                response.products.forEach(function (product) {
+
+                    html += renderHomeProductCard(
+                        product,
+                        'category'
+                    );
+
+                });
+
+                if (append) {
+
+                    categoryProducts.insertAdjacentHTML(
+                        'beforeend',
+                        html
+                    );
+
+                } else {
+
+                    categoryProducts.innerHTML = html;
+                }
+
+                // Refresh cart state.
+                if (
+                    typeof window.ajCartRefresh === 'function'
+                ) {
+
+                    window.ajCartRefresh();
+                }
+
+                hasMoreProducts = response.has_more === true;
+
+                currentPage++;
+
+                if (!hasMoreProducts) {
+
+                    categoryEnd.style.display = '';
+                }
+
+            },
+
+            error: function (xhr) {
+
+                if (thisRequest !== requestNumber) {
+                    return;
+                }
+
+                console.error(
+                    'Category products loading error:',
+                    xhr.responseText
+                );
+
+                if (!append) {
+
+                    categoryProducts.innerHTML = `
+                        <div class="text-center w-100 py-4">
+                            Something went wrong while loading products.
+                        </div>
+                    `;
+
+                }
+
+            },
+
+            complete: function () {
+
+                if (thisRequest !== requestNumber) {
+                    return;
+                }
+
+                isLoading = false;
+
+                hideCategoryLoader();
+            }
+
+        });
+
+    }
+
+
+    /* -------------------------------------
+       CATEGORY INFINITE SCROLL
+    ------------------------------------- */
+
+    function startCategoryObserver() {
+
+        if (categoryObserver) {
+            categoryObserver.disconnect();
+        }
+
+        if (!categorySentinel) {
+            return;
+        }
+
+        categoryObserver = new IntersectionObserver(
+
+            function (entries) {
+
+                entries.forEach(function (entry) {
+
+                    if (
+                        entry.isIntersecting &&
+                        hasMoreProducts &&
+                        !isLoading
+                    ) {
+
+                        loadCategoryProducts(true);
+                    }
+
+                });
+
+            },
+
+            {
+                root: null,
+                rootMargin: '300px',
+                threshold: 0
+            }
+
+        );
+
+        categoryObserver.observe(categorySentinel);
+    }
+
+
+    /* -------------------------------------
+       OPEN CATEGORY
+    ------------------------------------- */
+
+    function openCategory(categoryId, slug, name, updateHistory = true) {
+
+        if (!categoryId || !slug) {
+            return;
+        }
+
+        currentCategoryId = Number(categoryId);
+        currentCategoryName = name || 'Products';
+
+        homeContent.style.display = 'none';
+        categoryContent.style.display = '';
+
+        categoryTitle.textContent = currentCategoryName;
+
+        updateActiveNavigation('category', slug);
+
+        resetCategoryPage();
+
+        if (updateHistory) {
+
+            const url = new URL(window.location.href);
+
+            url.searchParams.set('category', slug);
+
+            window.history.pushState(
+                {
+                    page: 'category',
+                    slug: slug
+                },
+                '',
+                url.pathname + url.search + url.hash
+            );
+        }
+
+        loadCategoryProducts(false);
+
+        startCategoryObserver();
+
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+
+
+    /* -------------------------------------
+       OPEN FOR YOU / HOMEPAGE
+    ------------------------------------- */
+
+    function openHome(updateHistory = true) {
+
+        currentCategoryId = null;
+        currentCategoryName = '';
+
+        resetCategoryPage();
+
+        categoryContent.style.display = 'none';
+        homeContent.style.display = '';
+
+        updateActiveNavigation('home');
+
+        if (updateHistory) {
+
+            const url = new URL(window.location.href);
+
+            url.searchParams.delete('category');
+
+            window.history.pushState(
+                {
+                    page: 'home'
+                },
+                '',
+                url.pathname + url.search + url.hash
+            );
+        }
+
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+
+
+    /* -------------------------------------
+       CATEGORY NAVIGATION CLICK
+    ------------------------------------- */
+
+    categoryNav.addEventListener('click', function (event) {
+
+        const link = event.target.closest('.aj-v3-nav-category');
+
+        if (!link) {
+            return;
+        }
+
+        if (link.dataset.ajNav === 'home') {
+
+            event.preventDefault();
+
+            openHome(true);
+
+            return;
+        }
+
+        if (link.dataset.ajNav === 'category') {
+
+            event.preventDefault();
+
+            openCategory(
+                link.dataset.categoryId,
+                link.dataset.categorySlug,
+                link.dataset.categoryName,
+                true
+            );
+
+        }
+
+    });
+
+
+    /* -------------------------------------
+       BROWSER BACK / FORWARD
+    ------------------------------------- */
+
+    window.addEventListener('popstate', function () {
+
+        loadPageFromUrl();
+    });
+
+
+    /* -------------------------------------
+       LOAD CATEGORY FROM URL
+    ------------------------------------- */
+
+    function loadPageFromUrl() {
+
+        const params = new URLSearchParams(
+            window.location.search
+        );
+
+        const slug = params.get('category');
+
+        if (!slug) {
+
+            openHome(false);
+
+            return;
+        }
+
+        const link = categoryNav.querySelector(
+            '[data-aj-nav="category"][data-category-slug="' +
+            CSS.escape(slug) +
+            '"]'
+        );
+
+        if (!link) {
+
+            openHome(false);
+
+            return;
+        }
+
+        openCategory(
+            link.dataset.categoryId,
+            link.dataset.categorySlug,
+            link.dataset.categoryName,
+            false
+        );
+    }
+
+
+    /* -------------------------------------
+       INITIAL PAGE
+    ------------------------------------- */
+
+    loadPageFromUrl();
+
+})();
+
+
 /* =========================================
    1. POPULAR PRODUCTS
 ========================================= */
