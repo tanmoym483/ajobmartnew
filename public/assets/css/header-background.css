@@ -16,15 +16,33 @@
     isolation: isolate;
     overflow: hidden;
 
-    background: linear-gradient(
+    background:
+    radial-gradient(
+        ellipse at 15% 20%,
+        rgba(145, 65, 220, 0.42),
+        transparent 42%
+    ),
+    radial-gradient(
+        ellipse at 85% 75%,
+        rgba(105, 45, 190, 0.38),
+        transparent 45%
+    ),
+    radial-gradient(
+        ellipse at 50% 50%,
+        rgba(75, 45, 150, 0.25),
+        transparent 60%
+    ),
+    linear-gradient(
         120deg,
         #061329,
+        #17265c,
+        #35205f,
+        #542477,
         #102d59,
-        #29205c,
-        #0a3150
+        #061329
     );
 
-    background-size: 300% 300%;
+background-size: 200% 200%, 200% 200%, 200% 200%, 400% 400%;
     animation: ajFestivalGradient 12s ease infinite;
 }
 
