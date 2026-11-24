@@ -59,22 +59,30 @@
    Ajobmart Homepage Banner
 ================================= */
 
+/* =================================
+   Ajobmart Hero Carousel
+================================= */
+
 .aj-v3-hero-carousel {
     width: 100%;
     overflow: hidden;
     position: relative;
     border-radius: 12px;
+    margin-bottom: 4px;
+    padding-bottom: 0;
 }
 
 .aj-home-banner-swiper {
     width: 100%;
     overflow: hidden;
     border-radius: 12px;
+    margin-bottom: 0;
+    padding-bottom: 0;
 }
 
 .aj-home-banner-swiper .swiper-slide {
     height: auto;
-    overflow: hidden;
+    /* overflow: hidden; */
     border-radius: 12px;
 }
 
@@ -86,19 +94,35 @@
     border-radius: 12px;
 }
 
-.aj-home-banner-swiper img {
+.aj-home-banner-swiper .swiper-slide img {
     display: block;
     width: 100%;
-    aspect-ratio: 2.5 / 1;
-    object-fit: cover;
+    height: auto;
+    aspect-ratio: auto;
+    object-fit: contain;
     border-radius: 12px;
 }
 
+/* Pagination */
+
 .aj-home-banner-swiper .swiper-pagination {
     position: relative;
-    margin-top: 10px;
+    /* margin-top: 4px; */
+    margin-bottom: 0;
+    padding: 0;
 }
 
+/* =================================
+   Tablet
+================================= */
+
+@media (min-width: 576px) and (max-width: 991px) {
+
+    .aj-home-banner-swiper .swiper-slide img {
+        aspect-ratio: 2.2 / 1;
+    }
+
+}
 
 /* =================================
    Mobile Banner
@@ -106,19 +130,14 @@
 
 @media (max-width: 575px) {
 
-    .aj-v3-hero-carousel {
-        width: 100%;
-        overflow: hidden;
-        border-radius: 14px;
-    }
-
+    .aj-v3-hero-carousel,
     .aj-home-banner-swiper,
     .aj-home-banner-swiper .swiper-slide,
     .aj-home-banner-swiper .swiper-slide a,
     .aj-home-banner-swiper .swiper-slide picture {
         width: 100%;
         overflow: hidden;
-        border-radius: 14px;
+        border-radius: 10px;
     }
 
     .aj-home-banner-swiper .swiper-slide img {
@@ -126,17 +145,26 @@
         width: 100%;
         height: auto;
         aspect-ratio: auto;
-        max-height: none;
         object-fit: contain;
-        border-radius: 14px;
-        background: transparent;
+        border-radius: 10px;
     }
 
     .aj-home-banner-swiper .swiper-pagination {
-        margin-top: 2px;
+        margin-top: 3px;
+        margin-bottom: 0;
     }
 
 }
+
+/* =================================
+   Next Section Spacing
+================================= */
+
+.aj-v3-hero-carousel + section {
+    margin-top: 0;
+    padding-top: 0;
+}
+
 
 
     
@@ -381,7 +409,7 @@
 }
 
 /* Reduce space below homepage banner */
-.aj-v3-hero-carousel {
+/* .aj-v3-hero-carousel {
     margin-bottom: 8px !important;
     padding-bottom: 0 !important;
 }
@@ -397,8 +425,7 @@
     padding: 0 !important;
 }
 
-/* Remove extra spacing from the next section */
 .aj-v3-hero-carousel + section {
     margin-top: 0 !important;
     padding-top: 0 !important;
-}
+} */
