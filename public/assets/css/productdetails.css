@@ -1153,21 +1153,7 @@
 }
 
 
-@media (max-width: 767.98px) {
 
-    #ajProductCartAction.aj-mobile-floating {
-        position: fixed !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 40px !important;
-        width: 100% !important;
-        z-index: 999999 !important;
-        background: #fff !important;
-        padding: 12px 15px !important;
-        box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.15);
-    }
-
-}
 
 /* Product details cart buttons */
 .aj-product-details-page .aj-product-cart-action {
@@ -1238,12 +1224,12 @@
         position: fixed !important;
         left: 0 !important;
         right: 0 !important;
-        bottom: 40px !important;
+        bottom: 52px !important;
         width: 100% !important;
         z-index: 999999 !important;
-        background: #fff !important;
-        padding: 12px 15px !important;
-        box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.15);
+        background: transparent !important;
+        /* padding: 12px 15px !important; */
+        /* box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.15); */
     }
 }
 
@@ -1283,4 +1269,212 @@
 #ajProductAddCart[hidden],
 #ajProductGoToCart[hidden] {
     display: none !important;
+}
+
+
+
+/* =========================================
+   AJOBMART WOW OFFER - FULL DEEP BLUE THEME
+========================================= */
+
+.aj-wow-offer {
+    margin: 18px 0;
+    border: 1px solid #315da8;
+    border-radius: 13px;
+    background:
+        radial-gradient(circle at 5% 0%, rgba(61,130,255,.30), transparent 45%),
+        radial-gradient(circle at 100% 100%, rgba(20,90,190,.25), transparent 45%),
+        linear-gradient(135deg, #061a3a 0%, #0b2e65 50%, #102f70 100%);
+    box-shadow:
+        0 8px 22px rgba(0,20,60,.30),
+        0 16px 35px rgba(0,25,70,.20),
+        inset 0 1px 2px rgba(255,255,255,.16),
+        inset 0 -4px 10px rgba(0,0,0,.20);
+    overflow: hidden;
+}
+
+.aj-wow-offer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 16px;
+    cursor: pointer;
+    gap: 12px;
+}
+
+.aj-wow-offer-heading {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.aj-wow-icon {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #276bd0, #16438e);
+    color: #fff;
+    font-size: 20px;
+    border: 1px solid rgba(255,255,255,.22);
+    box-shadow: 0 4px 10px rgba(0,0,0,.20);
+}
+
+.aj-wow-offer-heading strong {
+    display: block;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: .5px;
+}
+
+.aj-wow-offer-heading small {
+    display: block;
+    color: #c1d8ff;
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.aj-wow-arrow {
+    color: #d7e7ff;
+    font-size: 15px;
+    flex-shrink: 0;
+    transition: transform .25s ease;
+}
+
+.aj-wow-offer.is-open .aj-wow-arrow {
+    transform: rotate(180deg);
+}
+
+.aj-wow-offer-content {
+    padding: 0 16px 15px;
+    border-top: 1px dashed rgba(190,215,255,.35);
+}
+
+.aj-wow-offer-details {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 14px 0;
+}
+
+.aj-wow-discount {
+    min-width: 105px;
+    padding: 10px;
+    text-align: center;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #174b9c, #2469c9);
+    border: 1px solid rgba(190,220,255,.35);
+    box-shadow:
+        0 4px 12px rgba(0,0,0,.20),
+        inset 0 1px 3px rgba(255,255,255,.15);
+}
+
+.aj-wow-discount strong {
+    display: block;
+    color: #fff;
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.aj-wow-discount span {
+    display: block;
+    color: #d4e5ff;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.aj-wow-offer-details p {
+    margin: 0;
+    color: #e0ebff;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.aj-wow-apply-btn {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #74aaff;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #2878e8, #1452b5);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow:
+        0 4px 12px rgba(0,0,0,.25),
+        inset 0 1px 2px rgba(255,255,255,.25);
+    transition: all .2s ease;
+}
+
+.aj-wow-apply-btn:hover {
+    background: linear-gradient(135deg, #398bff, #1c63ce);
+    transform: translateY(-2px);
+    box-shadow: 0 7px 16px rgba(0,0,0,.30);
+}
+
+.aj-wow-applied-message {
+    margin-top: 10px;
+    color: #75edb0;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.aj-wow-applied-message i {
+    margin-right: 5px;
+}
+
+.aj-wow-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.aj-wow-header-price {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.aj-wow-header-price strong {
+    display: block;
+    color: #8fc1ff;
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.aj-wow-header-price del {
+    display: block;
+    color: #b4c5df;
+    font-size: 11px;
+}
+
+@media (max-width: 576px) {
+    .aj-wow-offer-details {
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 420px) {
+    .aj-wow-offer-header {
+        padding: 11px;
+    }
+
+    .aj-wow-header-right {
+        gap: 7px;
+    }
+
+    .aj-wow-header-price strong {
+        font-size: 16px;
+    }
+
+    .aj-wow-offer-heading strong {
+        font-size: 13px;
+    }
+
+    .aj-wow-offer-heading small {
+        font-size: 10px;
+    }
 }

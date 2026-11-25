@@ -355,7 +355,7 @@ foreach ($images ?? [] as $cartImage) {
                 id="ajProductCartAction"
                 data-product-id="<?= $productId ?>">
 
-                <div class="aj-product-action-buttons">
+                <div class="aj-product-action-buttons mb-3">
 
                     <!-- Add to Cart -->
                     <button type="button"
