@@ -78,31 +78,31 @@
     margin: 24px 0;
 
     border-radius: 18px;
-    border: 1px solid rgba(129, 145, 255, 0.35);
+    border: 1px solid rgba(100, 220, 190, 0.25);
 
     background:
         radial-gradient(
-            circle at 10% 15%,
-            rgba(65, 100, 220, 0.42),
-            transparent 38%
+            circle at 8% 12%,
+            rgba(16, 185, 129, 0.30),
+            transparent 40%
         ),
         radial-gradient(
-            circle at 90% 85%,
-            rgba(128, 48, 190, 0.38),
-            transparent 40%
+            circle at 95% 90%,
+            rgba(14, 116, 144, 0.32),
+            transparent 42%
         ),
         linear-gradient(
             135deg,
-            #101a38 0%,
-            #19234c 45%,
-            #271747 100%
+            #061f1b 0%,
+            #0b3b32 48%,
+            #102b40 100%
         );
 
     box-shadow:
-        0 12px 25px rgba(5, 10, 35, 0.30),
-        0 25px 50px rgba(10, 15, 55, 0.22),
-        inset 0 2px 3px rgba(255, 255, 255, 0.12),
-        inset 0 -5px 12px rgba(0, 0, 0, 0.22);
+        0 12px 25px rgba(0, 15, 12, 0.38),
+        0 25px 50px rgba(0, 20, 25, 0.30),
+        inset 0 2px 4px rgba(255, 255, 255, 0.10),
+        inset 0 -6px 14px rgba(0, 0, 0, 0.30);
 }
 
 /* Deep glowing texture */
@@ -263,4 +263,68 @@
     display: inline-flex !important;
     visibility: visible !important;
     opacity: 1 !important;
+}
+
+/* =========================================
+   MOBILE - TRANSPARENT PRODUCT CARDS
+========================================= */
+
+@media (max-width: 767px) {
+
+    /* Keep the main deep background */
+    /* #ajRecentlyViewedSection {
+        background:
+            radial-gradient(
+                circle at 5% 10%,
+                rgba(65, 100, 220, 0.42),
+                transparent 42%
+            ),
+            radial-gradient(
+                circle at 95% 90%,
+                rgba(128, 48, 190, 0.38),
+                transparent 42%
+            ),
+            linear-gradient(
+                135deg,
+                #101a38,
+                #19234c 45%,
+                #271747
+            ) !important;
+    } */
+
+    #ajRecentlyViewed{
+        background: transparent;
+    }
+
+    /* Remove individual product card background */
+    #ajRecentlyViewed .aj-product-card {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+    }
+
+    /* Remove image wrapper background */
+    #ajRecentlyViewed .aj-product-image {
+        background: #ffffff !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    #ajRecentlyViewed .aj-product-details-link {
+        background: #ffffff !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Keep image visible */
+    #ajRecentlyViewed .aj-popular-product-img {
+        background: transparent !important;
+        object-fit: contain;
+    }
+
+    /* Keep WOW button visible */
+    #ajRecentlyViewed .aj-recent-wow-section {
+        background: transparent !important;
+    }
 }
