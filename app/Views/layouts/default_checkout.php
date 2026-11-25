@@ -379,6 +379,7 @@ window.AJ_CART_CONFIG = {
 <script src="<?= base_url('public/assets/js/ajobmart-cart.js') ?>"></script>
 <script src="<?= base_url('public/assets/js/ajobmart.js') ?>"></script>
 <script src="<?= base_url('public/assets/js/aj-shipping.js') ?>"></script>
+<script src="<?= base_url('public/assets/js/headerbackground.js') ?>"></script>
 
 
 </body>

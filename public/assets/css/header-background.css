@@ -9,6 +9,20 @@
 /* =========================================
    AJOBMART FESTIVAL BACKGROUND
 ========================================= */
+/* =========================================
+   AJOBMART FESTIVAL DYNAMIC BACKGROUND
+========================================= */
+
+:root {
+    --aj-festival-color-1: #061329;
+    --aj-festival-color-2: #17265c;
+    --aj-festival-color-3: #35205f;
+    --aj-festival-color-4: #542477;
+    --aj-festival-glow-1: rgba(145, 65, 220, 0.42);
+    --aj-festival-glow-2: rgba(105, 45, 190, 0.38);
+    --aj-festival-glow-3: rgba(75, 45, 150, 0.25);
+    --aj-festival-rupee: rgba(255, 215, 100, 0.30);
+}
 
 .aj-header-top,
 .aj-sticky-header {
@@ -17,43 +31,44 @@
     overflow: hidden;
 
     background:
-    radial-gradient(
-        ellipse at 15% 20%,
-        rgba(145, 65, 220, 0.42),
-        transparent 42%
-    ),
-    radial-gradient(
-        ellipse at 85% 75%,
-        rgba(105, 45, 190, 0.38),
-        transparent 45%
-    ),
-    radial-gradient(
-        ellipse at 50% 50%,
-        rgba(75, 45, 150, 0.25),
-        transparent 60%
-    ),
-    linear-gradient(
-        120deg,
-        #061329,
-        #17265c,
-        #35205f,
-        #542477,
-        #102d59,
-        #061329
-    );
+        radial-gradient(
+            ellipse at 15% 20%,
+            var(--aj-festival-glow-1),
+            transparent 42%
+        ),
+        radial-gradient(
+            ellipse at 85% 75%,
+            var(--aj-festival-glow-2),
+            transparent 45%
+        ),
+        radial-gradient(
+            ellipse at 50% 50%,
+            var(--aj-festival-glow-3),
+            transparent 60%
+        ),
+        linear-gradient(
+            120deg,
+            var(--aj-festival-color-1),
+            var(--aj-festival-color-2),
+            var(--aj-festival-color-3),
+            var(--aj-festival-color-4),
+            var(--aj-festival-color-2),
+            var(--aj-festival-color-1)
+        );
 
-background-size: 200% 200%, 200% 200%, 200% 200%, 400% 400%;
+    background-size: 200% 200%, 200% 200%, 200% 200%, 400% 400%;
+
     animation: ajFestivalGradient 12s ease infinite;
+
+    transition: background 2s ease;
 }
 
-/* Keep sticky behaviour */
 .aj-sticky-header {
     position: sticky;
     top: 0;
     z-index: 1050;
 }
 
-/* Floating rupee symbols */
 .aj-header-top::before,
 .aj-sticky-header::before {
     content: "*          *        *        ₹         *          *";
@@ -63,7 +78,7 @@ background-size: 200% 200%, 200% 200%, 200% 200%, 400% 400%;
     z-index: 0;
     pointer-events: none;
 
-    color: rgba(255, 215, 100, 0.30);
+    color: var(--aj-festival-rupee);
     font-size: 35px;
     font-weight: 800;
     letter-spacing: 35px;
@@ -72,14 +87,17 @@ background-size: 200% 200%, 200% 200%, 200% 200%, 400% 400%;
     word-spacing: 25px;
 
     background-image:
-        radial-gradient(circle, rgba(255, 215, 100, .22) 1px, transparent 2px);
+        radial-gradient(
+            circle,
+            rgba(255, 215, 100, .22) 1px,
+            transparent 2px
+        );
 
     background-size: 45px 45px;
 
     animation: ajRupeeFloat 15s linear infinite;
 }
 
-/* Keep content above background */
 .aj-header-top > *,
 .aj-sticky-header > * {
     position: relative;

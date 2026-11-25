@@ -848,6 +848,8 @@ window.AJ_CART_CONFIG = {
 <script src="<?= base_url('public/assets/js/aj-shipping.js') ?>"></script>
 <script src="<?= base_url('public/assets/js/mobilenav.js') ?>"></script>
 <script src="<?= base_url('public/assets/js/aj-google-maps.js') ?>"></script>
+<script src="<?= base_url('public/assets/js/headerbackground.js') ?>"></script>
+
 
 
 
