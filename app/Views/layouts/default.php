@@ -82,6 +82,7 @@ if ($isCustomerLoggedIn) {
 <link rel="stylesheet" href="<?= base_url('public/assets/css/category_nav.css') ?>">
 
     <link rel="stylesheet" href="<?= base_url('public/assets/css/header-background.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('public/assets/css/recentlyview.css') ?>">
     
 </head>
 
