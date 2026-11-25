@@ -83,7 +83,21 @@ if ($isCustomerLoggedIn) {
 
     <link rel="stylesheet" href="<?= base_url('public/assets/css/header-background.css') ?>">
     <link rel="stylesheet" href="<?= base_url('public/assets/css/recentlyview.css') ?>">
-    
+    <style>
+        .aj-delivery-animation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.aj-delivery-gif {
+    width: 110px;
+    height: 75px;
+    object-fit: contain;
+    display: block;
+}
+    </style>
 </head>
 
 <body>
@@ -105,8 +119,11 @@ if ($isCustomerLoggedIn) {
 
             <!-- Animated Ajobmart Delivery Biker -->
             <div class="aj-delivery-animation" aria-hidden="true">
-                <span class="aj-delivery-scooter">🛵</span>
-                <span class="aj-delivery-parcel">📦</span>
+                <img
+                    src="<?= base_url('public/assets/images/ajobmartdelivery_new_logo.gif') ?>"
+                    alt=""
+                    class="aj-delivery-gif"
+                >
             </div>
         </div>
 
