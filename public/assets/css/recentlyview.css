@@ -328,3 +328,126 @@
         background: transparent !important;
     }
 }
+
+/* =========================================
+   RECENTLY VIEWED - WOW BUTTON DESIGN ONLY
+========================================= */
+
+#ajRecentlyViewed .aj-recent-wow-section {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    padding: 10px 8px 12px;
+
+    background: linear-gradient(
+        135deg,
+        rgba(5, 65, 53, 0.95),
+        rgba(10, 105, 83, 0.95)
+    );
+
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 0 0 12px 12px;
+
+    box-shadow:
+        inset 0 2px 5px rgba(255, 255, 255, 0.08),
+        0 -3px 10px rgba(0, 0, 0, 0.12);
+}
+
+/* WOW button */
+#ajRecentlyViewed .aj-recent-wow-section .wowofferbtn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    width: 100%;
+    max-width: 155px;
+    min-height: 34px;
+
+    padding: 7px 12px;
+
+    color: #ffffff !important;
+    font-size: 13px;
+    font-weight: 800;
+
+    background: linear-gradient(
+        135deg,
+        #ffb800,
+        #ff7900
+    ) !important;
+
+    border: 1px solid rgba(255, 225, 140, 0.8) !important;
+    border-radius: 8px !important;
+
+    box-shadow:
+        0 3px 7px rgba(0, 0, 0, 0.22),
+        inset 0 1px 2px rgba(255, 255, 255, 0.35);
+
+    transition: all 0.25s ease;
+}
+
+#ajRecentlyViewed .aj-recent-wow-section .wowofferbtn:hover {
+    transform: translateY(-2px);
+
+    background: linear-gradient(
+        135deg,
+        #ffd044,
+        #ff8c00
+    ) !important;
+
+    box-shadow:
+        0 6px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+
+    #ajRecentlyViewed .aj-recent-wow-section {
+        padding: 8px 3px 5px;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    #ajRecentlyViewed .aj-recent-wow-section .wowofferbtn {
+        min-height: 30px;
+        max-width: 135px;
+        font-size: 11px;
+        padding: 6px 8px;
+    }
+}
+
+/* =========================================
+   RECENTLY VIEWED - MOBILE HALF CARD PEEK
+========================================= */
+
+@media (max-width: 576px) {
+
+    #ajRecentlyViewed {
+        display: flex;
+        flex-wrap: nowrap;
+
+        gap: 10px;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        /* Keep space for the next card peek */
+        padding: 12px 12px 18px 4px;
+
+        scroll-snap-type: x mandatory;
+        scroll-padding-left: 4px;
+
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #ajRecentlyViewed .aj-product-card {
+        /* Two full cards + half of third */
+        flex: 0 0 calc((100% - 20px) / 2.5);
+        width: calc((100% - 20px) / 2.5);
+        min-width: calc((100% - 20px) / 2.5);
+
+        scroll-snap-align: start;
+    }
+}

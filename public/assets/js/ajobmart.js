@@ -543,19 +543,21 @@ function renderHomeProductCard(product, sectionType) {
                     
 
         </div>
-        <button
-                        type="button"
-                        class="aj-price-discount aj-add-cart wowofferbtn"
-                        data-product-id="${productId}"
-                        data-wow-offer-applied="1"
-                        aria-label="Add ${safeName} to cart with 20 percent WOW discount"
-                    >
-                        <span class="text-white" style="font-size:6px;">WOW</span>
-                        ₹${wowPrice.toLocaleString('en-IN', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
-                        })}
-                    </button>
+        <div class="aj-recent-wow-section">
+            <button
+                type="button"
+                class="aj-price-discount aj-add-cart wowofferbtn"
+                data-product-id="${productId}"
+                data-wow-offer-applied="1"
+                aria-label="Add ${safeName} to cart with 20 percent WOW discount"
+            >
+                <span class="text-white" style="font-size:6px;">WOW</span>
+                ₹${wowPrice.toLocaleString('en-IN', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                })}
+            </button>
+        </div>
 
     </div>
 
