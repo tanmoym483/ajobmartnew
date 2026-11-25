@@ -300,14 +300,14 @@ foreach ($images ?? [] as $cartImage) {
                     </div>
 
                     <button type="button"
-                            class="aj-wow-apply-btn"
+                            class="aj-wow-apply-btn ajApplyBtn"
                             id="ajWowApplyBtn"
                             <?= $wowOfferApplied ? 'hidden' : '' ?>>
                         Apply Offer
                     </button>
 
                     <button type="button"
-                            class="aj-wow-apply-btn"
+                            class="aj-wow-apply-btn ajRemoveBtn"
                             id="ajWowRemoveBtn"
                             <?= $wowOfferApplied ? '' : 'hidden' ?>>
                         Remove Offer
