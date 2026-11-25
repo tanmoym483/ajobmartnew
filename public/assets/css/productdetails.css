@@ -1282,9 +1282,9 @@
     border: 1px solid #315da8;
     border-radius: 13px;
     background:
-        radial-gradient(circle at 5% 0%, rgba(61,130,255,.30), transparent 45%),
-        radial-gradient(circle at 100% 100%, rgba(20,90,190,.25), transparent 45%),
-        linear-gradient(135deg, #061a3a 0%, #0b2e65 50%, #102f70 100%);
+        radial-gradient(circle at 5% 0%, rgba(81, 138, 243, 0.3), transparent 45%),
+        radial-gradient(circle at 100% 100%, rgba(71, 139, 234, 0.25), transparent 45%),
+        linear-gradient(135deg, #06303a 0%, #1a55b4 50%, #1a49b0 100%);
     box-shadow:
         0 8px 22px rgba(0,20,60,.30),
         0 16px 35px rgba(0,25,70,.20),
@@ -1440,7 +1440,7 @@
 
 .aj-wow-header-price strong {
     display: block;
-    color: #8fc1ff;
+    color: #f7f8f2;
     font-size: 19px;
     font-weight: 800;
 }
