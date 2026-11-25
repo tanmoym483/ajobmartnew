@@ -290,7 +290,7 @@ foreach ($images ?? [] as $cartImage) {
                     <div class="aj-wow-offer-details">
                         <div class="aj-wow-discount">
                             <strong>20% OFF</strong>
-                            <span>Online Payment</span>
+                            <!-- <span>Online Payment</span> -->
                         </div>
 
                         <p>
