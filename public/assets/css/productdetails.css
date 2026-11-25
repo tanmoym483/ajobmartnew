@@ -1315,8 +1315,8 @@
     align-items: center;
     justify-content: center;
     border-radius: 10px;
-    background: linear-gradient(135deg, #276bd0, #16438e);
-    color: #fff;
+    background: linear-gradient(135deg, #efb028de, #f59d22);
+    color: #fefcfc;
     font-size: 20px;
     border: 1px solid rgba(255,255,255,.22);
     box-shadow: 0 4px 10px rgba(0,0,0,.20);
@@ -1365,8 +1365,8 @@
     padding: 10px;
     text-align: center;
     border-radius: 10px;
-    background: linear-gradient(135deg, #174b9c, #2469c9);
-    border: 1px solid rgba(190,220,255,.35);
+    background: linear-gradient(135deg, #189a2c, #1b9423);
+    border: 2px solid rgb(250, 251, 253);
     box-shadow:
         0 4px 12px rgba(0,0,0,.20),
         inset 0 1px 3px rgba(255,255,255,.15);
@@ -1396,9 +1396,9 @@
 .aj-wow-apply-btn {
     width: 100%;
     padding: 10px 15px;
-    border: 1px solid #74aaff;
+    border: 2px solid #f8f6f4;
     border-radius: 8px;
-    background: linear-gradient(135deg, #2878e8, #1452b5);
+    background: linear-gradient(135deg, #ea2eb2, #e42ab3);
     color: #fff;
     font-size: 14px;
     font-weight: 700;
