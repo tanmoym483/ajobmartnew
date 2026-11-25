@@ -264,7 +264,7 @@
 
 
 
-        <section class="aj-extra-section aj-brand-section">
+        <!-- <section class="aj-extra-section aj-brand-section">
 
             <div class="aj-extra-heading">
                 <div>
@@ -285,7 +285,7 @@
 
             </div>
 
-        </section>
+        </section> -->
 
 
 
