@@ -6137,7 +6137,7 @@ input {
     position: relative;
     width: 100%;
     overflow: hidden;
-    margin: 10px 0 28px;
+    /* margin: 10px 0 28px; */
     border-radius: 12px;
     /* background: #eaf0f7; */
 }
@@ -6281,7 +6281,7 @@ input {
 /* Mobile */
 @media (max-width: 576px) {
     .aj-home-v3 .aj-v3-hero-carousel {
-        margin: 8px 0 20px;
+        /* margin: 8px 0 20px; */
         border-radius: 8px;
     }
 
@@ -6368,7 +6368,7 @@ input {
         0 0 0 3px #f1f3f5,
         0 5px 18px rgba(0, 0, 0, 0.12) !important; */
     overflow: hidden;
-    margin: 15px 0 28px;
+    /* margin: 15px 0 28px; */
 }
 
 .aj-home-v3 .aj-v3-carousel-track {
@@ -7091,7 +7091,7 @@ input {
 }
 
 /* TRANSPARENT PRODUCT DETAILS */
-.aj-product-info {
+.aj-product-info { 
     padding: 10px 3px 4px;
 
     background: transparent;

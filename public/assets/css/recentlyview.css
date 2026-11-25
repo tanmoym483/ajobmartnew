@@ -75,7 +75,7 @@
     overflow: hidden;
 
     padding: 25px 20px 18px;
-    margin: 24px 0;
+    /* margin: 24px 0; */
 
     border-radius: 18px;
     border: 1px solid rgba(100, 220, 190, 0.25);

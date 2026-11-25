@@ -1,5 +1,5 @@
 
-/* .aj-google-shipping-modal .modal-body {
+.aj-google-shipping-modal .modal-body {
     overflow-x: hidden;
 }
 
@@ -52,7 +52,7 @@
 
 #ajShippingMessage {
     overflow-wrap: anywhere;
-} */
+}
 
 
 /* =================================
@@ -68,7 +68,7 @@
     overflow: hidden;
     position: relative;
     border-radius: 12px;
-    margin-bottom: 4px;
+    /* margin-bottom: 4px; */
     padding-bottom: 0;
 }
 
@@ -150,7 +150,7 @@
     }
 
     .aj-home-banner-swiper .swiper-pagination {
-        margin-top: 3px;
+        /* margin-top: 3px; */
         margin-bottom: 0;
     }
 

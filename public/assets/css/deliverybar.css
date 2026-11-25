@@ -44,7 +44,6 @@
 }
 
 
-
 .aj-delivery-icon {
     flex: 0 0 32px;
     width: 32px;
@@ -88,31 +87,4 @@
     .aj-global-delivery-bar { padding: 5px 12px; }
     .aj-delivery-card { padding: 6px 9px; gap: 8px; }
     .aj-delivery-icon { width: 29px; height: 29px; flex-basis: 29px; font-size: 15px; }
-}
-
-
-
-/* =========================================
-   REMOVE DELIVERY BAR BORDER - ALL DEVICES
-========================================= */
-
-@media (max-width: 767px) {
-    .aj-global-delivery-bar,
-    .aj-global-delivery-bar .aj-address-changes,
-    .aj-global-delivery-bar .aj-delivery-card,
-    .aj-global-delivery-bar .aj-delivery-icon {
-        border: 0 !important;
-        outline: 0 !important;
-        box-shadow: none !important;
-    }
-
-    .aj-global-delivery-bar .aj-delivery-card {
-        background: transparent !important;
-        border-radius: 0 !important;
-    }
-
-    .aj-global-delivery-bar .aj-address-changes:hover .aj-delivery-card {
-        border: 0 !important;
-        box-shadow: none !important;
-    }
 }
