@@ -1115,5 +1115,51 @@
 
 
 /* =========================================
+   MEGA DEALS – ZOOM IN / ZOOM OUT ANIMATION
+========================================= */
+
+#aj-deals .aj-deals-heading h2 {
+    display: inline-block;
+    transform-origin: center center;
+    animation: ajMegaDealsZoom 1.8s ease-in-out infinite;
+    will-change: transform;
+}
+
+@keyframes ajMegaDealsZoom {
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.18);
+    }
+}
+
+/* Mobile adjustment */
+@media (max-width: 767px) {
+    #aj-deals .aj-deals-heading h2 {
+        animation: ajMegaDealsZoomMobile 1.8s ease-in-out infinite;
+    }
+
+    @keyframes ajMegaDealsZoomMobile {
+        0%, 100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.10);
+        }
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    #aj-deals .aj-deals-heading h2 {
+        animation: none;
+    }
+}
+
+
+/* =========================================
    END MEGA DEALS
 ========================================= */
