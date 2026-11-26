@@ -83,19 +83,19 @@
     background:
         radial-gradient(
             circle at 8% 12%,
-            rgba(16, 185, 129, 0.30),
+            rgba(172, 15, 164, 0.3),
             transparent 40%
         ),
         radial-gradient(
             circle at 95% 90%,
-            rgba(14, 116, 144, 0.32),
+            rgba(172, 15, 164, 0.3),
             transparent 42%
         ),
         linear-gradient(
             135deg,
-            #061f1b 0%,
-            #0b3b32 48%,
-            #102b40 100%
+            #090a0a 0%,
+            #090a0a 48%,
+            #090a0a 100%
         );
         /* url("../images/wave-bg.gif"); */
 
