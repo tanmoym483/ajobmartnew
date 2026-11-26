@@ -466,6 +466,7 @@ function renderHomeProductCard(product, sectionType) {
     const safeImageUrl = escapeHomeHtml(imageUrl);
 
     const productId = Number(product.id) || 0;
+    const isTrending = sectionType === 'trending';
 
     const productUrl = site_url + 'product-details/' + productId;
 
@@ -490,6 +491,7 @@ function renderHomeProductCard(product, sectionType) {
 
     <!-- IMAGE CARD ONLY -->
     <div class="aj-product-image">
+            
 
         <a href="${productUrl}"
            class="aj-product-details-link"
@@ -509,6 +511,11 @@ function renderHomeProductCard(product, sectionType) {
             `}
 
         </a>
+        ${isTrending && mrp > 0 && wowPrice > 0 && mrp > wowPrice ? `
+            <span class="aj-trending-discount-badge">
+                ${Math.round((mrp - wowPrice) / mrp * 100)}% OFF
+            </span>
+        ` : ''}
 
     </div>
 

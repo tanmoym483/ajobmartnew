@@ -1,4 +1,533 @@
+<style>
+ /* =========================================
+   AJOBMART TRENDING IMAGE GALLERY
+========================================= */
 
+#ajTrendingProducts {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+
+    padding: 8px 3px 16px;
+}
+
+#ajTrendingProducts::-webkit-scrollbar {
+    display: none;
+}
+
+/* Remove traditional card appearance */
+#ajTrendingProducts .aj-product-card {
+    position: relative;
+
+    flex: 0 0 calc((100% - 28px) / 3);
+    min-width: 0;
+
+    padding: 0;
+    border: 0;
+    border-radius: 16px;
+
+    background: transparent;
+    box-shadow: none;
+
+    overflow: hidden;
+    scroll-snap-align: start;
+}
+
+/* Image gallery tile */
+#ajTrendingProducts .aj-product-image {
+    position: relative;
+
+    width: 100%;
+    aspect-ratio: 4 / 5;
+
+    padding: 0;
+    overflow: hidden;
+
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #e8edff,
+            #f9e7e9,
+            #fce9cc
+        );
+
+    box-shadow:
+        0 6px 16px rgba(20, 30, 60, .14);
+}
+
+/* Full image area */
+#ajTrendingProducts .aj-product-details-link {
+    display: flex;
+
+    width: 100%;
+    height: 100%;
+
+    align-items: center;
+    justify-content: center;
+}
+
+/* Make product images larger */
+#ajTrendingProducts .aj-popular-product-img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    transition: transform .4s ease;
+}
+
+/* Floating discount */
+#ajTrendingProducts .aj-trending-discount-badge {
+    position: absolute;
+
+    top: 10px;
+    left: 10px;
+
+    z-index: 5;
+
+    padding: 7px 11px;
+
+    border-radius: 30px;
+
+    background: linear-gradient(
+        135deg,
+        #ffdf73,
+        #ff9e27
+    );
+
+    color: #382000;
+
+    font-size: 11px;
+    font-weight: 900;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,.17);
+}
+
+/* Hover */
+@media (hover: hover) {
+    #ajTrendingProducts .aj-product-card:hover img {
+        transform: scale(1.08);
+    }
+}
+
+/* Mobile */
+@media(max-width:767px) {
+
+    #ajTrendingProducts {
+        gap: 11px;
+    }
+
+    #ajTrendingProducts .aj-product-card {
+        flex: 0 0 68%;
+    }
+
+    #ajTrendingProducts .aj-product-image {
+        border-radius: 13px;
+
+    }
+
+    #ajTrendingProducts .aj-trending-discount-badge {
+        top: 7px;
+        left: 7px;
+
+        padding: 5px 7px;
+        font-size: 9px;
+    }
+}
+
+/* #aj-trending {
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+} */
+
+/* =========================================
+   TRENDING - LARGE FULL PRODUCT IMAGES
+========================================= */
+
+#ajTrendingProducts {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding: 12px 3px 15px;
+}
+
+#ajTrendingProducts::-webkit-scrollbar {
+    display: none;
+}
+
+/* Frameless cards */
+#ajTrendingProducts .aj-product-card {
+    position: relative;
+    flex: 0 0 32%;
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    scroll-snap-align: start;
+    overflow: visible;
+}
+
+/* Larger image area */
+#ajTrendingProducts .aj-product-image {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+
+    padding: 0;
+    margin: 0;
+
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: visible;
+}
+
+/* Image link */
+#ajTrendingProducts .aj-product-details-link {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Large image without cropping */
+#ajTrendingProducts .aj-popular-product-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain !important;
+    object-position: center;
+
+    transform: scale(1.15);
+    transform-origin: center;
+
+    filter: drop-shadow(0 6px 8px rgba(0,0,0,.12));
+    transition: transform .3s ease;
+}
+
+/* Discount badge */
+#ajTrendingProducts .aj-trending-discount-badge {
+    position: absolute;
+    top: 3px;
+    right: 0;
+    z-index: 5;
+
+    padding: 7px 10px;
+    border-radius: 30px;
+
+    background: linear-gradient(135deg, #ffe477, #ffad27);
+    color: #392300;
+
+    font-size: 11px;
+    font-weight: 900;
+}
+
+/* Mobile */
+@media(max-width:767px) {
+
+    #ajTrendingProducts .aj-product-card {
+        flex: 0 0 44%;
+        background: transparent;
+    }
+
+    #ajTrendingProducts .aj-product-image {
+        aspect-ratio: 1 / 1;
+    }
+
+    #ajTrendingProducts .aj-popular-product-img {
+        transform: scale(1.12);
+    }
+
+    #ajTrendingProducts .aj-trending-discount-badge {
+        font-size: 9px;
+        padding: 5px 7px;
+    }
+}
+
+/* Hide product details only in Trending */
+#ajTrendingProducts .aj-product-info {
+    display: none !important;
+}
+
+/* Ensure only image cards remain */
+#ajTrendingProducts .aj-product-card {
+    padding-bottom: 0 !important;
+}
+
+/* Trending product image rounded corners */
+#ajTrendingProducts .aj-product-image {
+    border-radius: 18px !important;
+    overflow: hidden;
+}
+
+/* Product images */
+#ajTrendingProducts .aj-popular-product-img {
+    border-radius: 18px !important;
+}
+
+/* Discount badge */
+#ajTrendingProducts .aj-trending-discount-badge {
+    border-radius: 30px !important;
+}
+
+/* Product card */
+#ajTrendingProducts .aj-product-card {
+    border-radius: 18px !important;
+}
+
+/* Trending discount - full width bottom overlay */
+#ajTrendingProducts .aj-trending-discount-badge {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+
+    z-index: 5;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    width: 100%;
+    padding: 10px 6px;
+
+    border-radius: 0 0 18px 18px;
+
+    background: linear-gradient(
+        90deg,
+        #ffb52e,
+        #ffe17a,
+        #ffb52e
+    );
+
+    color: #382000;
+
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: .5px;
+
+    box-shadow: 0 -3px 12px rgba(0,0,0,.10);
+}
+
+#ajTrendingProducts .aj-product-image {
+    position: relative;
+    overflow: hidden;
+    border-radius: 18px !important;
+}
+
+#ajTrendingProducts .aj-product-image {
+    position: relative;
+    overflow: hidden;
+    border-radius: 18px !important;
+}
+
+#ajTrendingProducts .aj-trending-discount-badge {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 5;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 6px;
+
+    background: linear-gradient(90deg, #ffb52e, #ffe17a, #ffb52e);
+    color: #382000;
+
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: .5px;
+
+    border-radius: 0 0 18px 18px;
+    box-shadow: 0 -3px 12px rgba(0, 0, 0, .10);
+}
+
+
+/* =========================================
+   AJOBMART TRENDING - 3D PRODUCT EFFECT
+========================================= */
+
+#ajTrendingProducts .aj-product-card {
+    perspective: 900px;
+}
+
+#ajTrendingProducts .aj-product-image {
+    position: relative;
+    overflow: hidden;
+    border-radius: 18px !important;
+    transform-style: preserve-3d;
+    transition: transform .4s ease, box-shadow .4s ease;
+}
+
+/* Floating product image */
+#ajTrendingProducts .aj-popular-product-img {
+    animation: ajTrendingFloat 3.5s ease-in-out infinite;
+    transform-origin: center;
+    filter:
+        drop-shadow(0 9px 5px rgba(0, 0, 0, .12))
+        drop-shadow(0 18px 12px rgba(0, 0, 0, .08));
+    transition: filter .4s ease;
+}
+
+/* 3D hover tilt */
+@media (hover: hover) and (pointer: fine) {
+    #ajTrendingProducts .aj-product-card:hover .aj-product-image {
+        transform: rotateY(-7deg) rotateX(5deg) scale(1.025);
+        box-shadow: 0 15px 25px rgba(0, 0, 0, .16);
+    }
+
+    #ajTrendingProducts .aj-product-card:hover .aj-popular-product-img {
+        filter:
+            drop-shadow(0 14px 9px rgba(0, 0, 0, .18))
+            drop-shadow(0 22px 15px rgba(0, 0, 0, .10));
+    }
+}
+
+/* Floating animation */
+@keyframes ajTrendingFloat {
+    0%, 100% {
+        transform: translateY(0) scale(1.12);
+    }
+
+    50% {
+        transform: translateY(-6px) scale(1.12);
+    }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    #ajTrendingProducts .aj-popular-product-img {
+        animation: none;
+    }
+
+    #ajTrendingProducts .aj-product-image {
+        transition: none;
+    }
+}
+
+
+/* =========================================
+   AJOBMART TRENDING SECTION - PREMIUM BACKGROUND
+========================================= */
+
+#aj-trending {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: 24px 16px 28px;
+    border-radius: 22px;
+
+    background:
+        radial-gradient(
+            circle at 10% 15%,
+            rgba(66, 133, 244, .35),
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at 90% 85%,
+            rgba(153, 76, 255, .30),
+            transparent 38%
+        ),
+        linear-gradient(
+            135deg,
+            #07152f 0%,
+            #102c59 45%,
+            #211b50 100%
+        );
+
+    box-shadow:
+        0 12px 35px rgba(10, 20, 55, .22),
+        inset 0 1px 0 rgba(255, 255, 255, .15);
+}
+
+/* Soft decorative glow */
+#aj-trending::before {
+    content: "";
+    position: absolute;
+    width: 260px;
+    height: 260px;
+    top: -130px;
+    right: -70px;
+    border-radius: 50%;
+    background: rgba(255, 190, 70, .15);
+    filter: blur(55px);
+    z-index: -1;
+    pointer-events: none;
+}
+
+#aj-trending::after {
+    content: "";
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    bottom: -120px;
+    left: 15%;
+    border-radius: 50%;
+    background: rgba(75, 160, 255, .20);
+    filter: blur(55px);
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Trending heading */
+#aj-trending .aj-v3-heading {
+    position: relative;
+    z-index: 1;
+}
+
+#aj-trending .aj-v3-heading h2 {
+    color: #ffffff;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, .25);
+}
+
+#aj-trending .aj-v3-heading p,
+#aj-trending .aj-v3-label {
+    color: #d8e5ff;
+}
+
+/* Keep product cards above background effects */
+#aj-trending #ajTrendingProducts {
+    position: relative;
+    z-index: 1;
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+    #aj-trending {
+        padding: 20px 12px 24px;
+        border-radius: 17px;
+    }
+
+    #aj-trending .aj-v3-product-grid {
+        
+        background: transparent;
+    }
+}
+
+
+</style>
 <!-- CATEGORY NAVIGATION -->
 <!-- =========================================
      AJOBMART - CLEAN MARKETPLACE HOMEPAGE
@@ -79,6 +608,91 @@
 
 
     <!-- =====================================
+            4. TRENDING PRODUCTS
+        ====================================== -->
+
+        <section class="aj-v3-section aj-section-trending aj-home-section" id="aj-trending">
+
+        
+            <div class="aj-v3-heading">
+                <div>
+                    <span class="aj-v3-label">CUSTOMER FAVOURITES</span>
+                    <h2>
+                        Trending Products
+                        <i class="bi bi-fire"></i>
+                    </h2>
+                    <p>See what everyone is shopping for.</p>
+                </div>
+
+                <a href="#" class="aj-v3-view-all">
+                    View All <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <div id="ajTrendingProducts"
+                class="aj-v3-product-grid aj-trending-grid">
+            </div>
+            
+
+        </section>
+
+
+
+
+    <!-- =====================================
+         3. COMPACT WOW OFFER
+    ====================================== -->
+
+    <section class="aj-v3-wow-strip">
+
+        <div class="aj-v3-wow-left">
+            <span class="aj-v3-wow-icon">
+                <i class="bi bi-lightning-charge-fill"></i>
+            </span>
+
+            <div>
+                <strong>AJOBMART WOW DEALS</strong>
+                <small>Discover exclusive savings on selected products.</small>
+            </div>
+        </div>
+
+        <a href="#ajBestDeals">
+            Explore Deals <i class="bi bi-arrow-right"></i>
+        </a>
+
+    </section>
+
+
+
+        <!-- =====================================
+            2. MEGA DEALS
+        ====================================== -->
+
+        <section class="aj-v3-section aj-section-deals aj-home-section" id="aj-deals">
+
+            <div class="aj-v3-heading">
+                <div>
+                    <span class="aj-v3-label">LIMITED TIME OFFERS</span>
+                    <h2>
+                        Mega Deals
+                        <i class="bi bi-lightning-fill"></i>
+                    </h2>
+                    <p>Amazing products at special prices.</p>
+                </div>
+
+                <a href="#" class="aj-v3-view-all">
+                    View All <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+
+            <div id="ajBestDeals"
+                class="aj-v3-product-grid aj-deals-grid">
+            </div>
+
+        </section>
+
+
+        
+    <!-- =====================================
          1. POPULAR PRODUCTS - FIRST SECTION
     ====================================== -->
 
@@ -112,58 +726,6 @@
 
     </section>
 
-
-    <!-- =====================================
-         3. COMPACT WOW OFFER
-    ====================================== -->
-
-    <section class="aj-v3-wow-strip">
-
-        <div class="aj-v3-wow-left">
-            <span class="aj-v3-wow-icon">
-                <i class="bi bi-lightning-charge-fill"></i>
-            </span>
-
-            <div>
-                <strong>AJOBMART WOW DEALS</strong>
-                <small>Discover exclusive savings on selected products.</small>
-            </div>
-        </div>
-
-        <a href="#ajBestDeals">
-            Explore Deals <i class="bi bi-arrow-right"></i>
-        </a>
-
-    </section>
-
-
-
-        <!-- =====================================
-            2. BEST DEALS
-        ====================================== -->
-
-        <section class="aj-v3-section aj-section-deals aj-home-section" id="aj-deals">
-
-            <div class="aj-v3-heading">
-                <div>
-                    <span class="aj-v3-label">LIMITED TIME OFFERS</span>
-                    <h2>
-                        Best Deals
-                        <i class="bi bi-lightning-fill"></i>
-                    </h2>
-                    <p>Amazing products at special prices.</p>
-                </div>
-
-                <a href="#" class="aj-v3-view-all">
-                    View All <i class="bi bi-arrow-right"></i>
-                </a>
-            </div>
-
-            <div id="ajBestDeals"
-                class="aj-v3-product-grid aj-deals-grid">
-            </div>
-
-        </section>
 
 
 
@@ -360,33 +922,7 @@
 
         </section>
 
-        <!-- =====================================
-            4. TRENDING PRODUCTS
-        ====================================== -->
-
-        <section class="aj-v3-section aj-section-trending aj-home-section" id="aj-trending">
-
-            <div class="aj-v3-heading">
-                <div>
-                    <span class="aj-v3-label">CUSTOMER FAVOURITES</span>
-                    <h2>
-                        Trending Products
-                        <i class="bi bi-fire"></i>
-                    </h2>
-                    <p>See what everyone is shopping for.</p>
-                </div>
-
-                <a href="#" class="aj-v3-view-all">
-                    View All <i class="bi bi-arrow-right"></i>
-                </a>
-            </div>
-
-            <div id="ajTrendingProducts"
-                class="aj-v3-product-grid aj-trending-grid">
-            </div>
-
-        </section>
-
+        
 
 
 
