@@ -795,6 +795,37 @@
     z-index: 2;
 }
 
+@media (max-width: 767px) {
+
+    .aj-deals-grid {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 12px;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        padding: 5px 3px 13px;
+
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .aj-deals-grid::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Two full cards + half of third card */
+    .aj-section-deals .aj-product-card {
+        flex: 0 0 calc((100% - 24px) / 2.5);
+        min-width: calc((100% - 24px) / 2.5);
+        max-width: calc((100% - 24px) / 2.5);
+
+        scroll-snap-align: start;
+    }
+}
+
 
 /* =========================================
    END MEGA DEALS
