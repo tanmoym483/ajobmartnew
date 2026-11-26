@@ -83,6 +83,9 @@ if ($isCustomerLoggedIn) {
 
     <link rel="stylesheet" href="<?= base_url('public/assets/css/header-background.css') ?>">
     <link rel="stylesheet" href="<?= base_url('public/assets/css/recentlyview.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('public/assets/css/trendingview.css') ?>">
+
+
     <style>
         .aj-delivery-animation {
     display: flex;
