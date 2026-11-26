@@ -826,6 +826,199 @@
     }
 }
 
+/* Mega Deals: four products per scroll page */
+#ajBestDeals {
+    display: flex !important;
+    flex-wrap: nowrap;
+    gap: 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 5px 3px 13px;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+#ajBestDeals::-webkit-scrollbar {
+    display: none;
+}
+
+/* One page contains four product cards */
+#ajBestDeals .aj-deals-page {
+    flex: 0 0 100%;
+    min-width: 0;
+
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+}
+
+/* Product card */
+#ajBestDeals .aj-product-card {
+    min-width: 0 !important;
+    max-width: none !important;
+    padding: 6px;
+    box-sizing: border-box;
+}
+
+/* Product image */
+#ajBestDeals .aj-product-image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+#ajBestDeals .aj-product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Hide WOW button only in Mega Deals */
+#ajBestDeals .aj-recent-wow-section,
+#ajBestDeals .wowofferbtn {
+    display: none !important;
+}
+
+/* Mobile: still four images per page */
+@media (max-width: 767px) {
+    #ajBestDeals .aj-deals-page {
+        gap: 6px;
+    }
+
+    #ajBestDeals .aj-product-card {
+        padding: 4px;
+        border-radius: 10px;
+    }
+
+    #ajBestDeals .aj-product-image {
+        border-radius: 8px;
+    }
+}
+
+
+/* =========================================
+   MEGA DEALS – 2 × 2 PRODUCT IMAGE BOX
+========================================= */
+
+#aj-deals #ajBestDeals {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 16px;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding: 4px 0 12px;
+}
+
+#aj-deals #ajBestDeals::-webkit-scrollbar {
+    display: none;
+}
+
+/* One page contains exactly four products */
+#aj-deals .aj-deals-page {
+    flex: 0 0 100%;
+    min-width: 0;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-rows: repeat(2, auto);
+    gap: 12px;
+    scroll-snap-align: start;
+    box-sizing: border-box;
+}
+
+/* Product image card */
+#aj-deals .aj-deals-page .aj-product-card {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 8px;
+    box-sizing: border-box;
+
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+}
+
+/* Show the complete product image */
+#aj-deals .aj-product-image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    height: auto !important;
+    background: transparent;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#aj-deals .aj-product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+/* Images only */
+#aj-deals .aj-product-name,
+#aj-deals .aj-recent-wow-section,
+#aj-deals .wowofferbtn {
+    display: none !important;
+}
+
+@media (max-width: 767px) {
+    #aj-deals .aj-deals-page {
+        gap: 8px;
+    }
+
+    #aj-deals .aj-deals-page .aj-product-card {
+        padding: 5px;
+        border-radius: 12px;
+    }
+}
+
+
+/* Fix empty space when the last Mega Deals page
+   contains fewer than four products */
+
+#aj-deals #ajBestDeals .aj-deals-page {
+    grid-template-rows: none !important;
+    grid-auto-rows: auto;
+    align-content: start;
+    align-items: start;
+}
+
+/* Keep cards compact */
+#aj-deals #ajBestDeals .aj-product-card {
+    height: auto !important;
+    min-height: 0 !important;
+    align-self: start;
+}
+
+/* Single product: show one compact image card */
+#aj-deals #ajBestDeals .aj-deals-page:has(> .aj-product-card:only-child) {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto !important;
+    gap: 0;
+}
+
+/* Remove unnecessary space below the cards */
+#aj-deals #ajBestDeals {
+    padding-bottom: 4px;
+}
+
+#aj-deals {
+    padding-bottom: 16px;
+}
+
 
 /* =========================================
    END MEGA DEALS

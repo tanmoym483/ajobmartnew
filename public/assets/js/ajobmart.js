@@ -409,13 +409,20 @@ function fetchHomeSection(url, containerId, sectionType, silent = false) {
                 window.ajCartRegisterProducts(response.products);
             }
 
-            let html = '';
+            if (containerId === 'ajBestDeals') {
 
-            response.products.forEach(function (product) {
-                html += renderHomeProductCard(product, sectionType);
-            });
+                renderMegaDeals(response.products);
 
-            container.html(html);
+            } else {
+
+                let html = '';
+
+                response.products.forEach(function (product) {
+                    html += renderHomeProductCard(product, sectionType);
+                });
+
+                container.html(html);
+            }
 
             if (typeof window.ajCartRefresh === 'function') {
                 window.ajCartRefresh();
@@ -435,6 +442,30 @@ function fetchHomeSection(url, containerId, sectionType, silent = false) {
             }
         }
     });
+}
+
+function renderMegaDeals(products) {
+    const container = document.getElementById('ajBestDeals');
+
+    if (!container || !Array.isArray(products)) {
+        return;
+    }
+
+    let html = '';
+
+    for (let i = 0; i < products.length; i += 4) {
+        const group = products.slice(i, i + 4);
+
+        html += `
+            <div class="aj-deals-page">
+                ${group.map(product =>
+                    renderHomeProductCard(product, 'deals')
+                ).join('')}
+            </div>
+        `;
+    }
+
+    container.innerHTML = html;
 }
 
 
