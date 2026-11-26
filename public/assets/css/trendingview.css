@@ -800,7 +800,7 @@
     .aj-deals-grid {
         display: flex;
         flex-wrap: nowrap;
-        gap: 12px;
+        gap: 10px;
 
         overflow-x: auto;
         overflow-y: hidden;
@@ -818,9 +818,9 @@
 
     /* Two full cards + half of third card */
     .aj-section-deals .aj-product-card {
-        flex: 0 0 calc((100% - 24px) / 2.5);
-        min-width: calc((100% - 24px) / 2.5);
-        max-width: calc((100% - 24px) / 2.5);
+        flex: 0 0 calc((100% - 24px) / 1.5);
+        min-width: calc((100% - 24px) / 1.5);
+        max-width: calc((100% - 24px) / 1.5);
 
         scroll-snap-align: start;
     }
