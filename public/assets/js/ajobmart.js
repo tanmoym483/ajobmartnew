@@ -467,6 +467,7 @@ function renderHomeProductCard(product, sectionType) {
 
     const productId = Number(product.id) || 0;
     const isTrending = sectionType === 'trending';
+    const isRecentlyViewed = sectionType === 'recent';
 
     const productUrl = site_url + 'product-details/' + productId;
 
@@ -491,7 +492,14 @@ function renderHomeProductCard(product, sectionType) {
 
     <!-- IMAGE CARD ONLY -->
     <div class="aj-product-image">
-            
+            ${isRecentlyViewed && mrp > 0 && wowPrice > 0 && mrp > wowPrice ? `
+                <span class="aj-recent-wow-ribbon">
+                    ₹${wowPrice.toLocaleString('en-IN', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    })}
+                </span>
+            ` : ''}
 
         <a href="${productUrl}"
            class="aj-product-details-link"
