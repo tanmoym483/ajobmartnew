@@ -1021,5 +1021,99 @@
 
 
 /* =========================================
+   MEGA DEALS – PREMIUM GOLD GLOW HEADING
+========================================= */
+
+#aj-deals .aj-deals-heading h2 {
+    position: relative;
+    display: inline-block;
+
+    font-size: 34px;
+    font-weight: 950;
+    letter-spacing: 1.5px;
+    line-height: 1.2;
+
+    background: linear-gradient(
+        180deg,
+        #fff9d6 0%,
+        #ffe08a 25%,
+        #ffbd35 55%,
+        #fff0b0 75%,
+        #d99113 100%
+    );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    filter: drop-shadow(0 3px 2px rgba(0,0,0,.55))
+            drop-shadow(0 0 9px rgba(255,190,50,.55));
+
+    animation: ajMegaTitleGlow 2.5s ease-in-out infinite alternate;
+}
+
+/* Golden shine animation */
+#aj-deals .aj-deals-heading h2::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -120%;
+    width: 70%;
+    height: 100%;
+
+    background: linear-gradient(
+        110deg,
+        transparent,
+        rgba(255,255,255,.65),
+        transparent
+    );
+
+    transform: skewX(-20deg);
+    animation: ajMegaTitleShine 4s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes ajMegaTitleGlow {
+    from {
+        filter: drop-shadow(0 3px 2px rgba(0,0,0,.5))
+                drop-shadow(0 0 5px rgba(255,190,50,.3));
+    }
+
+    to {
+        filter: drop-shadow(0 3px 3px rgba(0,0,0,.6))
+                drop-shadow(0 0 15px rgba(255,200,60,.85));
+    }
+}
+
+@keyframes ajMegaTitleShine {
+    0%, 65% {
+        left: -120%;
+    }
+
+    100% {
+        left: 150%;
+    }
+}
+
+/* Highlight the fire / deals icon */
+#aj-deals .aj-deals-heading h2 i {
+    color: #fff1a8;
+    -webkit-text-fill-color: #fff1a8;
+
+    filter:
+        drop-shadow(0 0 5px #ffb700)
+        drop-shadow(0 0 12px rgba(255,190,40,.9));
+}
+
+/* Mobile heading */
+@media (max-width: 767px) {
+    #aj-deals .aj-deals-heading h2 {
+        font-size: 25px;
+        letter-spacing: 1px;
+    }
+}
+
+
+/* =========================================
    END MEGA DEALS
 ========================================= */
