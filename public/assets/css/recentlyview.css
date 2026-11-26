@@ -81,7 +81,7 @@
     border: 1px solid rgba(100, 220, 190, 0.25);
 
     background:
-        /* radial-gradient(
+        radial-gradient(
             circle at 8% 12%,
             rgba(16, 185, 129, 0.30),
             transparent 40%
@@ -96,8 +96,8 @@
             #061f1b 0%,
             #0b3b32 48%,
             #102b40 100%
-        ), */
-        url("../images/wave-bg.gif");
+        );
+        /* url("../images/wave-bg.gif"); */
 
     background-size: cover;
     background-position: center;
@@ -566,9 +566,9 @@
 
     background: linear-gradient(
         135deg,
-        #ffd43b,
-        #ff9800,
-        #e85d04
+        #1a1890,
+        #1a1890,
+        #1a1890
     );
 
     box-shadow: 0 3px 8px rgba(0,0,0,.25);
