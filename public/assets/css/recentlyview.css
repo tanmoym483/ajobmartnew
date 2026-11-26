@@ -152,7 +152,7 @@
     z-index: 1;
 }
 
-#ajRecentlyViewedSection .aj-v3-heading h2 {
+#ajRecentlyViewedSection .aj-v3-heading h4 {
     color: #ffffff;
 }
 
@@ -176,7 +176,7 @@
     overflow-x: auto;
     overflow-y: hidden;
 
-    padding: 12px 4px 18px;
+    /* padding: 12px 4px 18px; */
 
     scroll-behavior: smooth;
     scroll-snap-type: x mandatory;
@@ -218,7 +218,7 @@
 
 /* Scrollbar */
 #ajRecentlyViewed::-webkit-scrollbar {
-    height: 6px;
+    height: 3px;
 }
 
 #ajRecentlyViewed::-webkit-scrollbar-track {
@@ -344,7 +344,7 @@
     justify-content: center;
 
     width: 100%;
-    padding: 10px 8px 12px;
+    /* padding: 10px 8px 12px; */
 
     background: linear-gradient(
         135deg,
@@ -439,7 +439,7 @@
         overflow-y: hidden;
 
         /* Keep space for the next card peek */
-        padding: 12px 12px 18px 4px;
+        padding: 0;
 
         scroll-snap-type: x mandatory;
         scroll-padding-left: 4px;

@@ -71,7 +71,7 @@
         <div class="aj-v3-heading">
             <div>
                 <!-- <span class="aj-v3-label">YOUR BROWSING HISTORY</span> -->
-                <h2>Recently Viewed</h2>
+                <h4>Still looking for these?</h4>
                 <!-- <p>Continue exploring products you viewed.</p> -->
             </div>
         </div>
