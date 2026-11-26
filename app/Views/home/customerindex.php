@@ -82,64 +82,7 @@
 
     </section>
 
-
     <!-- =====================================
-            4. TRENDING PRODUCTS
-        ====================================== -->
-
-        <section class="aj-v3-section aj-section-trending aj-home-section" id="aj-trending">
-
-        
-            <div class="aj-v3-heading">
-                <div>
-                    <span class="aj-v3-label">CUSTOMER FAVOURITES</span>
-                    <h2>
-                        Trending Products
-                        <i class="bi bi-fire"></i>
-                    </h2>
-                    <p>See what everyone is shopping for.</p>
-                </div>
-
-                <a href="#" class="aj-v3-view-all">
-                    View All <i class="bi bi-arrow-right"></i>
-                </a>
-            </div>
-            <div id="ajTrendingProducts"
-                class="aj-v3-product-grid aj-trending-grid">
-            </div>
-            
-
-        </section>
-
-
-
-
-    <!-- =====================================
-         3. COMPACT WOW OFFER
-    ====================================== -->
-
-    <section class="aj-v3-wow-strip">
-
-        <div class="aj-v3-wow-left">
-            <span class="aj-v3-wow-icon">
-                <i class="bi bi-lightning-charge-fill"></i>
-            </span>
-
-            <div>
-                <strong>AJOBMART WOW DEALS</strong>
-                <small>Discover exclusive savings on selected products.</small>
-            </div>
-        </div>
-
-        <a href="#ajBestDeals">
-            Explore Deals <i class="bi bi-arrow-right"></i>
-        </a>
-
-    </section>
-
-
-
-        <!-- =====================================
             2. MEGA DEALS
         ====================================== -->
 
@@ -176,6 +119,64 @@
     </div>
 
 </section>
+
+
+
+
+
+    <!-- =====================================
+         3. COMPACT WOW OFFER
+    ====================================== -->
+
+    <section class="aj-v3-wow-strip">
+
+        <div class="aj-v3-wow-left">
+            <span class="aj-v3-wow-icon">
+                <i class="bi bi-lightning-charge-fill"></i>
+            </span>
+
+            <div>
+                <strong>AJOBMART WOW DEALS</strong>
+                <small>Discover exclusive savings on selected products.</small>
+            </div>
+        </div>
+
+        <a href="#ajBestDeals">
+            Explore Deals <i class="bi bi-arrow-right"></i>
+        </a>
+
+    </section>
+
+
+
+        
+    <!-- =====================================
+            4. TRENDING PRODUCTS
+        ====================================== -->
+
+        <section class="aj-v3-section aj-section-trending aj-home-section" id="aj-trending">
+
+        
+            <div class="aj-v3-heading">
+                <div>
+                    <span class="aj-v3-label">CUSTOMER FAVOURITES</span>
+                    <h2>
+                        Trending Products
+                        <i class="bi bi-fire"></i>
+                    </h2>
+                    <p>See what everyone is shopping for.</p>
+                </div>
+
+                <a href="#" class="aj-v3-view-all">
+                    View All <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <div id="ajTrendingProducts"
+                class="aj-v3-product-grid aj-trending-grid">
+            </div>
+            
+
+        </section>
 
 
 
