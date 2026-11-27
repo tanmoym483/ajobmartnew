@@ -107,29 +107,63 @@ foreach ($images ?? [] as $cartImage) {
             <div class="aj-details-gallery">
 
                 <!-- Main image -->
+                                
                 <div class="aj-details-main-image" id="ajImageZoomArea">
 
                     <?php if (!empty($productImages)): ?>
+
                         <img
                             id="ajDetailsMainImage"
                             src="<?= esc($productImages[0]) ?>"
                             alt="<?= esc($productName) ?>"
                             onerror="this.style.display='none';">
 
+                        <!-- Product actions -->
+                        <div class="aj-image-actions">
+
+                            <!-- Wishlist -->
+                            <button
+                                type="button"
+                                class="aj-image-action-btn aj-wishlist-btn"
+                                id="ajProductWishlist"
+                                aria-label="Add to wishlist"
+                                title="Add to wishlist">
+
+                                <i class="bi bi-heart"></i>
+                            </button>
+
+                            <!-- Share -->
+                            <button
+                                type="button"
+                                class="aj-image-action-btn aj-share-btn"
+                                id="ajProductShare"
+                                aria-label="Share product"
+                                title="Share product">
+
+                                <i class="bi bi-share"></i>
+                            </button>
+
+                        </div>
+
+                        <!-- Zoom -->
                         <button type="button"
                                 class="aj-image-zoom-btn"
                                 id="ajOpenImageZoom"
                                 aria-label="Zoom product image">
                             <i class="bi bi-zoom-in"></i>
                         </button>
+
                     <?php else: ?>
+
                         <div class="aj-details-no-image">
                             <i class="bi bi-image"></i>
                             <span>No image available</span>
                         </div>
+
                     <?php endif; ?>
 
                 </div>
+
 
                 <!-- Thumbnails -->
                 <?php if (count($productImages) > 1): ?>
@@ -1281,6 +1315,74 @@ foreach ($images ?? [] as $cartImage) {
     } else {
         initFloatingCart();
     }
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+    // Wishlist visual toggle
+    const wishlistBtn = document.getElementById('ajProductWishlist');
+
+    if (wishlistBtn) {
+        wishlistBtn.addEventListener('click', function () {
+
+            this.classList.toggle('active');
+
+            const icon = this.querySelector('i');
+            const active = this.classList.contains('active');
+
+            icon.className = active
+                ? 'bi bi-heart-fill'
+                : 'bi bi-heart';
+
+            this.setAttribute(
+                'aria-label',
+                active ? 'Remove from wishlist' : 'Add to wishlist'
+            );
+        });
+    }
+
+    // Share product link
+    const shareBtn = document.getElementById('ajProductShare');
+
+    if (shareBtn) {
+        shareBtn.addEventListener('click', async function () {
+
+            const shareData = {
+                title: document.title,
+                text: 'Check out this product on Ajobmart!',
+                url: window.location.href
+            };
+
+            try {
+                if (navigator.share) {
+
+                    await navigator.share(shareData);
+
+                } else {
+
+                    await navigator.clipboard.writeText(
+                        window.location.href
+                    );
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Link Copied!',
+                        text: 'Product link copied. You can share it anywhere.',
+                        timer: 1800,
+                        showConfirmButton: false
+                    });
+                }
+
+            } catch (error) {
+
+                if (error.name !== 'AbortError') {
+                    console.error('Product sharing failed:', error);
+                }
+            }
+        });
+    }
+
+});
 
 })();
 

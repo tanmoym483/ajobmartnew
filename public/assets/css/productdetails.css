@@ -1530,3 +1530,63 @@
         font-size: 10px;
     }
 }
+
+
+/* Product image action buttons */
+.aj-details-main-image {
+    position: relative;
+}
+
+.aj-image-actions {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 10;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.aj-image-action-btn {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+
+    font-size: 19px;
+
+    cursor: pointer;
+    transition: all 0.25s ease;
+
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+}
+
+.aj-image-action-btn:hover {
+    transform: scale(1.1);
+    background: #fff;
+}
+
+/* Active wishlist */
+.aj-wishlist-btn.active {
+    color: #e53950;
+    border-color: #e53950;
+}
+
+.aj-wishlist-btn.active i {
+    font-weight: bold;
+}
+
+/* Share hover */
+.aj-share-btn:hover {
+    color: #0d6efd;
+    border-color: #0d6efd;
+}
