@@ -24,6 +24,23 @@ $routes->post(
 
 $routes->post('auth/login', 'Auth::login');
 
+
+$routes->post(
+    'auth/sendForgotPasswordOtp',
+    'Auth::sendForgotPasswordOtp'
+);
+
+$routes->post(
+    'auth/verifyForgotPasswordOtp',
+    'Auth::verifyForgotPasswordOtp'
+);
+
+$routes->post(
+    'auth/resetPassword',
+    'Auth::resetPassword'
+);
+
+
 $routes->get('auth/customerLogout', 'Auth::customerLogout');
 
 $routes->get('fetchpopularproduct', 'Product::fetchpopularproduct');

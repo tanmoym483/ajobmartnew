@@ -469,21 +469,32 @@ function showLoginPopup() {
             }
 
             // Show/hide password.
-            $('#ajTogglePassword').on('click', function () {
-                const input = $('#ajLoginPassword');
-                const icon = $(this).find('i');
-                const showing = input.attr('type') === 'text';
+            const togglePassword = document.getElementById('ajTogglePassword');
+            const passwordInput = document.getElementById('ajLoginPassword');
 
-                input.attr('type', showing ? 'password' : 'text');
+            if (togglePassword && passwordInput) {
 
-                icon.toggleClass('bi-eye', showing);
-                icon.toggleClass('bi-eye-slash', !showing);
+                togglePassword.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
 
-                $(this).attr(
-                    'aria-label',
-                    showing ? 'Show password' : 'Hide password'
-                );
-            });
+                    const showing = passwordInput.type === 'text';
+
+                    passwordInput.type = showing ? 'password' : 'text';
+
+                    const icon = this.querySelector('i');
+
+                    if (icon) {
+                        icon.classList.toggle('bi-eye', showing);
+                        icon.classList.toggle('bi-eye-slash', !showing);
+                    }
+
+                    this.setAttribute(
+                        'aria-label',
+                        showing ? 'Show password' : 'Hide password'
+                    );
+                });
+            }
 
             // Connect to your existing registration popup, if defined.
             $('#ajCreateAccountLink').on('click', function () {
@@ -545,6 +556,231 @@ function showLoginPopup() {
     });
 
 }
+
+
+window.showForgotPasswordPopup = function () {
+
+    const csrfName = '<?= csrf_token() ?>';
+    const csrfHash = '<?= csrf_hash() ?>';
+
+    function sendRequest(url, data) {
+        data[csrfName] = csrfHash;
+
+        return $.ajax({
+            url: url,
+            type: 'POST',
+            dataType: 'json',
+            data: data,
+            xhrFields: {
+                withCredentials: true
+            }
+        });
+    }
+
+    // STEP 1: Enter registered email
+    Swal.fire({
+        title: 'Forgot Password?',
+        html: `
+            <p>Enter your registered email address.</p>
+            <input
+                type="email"
+                id="ajForgotEmail"
+                class="swal2-input"
+                placeholder="Enter your email"
+                autocomplete="email"
+            >
+        `,
+        confirmButtonText: 'Send OTP',
+        showCancelButton: true,
+        focusConfirm: false,
+
+        preConfirm: function () {
+            const email = $('#ajForgotEmail').val().trim();
+
+            if (!email) {
+                Swal.showValidationMessage('Please enter your email.');
+                return false;
+            }
+
+            return sendRequest(
+                '<?= site_url('auth/sendForgotPasswordOtp') ?>',
+                { email: email }
+            ).then(function (response) {
+                if (!response.status) {
+                    Swal.showValidationMessage(
+                        response.message || 'Unable to send OTP.'
+                    );
+                    return false;
+                }
+
+                return { email: email };
+            }).catch(function (xhr) {
+                Swal.showValidationMessage(
+                    xhr.responseJSON?.message ||
+                    'Unable to send OTP. Please try again.'
+                );
+                return false;
+            });
+        }
+    }).then(function (result) {
+
+        if (!result.isConfirmed || !result.value) {
+            return;
+        }
+
+        const email = result.value.email;
+
+        // STEP 2: Verify OTP
+        Swal.fire({
+            title: 'Verify OTP',
+            html: `
+                <p>Enter the 6-digit OTP sent to your email.</p>
+                <input
+                    type="text"
+                    id="ajForgotOtp"
+                    class="swal2-input"
+                    placeholder="Enter 6-digit OTP"
+                    maxlength="6"
+                    inputmode="numeric"
+                    autocomplete="one-time-code"
+                >
+                <p class="text-muted small">
+                    OTP expires after 10 minutes.
+                </p>
+            `,
+            confirmButtonText: 'Verify OTP',
+            showCancelButton: true,
+            focusConfirm: false,
+
+            preConfirm: function () {
+                const otp = $('#ajForgotOtp').val().trim();
+
+                if (!/^[0-9]{6}$/.test(otp)) {
+                    Swal.showValidationMessage(
+                        'Please enter a valid 6-digit OTP.'
+                    );
+                    return false;
+                }
+
+                return sendRequest(
+                    '<?= site_url('auth/verifyForgotPasswordOtp') ?>',
+                    {
+                        email: email,
+                        otp: otp
+                    }
+                ).then(function (response) {
+                    if (!response.status) {
+                        Swal.showValidationMessage(
+                            response.message || 'Invalid OTP.'
+                        );
+                        return false;
+                    }
+
+                    return true;
+                }).catch(function (xhr) {
+                    Swal.showValidationMessage(
+                        xhr.responseJSON?.message ||
+                        'OTP verification failed.'
+                    );
+                    return false;
+                });
+            }
+        }).then(function (otpResult) {
+
+            if (!otpResult.isConfirmed || !otpResult.value) {
+                return;
+            }
+
+            // STEP 3: Set new password
+            Swal.fire({
+                title: 'Create New Password',
+                html: `
+                    <input
+                        type="password"
+                        id="ajNewPassword"
+                        class="swal2-input"
+                        placeholder="New password"
+                        autocomplete="new-password"
+                    >
+
+                    <input
+                        type="password"
+                        id="ajConfirmNewPassword"
+                        class="swal2-input"
+                        placeholder="Confirm new password"
+                        autocomplete="new-password"
+                    >
+
+                    <div class="text-start small text-muted mt-2">
+                        Password must contain at least 6 characters.
+                    </div>
+                `,
+                confirmButtonText: 'Reset Password',
+                showCancelButton: false,
+                allowOutsideClick: false,
+                focusConfirm: false,
+
+                preConfirm: function () {
+                    const password = $('#ajNewPassword').val();
+                    const confirmPassword = $(
+                        '#ajConfirmNewPassword'
+                    ).val();
+
+                    if (!password || password.length < 6) {
+                        Swal.showValidationMessage(
+                            'Password must contain at least 6 characters.'
+                        );
+                        return false;
+                    }
+
+                    if (password !== confirmPassword) {
+                        Swal.showValidationMessage(
+                            'Passwords do not match.'
+                        );
+                        return false;
+                    }
+
+                    return sendRequest(
+                        '<?= site_url('auth/resetPassword') ?>',
+                        {
+                            password: password,
+                            confirm_password: confirmPassword
+                        }
+                    ).then(function (response) {
+                        if (!response.status) {
+                            Swal.showValidationMessage(
+                                response.message ||
+                                'Unable to reset password.'
+                            );
+                            return false;
+                        }
+
+                        return response;
+                    }).catch(function (xhr) {
+                        Swal.showValidationMessage(
+                            xhr.responseJSON?.message ||
+                            'Unable to reset password.'
+                        );
+                        return false;
+                    });
+                }
+            }).then(function (resetResult) {
+
+                if (resetResult.isConfirmed && resetResult.value?.status) {
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Password Changed!',
+                        text: 'Your password has been reset successfully.',
+                        confirmButtonText: 'Login Now'
+                    }).then(function () {
+                        showLoginPopup();
+                    });
+                }
+            });
+        });
+    });
+};
 
 
 window.ajSyncGuestCartAfterLogin = function () {
@@ -873,6 +1109,22 @@ function showRegisterPopup() {
                             class="aj-login-input"
                             placeholder="Confirm password"
                             autocomplete="new-password"
+                        >
+
+                    </div>
+
+                    <div class="aj-login-input-group">
+
+                        <i class="bi bi-person"></i>
+
+                        <input
+                            type="tel"
+                            id="ajReference"
+                            class="aj-login-input"
+                            placeholder="Reference No."
+                            maxlength="10"
+                            inputmode="numeric"
+                            autocomplete="tel"
                         >
 
                     </div>
@@ -1408,6 +1660,10 @@ $(document).on(
         const confirmPassword =
             $('#ajRegisterConfirmPassword')
                 .val();
+        
+        const referenceNumber =
+            $('#ajReference')
+                .val();
 
 
         if (name === '') {
@@ -1453,6 +1709,16 @@ $(document).on(
 
         }
 
+        if (!/^[0-9]{10}$/.test(referenceNumber)) {
+
+            Swal.showValidationMessage(
+                'Please enter a valid 10-digit reference mobile number'
+            );
+
+            return;
+
+        }
+
 
         const button =
             $('#ajFinalCreateAccountBtn');
@@ -1488,6 +1754,8 @@ $(document).on(
                 mobile: mobile,
 
                 password: password,
+
+                reference: referenceNumber,
 
 
             },

@@ -207,6 +207,11 @@ log_message(
 
         $password = (string) $this->request->getPost('password');
 
+        $referenceNumber = trim(
+            (string) $this->request->getPost('reference')
+        );
+
+
 
         // Verify email was actually verified
         $verifiedEmail = $this->session->get(
@@ -253,6 +258,15 @@ log_message(
             ]);
         }
 
+
+        // Validate Reference number
+        if (!preg_match('/^[0-9]{10}$/', $referenceNumber)) {
+            return $this->response->setJSON([
+                'status'  => false,
+                'message' => 'Please enter a valid 10-digit reference mobile number.'
+            ]);
+        }
+
         // Check email
         if ($this->userModel->findByEmail($email)) {
             return $this->response->setJSON([
@@ -289,6 +303,7 @@ log_message(
             'mobile'         => $mobile,
             'email'          => $email,
             'password'       => $hashedPassword,
+            'reference'      => $referenceNumber,
             'status'         => 'active',
             'email_verified' => 1,
             'created_at'     => $now,
@@ -339,11 +354,17 @@ public function login()
         ->get()
         ->getRowArray();
 
-    // Use the same password_hash() format as registration.
-    if (!$user || !password_verify($password, $user['password'])) {
+        if (!$user) {
         return $this->response->setJSON([
             'status'  => false,
-            'message' => 'Invalid User ID, email, mobile number or password.'
+            'message' => 'Invalid User ID, email, mobile number.'
+        ]);
+    }
+    // Use the same password_hash() format as registration.
+    if (!password_verify($password, $user['password'])) {
+        return $this->response->setJSON([
+            'status'  => false,
+            'message' => 'Invalid password.'
         ]);
     }
 
@@ -382,6 +403,239 @@ public function login()
         'redirect' => site_url('/')
     ]);
 }
+
+
+/**
+ * SEND FORGOT PASSWORD OTP
+ */
+public function sendForgotPasswordOtp()
+{
+    $email = strtolower(trim(
+        (string) $this->request->getPost('email')
+    ));
+
+    if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return $this->response->setJSON([
+            'status'  => false,
+            'message' => 'Please enter a valid email address.'
+        ]);
+    }
+
+    // Only registered customer accounts can reset passwords.
+    $user = $this->userModel->findByEmail($email);
+
+    // Use a generic response to avoid revealing registered emails.
+    if (!$user) {
+        return $this->response->setJSON([
+            'status'  => true,
+            'message' => 'If this email is registered, an OTP will be sent.'
+        ]);
+    }
+
+    if (!$this->otpModel->invalidatePreviousOtps($email)) {
+        return $this->response->setJSON([
+            'status'  => false,
+            'message' => 'Unable to generate OTP. Please try again.'
+        ]);
+    }
+
+    $otp = (string) random_int(100000, 999999);
+    $now = time();
+
+    $otpId = $this->otpModel->insert([
+        'email'      => $email,
+        'otp'        => $otp,
+        'expires_at' => date('Y-m-d H:i:s', $now + 600),
+        'verified'   => 0,
+        'created_at' => date('Y-m-d H:i:s', $now)
+    ]);
+
+    if (!$otpId) {
+        return $this->response->setJSON([
+            'status'  => false,
+            'message' => 'Unable to generate OTP. Please try again.'
+        ]);
+    }
+
+    // Use the existing email sender.
+    $sent = $this->sendEmailOtp(
+        $email,
+        $otp,
+        'password_reset',
+        'customer'
+    );
+
+    if (!$sent) {
+        $this->otpModel->deleteOtp((int) $otpId);
+
+        return $this->response->setJSON([
+            'status'  => false,
+            'message' => 'Unable to send OTP. Please try again.'
+        ]);
+    }
+
+    return $this->response->setJSON([
+        'status'  => true,
+        'message' => 'If this email is registered, an OTP will be sent.'
+    ]);
+}
+
+
+/**
+ * VERIFY FORGOT PASSWORD OTP
+ */
+public function verifyForgotPasswordOtp()
+{
+    $email = strtolower(trim(
+        (string) $this->request->getPost('email')
+    ));
+
+    $otp = trim(
+        (string) $this->request->getPost('otp')
+    );
+
+    if (
+        !$email ||
+        !filter_var($email, FILTER_VALIDATE_EMAIL) ||
+        !preg_match('/^[0-9]{6}$/', $otp)
+    ) {
+        return $this->response->setJSON([
+            'status'  => false,
+            'message' => 'Please enter a valid email and six-digit OTP.'
+        ]);
+    }
+
+    // Confirm that the customer account still exists.
+    if (!$this->userModel->findByEmail($email)) {
+        return $this->response->setJSON([
+            'status'  => false,
+            'message' => 'Invalid or expired OTP.'
+        ]);
+    }
+
+    $otpRow = $this->otpModel->findLatestPendingOtp(
+        $email,
+        $otp
+    );
+
+    if (!$otpRow) {
+        return $this->response->setJSON([
+            'status'  => false,
+            'message' => 'Invalid OTP.'
+        ]);
+    }
+
+    if (strtotime($otpRow->expires_at) < time()) {
+        return $this->response->setJSON([
+            'status'  => false,
+            'message' => 'OTP has expired. Please request a new OTP.'
+        ]);
+    }
+
+    if (!$this->otpModel->markVerified((int) $otpRow->id)) {
+        return $this->response->setJSON([
+            'status'  => false,
+            'message' => 'Unable to verify OTP. Please try again.'
+        ]);
+    }
+
+    // Authorize password reset for this email only.
+    $this->session->set([
+        'ajobmart_password_reset_email' => $email,
+        'ajobmart_password_reset_time'  => time()
+    ]);
+
+    return $this->response->setJSON([
+        'status'  => true,
+        'message' => 'OTP verified successfully.'
+    ]);
+}
+
+
+/**
+ * RESET CUSTOMER PASSWORD
+ */
+public function resetPassword()
+{
+    $email = (string) $this->session->get(
+        'ajobmart_password_reset_email'
+    );
+
+    $verifiedAt = (int) $this->session->get(
+        'ajobmart_password_reset_time'
+    );
+
+    // Reset authorization expires after 10 minutes.
+    if (
+        !$email ||
+        !$verifiedAt ||
+        (time() - $verifiedAt) > 600
+    ) {
+        $this->session->remove([
+            'ajobmart_password_reset_email',
+            'ajobmart_password_reset_time'
+        ]);
+
+        return $this->response->setJSON([
+            'status'  => false,
+            'message' => 'Password reset session expired. Please verify your OTP again.'
+        ]);
+    }
+
+    $password = (string) $this->request->getPost('password');
+
+    $confirmPassword = (string) $this->request->getPost(
+        'confirm_password'
+    );
+
+    if (strlen($password) < 6) {
+        return $this->response->setJSON([
+            'status'  => false,
+            'message' => 'Password must contain at least 6 characters.'
+        ]);
+    }
+
+    if ($password !== $confirmPassword) {
+        return $this->response->setJSON([
+            'status'  => false,
+            'message' => 'Passwords do not match.'
+        ]);
+    }
+
+    $hashedPassword = password_hash(
+        $password,
+        PASSWORD_DEFAULT
+    );
+
+    $db = \Config\Database::connect();
+
+    $updated = $db->table('ajobmart_users')
+        ->where('email', $email)
+        ->update([
+            'password'    => $hashedPassword,
+            'updated_at'  => date('Y-m-d H:i:s')
+        ]);
+
+    if (!$updated) {
+        return $this->response->setJSON([
+            'status'  => false,
+            'message' => 'Unable to update password. Please try again.'
+        ]);
+    }
+
+    // Remove reset authorization after successful password change.
+    $this->session->remove([
+        'ajobmart_password_reset_email',
+        'ajobmart_password_reset_time'
+    ]);
+
+    return $this->response->setJSON([
+        'status'  => true,
+        'message' => 'Your password has been changed successfully. Please log in.'
+    ]);
+}
+
+
 
     public function customerLogout()
     {

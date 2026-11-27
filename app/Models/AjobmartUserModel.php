@@ -17,8 +17,10 @@ class AjobmartUserModel extends Model
         'mobile',
         'email',
         'password',
+        'reference',
         'status',
         'email_verified',
+        'total_coupon_amount',
         'created_at',
         'updated_at',
     ];
