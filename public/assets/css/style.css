@@ -206,7 +206,7 @@
     width: 420px !important;
     max-width: calc(100vw - 24px) !important;
 
-    height: 420px !important;
+    height: 500px !important;
     max-height: calc(100dvh - 30px) !important;
 
     padding: 20px 22px 16px !important;
@@ -282,7 +282,7 @@
 
     .swal2-popup.aj-login-swal {
         width: 100% !important;
-        height: 360px !important;
+        height: 500px !important;
         max-height: calc(100dvh - 24px) !important;
 
         padding: 18px 16px 14px !important;
