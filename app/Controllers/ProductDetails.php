@@ -27,9 +27,12 @@ class ProductDetails extends BaseController
         }
 
         // Fetch all product images.
+        // Fetch product images with primary image first.
         $images = $this->db
             ->table('ajobmart_product_images')
             ->where('product_id', $id)
+            ->orderBy('is_primary', 'DESC')
+            ->orderBy('sort_order', 'ASC')
             ->orderBy('id', 'ASC')
             ->get()
             ->getResultArray();
