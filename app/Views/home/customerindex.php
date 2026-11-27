@@ -92,16 +92,16 @@
     <div class="aj-deals-heading">
 
         <div>
-            <span class="aj-deals-label">
+            <!-- <span class="aj-deals-label">
                 LIMITED TIME OFFERS
-            </span>
+            </span> -->
 
             <h2>
                 Mega Deals
                 <i class="bi bi-lightning-fill"></i>
             </h2>
 
-            <p>Unmissable offers. Limited time.</p>
+            <!-- <p>Unmissable offers. Limited time.</p> -->
         </div>
 
         <a href="#" class="aj-deals-view-all">

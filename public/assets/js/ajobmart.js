@@ -340,21 +340,50 @@ if (categoryNav && categorySection && searchWrapper) {
 });
 
 
+// Skip splash when opening the mobile Cart page
+document.addEventListener('click', function (event) {
+    const cartLink = event.target.closest('#ajMobileCartLink');
+
+    if (!cartLink) return;
+
+    // Ignore clicks that open a new tab
+    if (
+        event.ctrlKey ||
+        event.metaKey ||
+        event.shiftKey ||
+        event.altKey ||
+        event.button !== 0
+    ) {
+        return;
+    }
+
+    sessionStorage.setItem('ajSkipSplash', '1');
+});
+
 document.addEventListener('DOMContentLoaded', function () {
     const splash = document.getElementById('ajobmart-splash');
 
+    // Check and clear the one-time skip flag
+    const skipSplash = sessionStorage.getItem('ajSkipSplash') === '1';
+    sessionStorage.removeItem('ajSkipSplash');
+
     if (!splash) return;
 
-    // Show the splash screen for at least 1.5 seconds.
+    if (skipSplash) {
+        splash.remove();
+        return;
+    }
+
+    // Normal loader for all other pages
     setTimeout(function () {
         splash.classList.add('hide');
 
         setTimeout(function () {
             splash.remove();
         }, 450);
+
     }, 1500);
 });
-
 
 //To Fetch Populer product
 

@@ -68,16 +68,14 @@
     <span>Cart</span>
 </a> -->
 
-<a
-    href="<?= site_url('cart/') ?>"
-    class="aj-mobile-nav-item aj-mobile-cart"
-    id=""
->
+<a href="<?= site_url('cart/') ?>"
+   class="aj-mobile-nav-item aj-mobile-cart"
+   id="ajMobileCartLink">
+
     <i class="bi bi-cart3"></i>
-
     <span class="aj-mobile-cart-count">0</span>
-
     <span>Cart</span>
+
 </a>
 
 
