@@ -389,7 +389,11 @@ foreach ($images ?? [] as $cartImage) {
                             <?= $stock <= 0 ? 'disabled' : '' ?>>
 
                         <i class="bi bi-lightning-fill"></i>
-                        <span id = "ajBuyAmount">Buy At ₹<?= $formatPrice($price) ?></span>
+                        <span>Buy At 
+                            <strong id = "ajBuyAmount">
+                                ₹<?= $formatPrice($price) ?>
+                            </strong>
+                        </span>
                     </button>
 
                 </div>
@@ -1194,16 +1198,17 @@ foreach ($images ?? [] as $cartImage) {
 
     function initFloatingCart() {
 
-        const cartAction = document.getElementById('ajProductCartAction');
+        const cartAction = document.getElementById(
+            'ajProductCartAction'
+        );
 
-        if (!cartAction) {
-            console.error('Ajobmart: #ajProductCartAction not found');
-            return;
-        }
+        if (!cartAction) return;
 
-        const mobileQuery = window.matchMedia('(max-width: 767.98px)');
+        const mobileQuery = window.matchMedia(
+            '(max-width: 767.98px)'
+        );
 
-        // Create a placeholder to preserve the original layout.
+        // Preserve the original cart position.
         const placeholder = document.createElement('div');
 
         placeholder.style.width = '100%';
@@ -1211,23 +1216,25 @@ foreach ($images ?? [] as $cartImage) {
         placeholder.style.visibility = 'hidden';
         placeholder.style.pointerEvents = 'none';
 
-        cartAction.parentNode.insertBefore(placeholder, cartAction);
+        cartAction.parentNode.insertBefore(
+            placeholder,
+            cartAction
+        );
 
-        let observer;
+        function updateFloatingState() {
 
-        let cartPlaceholderVisible = true;
-
-        function updateFloatingState(isVisible) {
-
-            cartPlaceholderVisible = isVisible;
+            const rect = placeholder.getBoundingClientRect();
 
             const zoomOpen = document.body.classList.contains(
                 'aj-image-zoom-active'
             );
 
+            // Original cart buttons are still below the viewport.
+            const originalCartBelow = rect.top >= window.innerHeight;
+
             const shouldFloat =
                 mobileQuery.matches &&
-                !isVisible &&
+                originalCartBelow &&
                 !zoomOpen;
 
             cartAction.classList.toggle(
@@ -1236,59 +1243,41 @@ foreach ($images ?? [] as $cartImage) {
             );
         }
 
-        // Listen for product image zoom open/close.
-        document.addEventListener('aj:image-zoom-state', function () {
+        // Update while scrolling.
+        window.addEventListener(
+            'scroll',
+            updateFloatingState,
+            { passive: true }
+        );
 
-            updateFloatingState(cartPlaceholderVisible);
-
-        });
-
-        function startObserver() {
-
-            if (observer) {
-                observer.disconnect();
-            }
-
-            if (!mobileQuery.matches) {
-                updateFloatingState(true);
-                return;
-            }
-
-            placeholder.style.height =
-                cartAction.offsetHeight + 'px';
-
-            observer = new IntersectionObserver(function (entries) {
-                updateFloatingState(entries[0].isIntersecting);
-            }, {
-                threshold: 0
-            });
-
-            observer.observe(placeholder);
-        }
-
-        // Update placeholder when button size changes.
-        if (window.ResizeObserver) {
-            const resizeObserver = new ResizeObserver(function () {
-                placeholder.style.height =
-                    cartAction.offsetHeight + 'px';
-            });
-
-            resizeObserver.observe(cartAction);
-        }
-
-        window.addEventListener('resize', startObserver);
+        // Update on screen size changes.
+        window.addEventListener(
+            'resize',
+            updateFloatingState
+        );
 
         if (mobileQuery.addEventListener) {
-            mobileQuery.addEventListener('change', startObserver);
-        } else {
-            mobileQuery.addListener(startObserver);
+            mobileQuery.addEventListener(
+                'change',
+                updateFloatingState
+            );
         }
 
-        startObserver();
+        // Hide floating cart during image zoom.
+        document.addEventListener(
+            'aj:image-zoom-state',
+            updateFloatingState
+        );
+
+        // Initial state.
+        updateFloatingState();
     }
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initFloatingCart);
+        document.addEventListener(
+            'DOMContentLoaded',
+            initFloatingCart
+        );
     } else {
         initFloatingCart();
     }

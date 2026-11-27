@@ -151,7 +151,6 @@ if ($isCustomerLoggedIn) {
     </div>
     <?= view('layouts/modals') ?>
 
-<?= view('layouts/footer') ?>
 
 <?= view('layouts/mobile_bottom_nav', [
     'isCustomerLoggedIn' => $isCustomerLoggedIn,
